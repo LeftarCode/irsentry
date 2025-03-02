@@ -262,6 +262,7 @@ NORECURSE : 'norecurse' ;
 NOREDZONE : 'noredzone' ;
 NORETURN : 'noreturn' ;
 NOTAIL : 'notail' ;
+NOUNDEF : 'noundef' ;
 NOUNWIND : 'nounwind' ;
 NSW : 'nsw' ;
 NSZ : 'nsz' ;

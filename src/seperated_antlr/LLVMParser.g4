@@ -3630,7 +3630,7 @@ argList
 //  ::= metadata !'string'
 
 arg
-    : (llvmType optAddrSpace '*' | concreteNonRecType) paramAttrs value
+    : (llvmType optAddrSpace '*' | concreteNonRecType) ('noundef')? paramAttrs value
     | metadataType metadata
 ;
 
@@ -4083,8 +4083,8 @@ paramList
 ;
 
 param
-    : llvmType paramAttrs
-    | llvmType paramAttrs localIdent
+    : llvmType ('noundef')? paramAttrs
+    | llvmType ('noundef')? paramAttrs localIdent
 ;
 
 // https://llvm.org/docs/LangRef.html#runtime-preemption-model
