@@ -7647,6 +7647,7 @@ public:
     antlr4::tree::TerminalNode *NOALIAS();
     antlr4::tree::TerminalNode *NOCAPTURE();
     antlr4::tree::TerminalNode *NONNULL();
+    antlr4::tree::TerminalNode *NOUNDEF();
     antlr4::tree::TerminalNode *READNONE();
     antlr4::tree::TerminalNode *READONLY();
     antlr4::tree::TerminalNode *RETURNED();
@@ -7716,7 +7717,6 @@ public:
     virtual size_t getRuleIndex() const override;
     LlvmTypeContext *llvmType();
     ParamAttrsContext *paramAttrs();
-    antlr4::tree::TerminalNode *NOUNDEF();
     LocalIdentContext *localIdent();
 
 

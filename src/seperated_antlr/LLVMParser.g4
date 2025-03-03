@@ -4058,6 +4058,7 @@ paramAttr
     | 'noalias'
     | 'nocapture'
     | 'nonnull'
+    | 'noundef'
     | 'readnone'
     | 'readonly'
     | 'returned'
@@ -4069,7 +4070,7 @@ paramAttr
     | 'zeroext'
 ;
 
-// ref: Sret
+// ref: Structure return attribute
 // ::= '(' llvmType ')'
 sretAttr
     : 'sret' '(' llvmType ')'
@@ -4097,8 +4098,8 @@ paramList
 ;
 
 param
-    : llvmType ('noundef')? paramAttrs
-    | llvmType ('noundef')? paramAttrs localIdent
+    : llvmType paramAttrs
+    | llvmType paramAttrs localIdent
 ;
 
 // https://llvm.org/docs/LangRef.html#runtime-preemption-model

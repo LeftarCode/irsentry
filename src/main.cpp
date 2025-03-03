@@ -20,6 +20,23 @@ struct FunctionInfo {
   std::string body;
 };
 
+void parseFunctionParams(LLVMParser::FunctionHeaderContext *ctx) {
+  if (!ctx->params()) {
+    return;
+  }
+  auto currentParamList = ctx->params()->paramList();
+
+  int paramNum = 1;
+  while (currentParamList) {
+    auto param = currentParamList->param();
+    std::cout << paramNum << ". " << param->llvmType()->getText() << ": "
+              << param->localIdent()->getText() << std::endl;
+
+    currentParamList = currentParamList->paramList();
+    paramNum++;
+  }
+}
+
 class FunctionExtractorVisitor : public LLVMParserBaseVisitor {
 public:
   std::vector<FunctionInfo> functions;
@@ -30,16 +47,11 @@ public:
 
     auto header = ctx->functionHeader();
     if (header) {
-
       info.returnType = header->llvmType()->getText();
       info.name = header->globalIdent()->getText();
+      std::cout << "Function " << info.name << ": " << std::endl;
 
-      if (header->params() && header->params()->paramList()) {
-        std::cout << "PARAMS" << std::endl;
-        auto paramListCtx = header->params()->paramList()->param();
-        std::cout << paramListCtx->llvmType() << ": " << paramListCtx->getText()
-                  << std::endl;
-      }
+      parseFunctionParams(header);
     }
 
     if (ctx->functionBody()) {
@@ -50,6 +62,7 @@ public:
   }
 };
 
+// TODO: Better gramma for param attributes
 int main() {
   std::string filename = "../../../examples/rust/target1/target1.ll";
   std::ifstream file(filename);
@@ -72,22 +85,6 @@ int main() {
 
   FunctionExtractorVisitor visitor;
   visitor.visit(tree);
-
-  // Wypisanie zebranych informacji
-  for (const auto &func : visitor.functions) {
-    std::cout << "-----------------------------\n";
-    std::cout << "Funkcja: " << func.name << "\n";
-    std::cout << "Return Type: " << func.returnType << "\n";
-    std::cout << "Parametry: ";
-    for (const auto &param : func.parameters) {
-      std::cout << "(" << param.type << " " << param.name << ") ";
-    }
-    std::cout << "\n";
-    if (!func.body.empty()) {
-      std::cout << "Ciało: " << func.body << "\n";
-    }
-    std::cout << "-----------------------------\n";
-  }
 
   return 0;
 }
