@@ -8,87 +8,42 @@
 using namespace antlr4;
 using namespace antlr4::tree;
 
-// Struktura przechowująca informacje o pojedynczym parametrze funkcji.
 struct ParameterInfo {
   std::string type;
   std::string name;
 };
 
-// Struktura przechowująca informacje o funkcji.
 struct FunctionInfo {
   std::string returnType;
   std::string name;
   std::vector<ParameterInfo> parameters;
-  std::string body; // dla deklaracji funkcji może być puste
+  std::string body;
 };
 
-// Visitor wyodrębniający informacje o funkcjach.
-// Zamiast odwoływać się do sztywnych pozycji węzła, przeglądamy wszystkie
-// dzieci i sprawdzamy rodzaj tokenu.
 class FunctionExtractorVisitor : public LLVMParserBaseVisitor {
 public:
   std::vector<FunctionInfo> functions;
 
-  // Obsługa definicji funkcji (z ciałem)
   virtual antlrcpp::Any
   visitFunctionDef(LLVMParser::FunctionDefContext *ctx) override {
     FunctionInfo info;
-    if (ctx->children.size() < 0) {
-      return 0;
-    }
 
-    for (auto *child : ctx->children) {
-      for (auto *child1 : child->children) {
+    auto header = ctx->functionHeader();
+    if (header) {
 
-        std::cout << child1->getText() << std::endl;
+      info.returnType = header->llvmType()->getText();
+      info.name = header->globalIdent()->getText();
+
+      if (header->params() && header->params()->paramList()) {
+        std::cout << "PARAMS" << std::endl;
+        auto paramListCtx = header->params()->paramList()->param();
+        std::cout << paramListCtx->llvmType() << ": " << paramListCtx->getText()
+                  << std::endl;
       }
     }
 
-    functions.push_back(info);
-    return visitChildren(ctx);
-  }
-
-  // Obsługa deklaracji funkcji (bez ciała)
-  virtual antlrcpp::Any
-  visitFunctionDecl(LLVMParser::FunctionDeclContext *ctx) override {
-    FunctionInfo info;
-    for (auto child : ctx->children) {
-      if (auto terminal = dynamic_cast<TerminalNode *>(child)) {
-        int tokenType = terminal->getSymbol()->getType();
-        std::string text = terminal->getText();
-        if (tokenType == LLVMLexer::DECLARE) {
-          continue;
-        }
-        if (text == "void" || text == "i32" || text == "i64" || text == "i1" ||
-            text == "float" || text == "double") {
-          if (info.returnType.empty()) {
-            info.returnType = text;
-            continue;
-          }
-        }
-        if (!text.empty() && text[0] == '@') {
-          info.name = text.substr(1);
-          continue;
-        }
-      } else {
-        std::string subtreeText = child->getText();
-        if (!subtreeText.empty() && subtreeText.front() == '(' &&
-            subtreeText.back() == ')') {
-          std::string paramsStr = subtreeText.substr(1, subtreeText.size() - 2);
-          std::istringstream iss(paramsStr);
-          std::string param;
-          while (std::getline(iss, param, ',')) {
-            std::istringstream paramStream(param);
-            std::string paramType, paramName;
-            paramStream >> paramType >> paramName;
-            if (!paramType.empty() && !paramName.empty()) {
-              if (paramName[0] == '%')
-                paramName = paramName.substr(1);
-              info.parameters.push_back({paramType, paramName});
-            }
-          }
-        }
-      }
+    if (ctx->functionBody()) {
+      info.body = ctx->functionBody()->getText();
     }
     functions.push_back(info);
     return visitChildren(ctx);
@@ -96,7 +51,7 @@ public:
 };
 
 int main() {
-  std::string filename = "../../../examples/c/target1/target1.ll";
+  std::string filename = "../../../examples/rust/target1/target1.ll";
   std::ifstream file(filename);
   if (!file.is_open()) {
     throw std::runtime_error("Failed to open " + filename);

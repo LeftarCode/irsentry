@@ -203,6 +203,10 @@ public:
     return visitChildren(ctx);
   }
 
+  virtual std::any visitPtrType(LLVMParser::PtrTypeContext *ctx) override {
+    return visitChildren(ctx);
+  }
+
   virtual std::any visitVoidType(LLVMParser::VoidTypeContext *ctx) override {
     return visitChildren(ctx);
   }
@@ -1656,6 +1660,10 @@ public:
   }
 
   virtual std::any visitParamAttr(LLVMParser::ParamAttrContext *ctx) override {
+    return visitChildren(ctx);
+  }
+
+  virtual std::any visitSretAttr(LLVMParser::SretAttrContext *ctx) override {
     return visitChildren(ctx);
   }
 

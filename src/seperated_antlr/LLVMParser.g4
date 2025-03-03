@@ -1,4 +1,4 @@
-// This ANTLR4 parser grammar is based on the parser part of an LLVM BNF grammar from
+﻿// This ANTLR4 parser grammar is based on the parser part of an LLVM BNF grammar from
 // https://gist.github.com/mewmew/a2487392d5519ef49658fd8f84d9eed5,
 // which in turn has been based on the source code of the official LLVM project,
 // as of 2018-02-19 (rev db070bbdacd303ae7da129f59beaf35024d94c53).
@@ -452,6 +452,7 @@ concreteNonRecType
     : intType
     // llvmType ::= 'float' | 'void' (etc)
     | floatType
+    | ptrType
     // llvmType ::= llvmType '*'
     // llvmType ::= llvmType 'addrspace' '(' uint32 ')' '*'
     // llvmType ::= '<' ... '>'
@@ -467,6 +468,13 @@ concreteNonRecType
     | mmxType
     | tokenType
 ;
+
+// --- [ ptr types ] ----------------------------------------------------------
+
+ptrType
+    : 'ptr'
+;
+
 
 // --- [ void types ] ----------------------------------------------------------
 
@@ -619,6 +627,7 @@ value
     // %foo
     | localIdent
     | inlineAsm
+    | 'poison'
 ;
 
 // --- [ Inline Assembler Expressions ] ----------------------------------------
@@ -2214,7 +2223,7 @@ label
 //       OptionalAttrs 'to' TypeAndValue 'unwind' TypeAndValue
 
 invokeTerm
-    : 'invoke' optCallingConv returnAttrs llvmType value '(' args ')' funcAttrs operandBundles 'to' labelType localIdent 'unwind' labelType localIdent optCommaSepMetadataAttachmentList
+    : (localIdent '=' )? 'invoke' optCallingConv returnAttrs llvmType value '(' args ')' funcAttrs operandBundles 'to' labelType localIdent 'unwind' labelType localIdent optCommaSepMetadataAttachmentList
 ;
 
 // --- [ resume ] --------------------------------------------------------------
@@ -4053,13 +4062,18 @@ paramAttr
     | 'readonly'
     | 'returned'
     | 'signext'
-    | 'sret'
+    | sretAttr
     | 'swifterror'
     | 'swiftself'
     | 'writeonly'
     | 'zeroext'
 ;
 
+// ref: Sret
+// ::= '(' llvmType ')'
+sretAttr
+    : 'sret' '(' llvmType ')'
+;
 // ref: ParseArgumentList
 //
 //   ::= '(' ArgTypeListI ')'

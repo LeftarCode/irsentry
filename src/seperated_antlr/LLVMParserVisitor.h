@@ -113,6 +113,8 @@ public:
 
     virtual std::any visitConcreteNonRecType(LLVMParser::ConcreteNonRecTypeContext *context) = 0;
 
+    virtual std::any visitPtrType(LLVMParser::PtrTypeContext *context) = 0;
+
     virtual std::any visitVoidType(LLVMParser::VoidTypeContext *context) = 0;
 
     virtual std::any visitIntType(LLVMParser::IntTypeContext *context) = 0;
@@ -840,6 +842,8 @@ public:
     virtual std::any visitParamAttrList(LLVMParser::ParamAttrListContext *context) = 0;
 
     virtual std::any visitParamAttr(LLVMParser::ParamAttrContext *context) = 0;
+
+    virtual std::any visitSretAttr(LLVMParser::SretAttrContext *context) = 0;
 
     virtual std::any visitParams(LLVMParser::ParamsContext *context) = 0;
 

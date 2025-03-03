@@ -73,44 +73,44 @@ public:
     NSZ = 261, NULL_ = 262, NUW = 263, OEQ = 264, OFFSETCOLON = 265, OGE = 266, 
     OGT = 267, OLE = 268, OLT = 269, ONE = 270, OPAQUE = 271, OPERANDSCOLON = 272, 
     OPTNONE = 273, OPTSIZE = 274, OR = 275, ORD = 276, PERSONALITY = 277, 
-    PHI = 278, PPC_FP128 = 279, PREFIX = 280, PRESERVE_ALLCC = 281, PRESERVE_MOSTCC = 282, 
-    PRIVATE = 283, PRODUCERCOLON = 284, PROLOGUE = 285, PROTECTED = 286, 
-    PTRTOINT = 287, PTX_DEVICE = 288, PTX_KERNEL = 289, READNONE = 290, 
-    READONLY = 291, REASSOC = 292, RELEASE = 293, RESUME = 294, RET = 295, 
-    RETAINEDTYPESCOLON = 296, RETURNED = 297, RETURNS_TWICE = 298, RUNTIMELANGCOLON = 299, 
-    RUNTIMEVERSIONCOLON = 300, SAFESTACK = 301, SAMESIZE = 302, SANITIZE_ADDRESS = 303, 
-    SANITIZE_HWADDRESS = 304, SANITIZE_MEMORY = 305, SANITIZE_THREAD = 306, 
-    SCOPECOLON = 307, SCOPELINECOLON = 308, SDIV = 309, SECTION = 310, SELECT = 311, 
-    SEQ_CST = 312, SETTERCOLON = 313, SEXT = 314, SGE = 315, SGT = 316, 
-    SHL = 317, SHUFFLEVECTOR = 318, SIDEEFFECT = 319, SIGNEXT = 320, SITOFP = 321, 
-    SIZECOLON = 322, SLE = 323, SLT = 324, SOURCE_FILENAME = 325, SPECULATABLE = 326, 
-    SPIR_FUNC = 327, SPIR_KERNEL = 328, SPLITDEBUGFILENAMECOLON = 329, SPLITDEBUGINLININGCOLON = 330, 
-    SREM = 331, SRET = 332, SSP = 333, SSPREQ = 334, SSPSTRONG = 335, STORE = 336, 
-    STRICTFP = 337, SUB = 338, SWIFTCC = 339, SWIFTERROR = 340, SWIFTSELF = 341, 
-    SWITCH = 342, SYNCSCOPE = 343, TAGCOLON = 344, TAIL = 345, TARGET = 346, 
-    TEMPLATEPARAMSCOLON = 347, THISADJUSTMENTCOLON = 348, THREAD_LOCAL = 349, 
-    THROWNTYPESCOLON = 350, TO = 351, TOKEN = 352, TRIPLE = 353, TRUE = 354, 
-    TRUNC = 355, TYPECOLON = 356, TYPE = 357, TYPESCOLON = 358, UDIV = 359, 
-    UEQ = 360, UGE = 361, UGT = 362, UITOFP = 363, ULE = 364, ULT = 365, 
-    UMAX = 366, UMIN = 367, UNDEF = 368, UNE = 369, UNITCOLON = 370, UNNAMED_ADDR = 371, 
-    UNO = 372, UNORDERED = 373, UNREACHABLE = 374, UNWIND = 375, UREM = 376, 
-    USELISTORDER = 377, USELISTORDER_BB = 378, UWTABLE = 379, VA_ARG = 380, 
-    VALUECOLON = 381, VARCOLON = 382, VARIABLESCOLON = 383, VIRTUALINDEXCOLON = 384, 
-    VIRTUALITYCOLON = 385, VOID = 386, VTABLEHOLDERCOLON = 387, WEAK = 388, 
-    WEAK_ODR = 389, WEBKIT_JSCC = 390, WIN64CC = 391, WITHIN = 392, WRITEONLY = 393, 
-    X = 394, X86_64_SYSVCC = 395, X86_FASTCALLCC = 396, X86_FP80 = 397, 
-    X86_INTRCC = 398, X86_MMX = 399, X86_REGCALLCC = 400, X86_STDCALLCC = 401, 
-    X86_THISCALLCC = 402, X86_VECTORCALLCC = 403, XCHG = 404, XOR = 405, 
-    ZEROEXT = 406, ZEROINITIALIZER = 407, ZEXT = 408, VOLATILE = 409, COMMENT = 410, 
-    WHITESPACE = 411, ATTR_GROUP_ID = 412, COMDAT_NAME = 413, METADATA_NAME = 414, 
-    METADATA_ID = 415, DWARF_TAG = 416, DWARF_ATT_ENCODING = 417, DI_FLAG = 418, 
-    DWARF_LANG = 419, DWARF_CC = 420, CHECKSUM_KIND = 421, DWARF_VIRTUALITY = 422, 
-    DWARF_MACINFO = 423, DWARF_OP = 424, INT_LIT = 425, DECIMAL_LIT = 426, 
-    DECIMALS = 427, FLOAT_LIT = 428, FRAC_LIT = 429, SIGN = 430, SCI_LIT = 431, 
-    FLOAT_HEX_LIT = 432, STRING_LIT = 433, QUOTED_STRING = 434, INT_TYPE = 435, 
-    NAME = 436, ESCAPE_NAME = 437, QUOTED_NAME = 438, ID = 439, GLOBAL_IDENT = 440, 
-    GLOBAL_NAME = 441, GLOBAL_ID = 442, LOCAL_IDENT = 443, LOCAL_NAME = 444, 
-    LOCAL_ID = 445, LABEL_IDENT = 446
+    PHI = 278, POISON = 279, PPC_FP128 = 280, PREFIX = 281, PRESERVE_ALLCC = 282, 
+    PRESERVE_MOSTCC = 283, PRIVATE = 284, PRODUCERCOLON = 285, PROLOGUE = 286, 
+    PROTECTED = 287, PTR = 288, PTRTOINT = 289, PTX_DEVICE = 290, PTX_KERNEL = 291, 
+    READNONE = 292, READONLY = 293, REASSOC = 294, RELEASE = 295, RESUME = 296, 
+    RET = 297, RETAINEDTYPESCOLON = 298, RETURNED = 299, RETURNS_TWICE = 300, 
+    RUNTIMELANGCOLON = 301, RUNTIMEVERSIONCOLON = 302, SAFESTACK = 303, 
+    SAMESIZE = 304, SANITIZE_ADDRESS = 305, SANITIZE_HWADDRESS = 306, SANITIZE_MEMORY = 307, 
+    SANITIZE_THREAD = 308, SCOPECOLON = 309, SCOPELINECOLON = 310, SDIV = 311, 
+    SECTION = 312, SELECT = 313, SEQ_CST = 314, SETTERCOLON = 315, SEXT = 316, 
+    SGE = 317, SGT = 318, SHL = 319, SHUFFLEVECTOR = 320, SIDEEFFECT = 321, 
+    SIGNEXT = 322, SITOFP = 323, SIZECOLON = 324, SLE = 325, SLT = 326, 
+    SOURCE_FILENAME = 327, SPECULATABLE = 328, SPIR_FUNC = 329, SPIR_KERNEL = 330, 
+    SPLITDEBUGFILENAMECOLON = 331, SPLITDEBUGINLININGCOLON = 332, SREM = 333, 
+    SRET = 334, SSP = 335, SSPREQ = 336, SSPSTRONG = 337, STORE = 338, STRICTFP = 339, 
+    SUB = 340, SWIFTCC = 341, SWIFTERROR = 342, SWIFTSELF = 343, SWITCH = 344, 
+    SYNCSCOPE = 345, TAGCOLON = 346, TAIL = 347, TARGET = 348, TEMPLATEPARAMSCOLON = 349, 
+    THISADJUSTMENTCOLON = 350, THREAD_LOCAL = 351, THROWNTYPESCOLON = 352, 
+    TO = 353, TOKEN = 354, TRIPLE = 355, TRUE = 356, TRUNC = 357, TYPECOLON = 358, 
+    TYPE = 359, TYPESCOLON = 360, UDIV = 361, UEQ = 362, UGE = 363, UGT = 364, 
+    UITOFP = 365, ULE = 366, ULT = 367, UMAX = 368, UMIN = 369, UNDEF = 370, 
+    UNE = 371, UNITCOLON = 372, UNNAMED_ADDR = 373, UNO = 374, UNORDERED = 375, 
+    UNREACHABLE = 376, UNWIND = 377, UREM = 378, USELISTORDER = 379, USELISTORDER_BB = 380, 
+    UWTABLE = 381, VA_ARG = 382, VALUECOLON = 383, VARCOLON = 384, VARIABLESCOLON = 385, 
+    VIRTUALINDEXCOLON = 386, VIRTUALITYCOLON = 387, VOID = 388, VTABLEHOLDERCOLON = 389, 
+    WEAK = 390, WEAK_ODR = 391, WEBKIT_JSCC = 392, WIN64CC = 393, WITHIN = 394, 
+    WRITEONLY = 395, X = 396, X86_64_SYSVCC = 397, X86_FASTCALLCC = 398, 
+    X86_FP80 = 399, X86_INTRCC = 400, X86_MMX = 401, X86_REGCALLCC = 402, 
+    X86_STDCALLCC = 403, X86_THISCALLCC = 404, X86_VECTORCALLCC = 405, XCHG = 406, 
+    XOR = 407, ZEROEXT = 408, ZEROINITIALIZER = 409, ZEXT = 410, VOLATILE = 411, 
+    COMMENT = 412, WHITESPACE = 413, ATTR_GROUP_ID = 414, COMDAT_NAME = 415, 
+    METADATA_NAME = 416, METADATA_ID = 417, DWARF_TAG = 418, DWARF_ATT_ENCODING = 419, 
+    DI_FLAG = 420, DWARF_LANG = 421, DWARF_CC = 422, CHECKSUM_KIND = 423, 
+    DWARF_VIRTUALITY = 424, DWARF_MACINFO = 425, DWARF_OP = 426, INT_LIT = 427, 
+    DECIMAL_LIT = 428, DECIMALS = 429, FLOAT_LIT = 430, FRAC_LIT = 431, 
+    SIGN = 432, SCI_LIT = 433, FLOAT_HEX_LIT = 434, STRING_LIT = 435, QUOTED_STRING = 436, 
+    INT_TYPE = 437, NAME = 438, ESCAPE_NAME = 439, QUOTED_NAME = 440, ID = 441, 
+    GLOBAL_IDENT = 442, GLOBAL_NAME = 443, GLOBAL_ID = 444, LOCAL_IDENT = 445, 
+    LOCAL_NAME = 446, LOCAL_ID = 447, LABEL_IDENT = 448
   };
 
   enum {
@@ -127,122 +127,123 @@ public:
     RuleUseListOrderList = 35, RuleUseListOrder = 36, RuleUseListOrderBB = 37, 
     RuleGlobalIdent = 38, RuleLocalIdent = 39, RuleLabelIdent = 40, RuleAttrGroupID = 41, 
     RuleComdatName = 42, RuleMetadataName = 43, RuleMetadataID = 44, RuleLlvmType = 45, 
-    RuleConcreteNonRecType = 46, RuleVoidType = 47, RuleIntType = 48, RuleFloatType = 49, 
-    RuleFloatKind = 50, RuleMmxType = 51, RuleOptAddrSpace = 52, RuleAddrSpace = 53, 
-    RuleVectorType = 54, RuleLabelType = 55, RuleTokenType = 56, RuleMetadataType = 57, 
-    RuleArrayType = 58, RuleStructType = 59, RuleTypeList = 60, RuleOpaqueType = 61, 
-    RuleNamedType = 62, RuleValue = 63, RuleInlineAsm = 64, RuleOptSideEffect = 65, 
-    RuleOptAlignStack = 66, RuleOptIntelDialect = 67, RuleConstant = 68, 
-    RuleBoolConst = 69, RuleBoolLit = 70, RuleIntConst = 71, RuleIntLit = 72, 
-    RuleFloatConst = 73, RuleNullConst = 74, RuleNoneConst = 75, RuleStructConst = 76, 
-    RuleArrayConst = 77, RuleCharArrayConst = 78, RuleStringLit = 79, RuleVectorConst = 80, 
-    RuleZeroInitializerConst = 81, RuleUndefConst = 82, RuleBlockAddressConst = 83, 
-    RuleConstantExpr = 84, RuleAddExpr = 85, RuleFAddExpr = 86, RuleSubExpr = 87, 
-    RuleFSubExpr = 88, RuleMulExpr = 89, RuleFMulExpr = 90, RuleUDivExpr = 91, 
-    RuleSDivExpr = 92, RuleFDivExpr = 93, RuleURemExpr = 94, RuleSRemExpr = 95, 
-    RuleFRemExpr = 96, RuleShlExpr = 97, RuleLShrExpr = 98, RuleAshrExpr = 99, 
-    RuleAndExpr = 100, RuleOrExpr = 101, RuleXorExpr = 102, RuleExtractElementExpr = 103, 
-    RuleInsertElementExpr = 104, RuleShuffleVectorExpr = 105, RuleExtractValueExpr = 106, 
-    RuleInsertValueExpr = 107, RuleGetElementPtrExpr = 108, RuleGepConstIndices = 109, 
-    RuleGepConstIndexList = 110, RuleGepConstIndex = 111, RuleOptInrange = 112, 
-    RuleTruncExpr = 113, RuleZExtExpr = 114, RuleSExtExpr = 115, RuleFPTruncExpr = 116, 
-    RuleFpExtExpr = 117, RuleFpToUIExpr = 118, RuleFpToSIExpr = 119, RuleUiToFPExpr = 120, 
-    RuleSiToFPExpr = 121, RulePtrToIntExpr = 122, RuleIntToPtrExpr = 123, 
-    RuleBitCastExpr = 124, RuleAddrSpaceCastExpr = 125, RuleICmpExpr = 126, 
-    RuleFCmpExpr = 127, RuleSelectExpr = 128, RuleBasicBlockList = 129, 
-    RuleBasicBlock = 130, RuleOptLabelIdent = 131, RuleInstructions = 132, 
-    RuleInstructionList = 133, RuleInstruction = 134, RuleValueInstruction = 135, 
-    RuleAddInst = 136, RuleFAddInst = 137, RuleSubInst = 138, RuleFSubInst = 139, 
-    RuleMulInst = 140, RuleFMulInst = 141, RuleUDivInst = 142, RuleSDivInst = 143, 
-    RuleFDivInst = 144, RuleURemInst = 145, RuleSRemInst = 146, RuleFRemInst = 147, 
-    RuleShlInst = 148, RuleLshrInst = 149, RuleAshrInst = 150, RuleAndInst = 151, 
-    RuleOrInst = 152, RuleXorInst = 153, RuleExtractElementInst = 154, RuleInsertElementInst = 155, 
-    RuleShuffleVectorInst = 156, RuleExtractValueInst = 157, RuleInsertValueInst = 158, 
-    RuleAllocaInst = 159, RuleOptInAlloca = 160, RuleOptSwiftError = 161, 
-    RuleLoadInst = 162, RuleStoreInst = 163, RuleFenceInst = 164, RuleCmpXchgInst = 165, 
-    RuleOptWeak = 166, RuleAtomicRMWInst = 167, RuleBinOp = 168, RuleGetElementPtrInst = 169, 
-    RuleTruncInst = 170, RuleZExtInst = 171, RuleSExtInst = 172, RuleFpTruncInst = 173, 
-    RuleFpExtInst = 174, RuleFpToUIInst = 175, RuleFpToSIInst = 176, RuleUiToFPInst = 177, 
-    RuleSiToFPInst = 178, RulePtrToIntInst = 179, RuleIntToPtrInst = 180, 
-    RuleBitCastInst = 181, RuleAddrSpaceCastInst = 182, RuleICmpInst = 183, 
-    RuleFCmpInst = 184, RulePhiInst = 185, RuleIncList = 186, RuleInc = 187, 
-    RuleSelectInst = 188, RuleCallInst = 189, RuleOptTail = 190, RuleVaArgInst = 191, 
-    RuleLandingPadInst = 192, RuleOptCleanup = 193, RuleClauses = 194, RuleClauseList = 195, 
-    RuleClause = 196, RuleCatchPadInst = 197, RuleCleanupPadInst = 198, 
-    RuleTerminator = 199, RuleRetTerm = 200, RuleBrTerm = 201, RuleCondBrTerm = 202, 
-    RuleSwitchTerm = 203, RuleCases = 204, RuleCaseList = 205, RuleLlvmCase = 206, 
-    RuleIndirectBrTerm = 207, RuleLabelList = 208, RuleLabel = 209, RuleInvokeTerm = 210, 
-    RuleResumeTerm = 211, RuleCatchSwitchTerm = 212, RuleCatchRetTerm = 213, 
-    RuleCleanupRetTerm = 214, RuleUnreachableTerm = 215, RuleUnwindTarget = 216, 
-    RuleMdTuple = 217, RuleMdFields = 218, RuleMdFieldList = 219, RuleMdField = 220, 
-    RuleMetadata = 221, RuleMdString = 222, RuleMetadataAttachment = 223, 
-    RuleMdNode = 224, RuleMetadataAttachments = 225, RuleMetadataAttachmentList = 226, 
-    RuleOptCommaSepMetadataAttachmentList = 227, RuleCommaSepMetadataAttachmentList = 228, 
-    RuleSpecializedMDNode = 229, RuleDiCompileUnit = 230, RuleDiCompileUnitFields = 231, 
-    RuleDiCompileUnitFieldList = 232, RuleDiCompileUnitField = 233, RuleDiFile = 234, 
-    RuleDiFileFields = 235, RuleDiFileFieldList = 236, RuleDiFileField = 237, 
-    RuleDiBasicType = 238, RuleDiBasicTypeFields = 239, RuleDiBasicTypeFieldList = 240, 
-    RuleDiBasicTypeField = 241, RuleDiSubroutineType = 242, RuleDiSubroutineTypeFields = 243, 
-    RuleDiSubroutineTypeFieldList = 244, RuleDiSubroutineTypeField = 245, 
-    RuleDiDerivedType = 246, RuleDiDerivedTypeFields = 247, RuleDiDerivedTypeFieldList = 248, 
-    RuleDiDerivedTypeField = 249, RuleDiCompositeType = 250, RuleDiCompositeTypeFields = 251, 
-    RuleDiCompositeTypeFieldList = 252, RuleDiCompositeTypeField = 253, 
-    RuleDiSubrange = 254, RuleDiSubrangeFields = 255, RuleDiSubrangeFieldList = 256, 
-    RuleDiSubrangeField = 257, RuleDiEnumerator = 258, RuleDiEnumeratorFields = 259, 
-    RuleDiEnumeratorFieldList = 260, RuleDiEnumeratorField = 261, RuleDiTemplateTypeParameter = 262, 
-    RuleDiTemplateTypeParameterFields = 263, RuleDiTemplateTypeParameterFieldList = 264, 
-    RuleDiTemplateTypeParameterField = 265, RuleDiTemplateValueParameter = 266, 
-    RuleDiTemplateValueParameterFields = 267, RuleDiTemplateValueParameterFieldList = 268, 
-    RuleDiTemplateValueParameterField = 269, RuleDiModule = 270, RuleDiModuleFields = 271, 
-    RuleDiModuleFieldList = 272, RuleDiModuleField = 273, RuleDiNamespace = 274, 
-    RuleDiNamespaceFields = 275, RuleDiNamespaceFieldList = 276, RuleDiNamespaceField = 277, 
-    RuleDiGlobalVariable = 278, RuleDiGlobalVariableFields = 279, RuleDiGlobalVariableFieldList = 280, 
-    RuleDiGlobalVariableField = 281, RuleDiSubprogram = 282, RuleDiSubprogramFields = 283, 
-    RuleDiSubprogramFieldList = 284, RuleDiSubprogramField = 285, RuleDiLexicalBlock = 286, 
-    RuleDiLexicalBlockFields = 287, RuleDiLexicalBlockFieldList = 288, RuleDiLexicalBlockField = 289, 
-    RuleDiLexicalBlockFile = 290, RuleDiLexicalBlockFileFields = 291, RuleDiLexicalBlockFileFieldList = 292, 
-    RuleDiLexicalBlockFileField = 293, RuleDiLocation = 294, RuleDiLocationFields = 295, 
-    RuleDiLocationFieldList = 296, RuleDiLocationField = 297, RuleDiLocalVariable = 298, 
-    RuleDiLocalVariableFields = 299, RuleDiLocalVariableFieldList = 300, 
-    RuleDiLocalVariableField = 301, RuleDiExpression = 302, RuleDiExpressionFields = 303, 
-    RuleDiExpressionFieldList = 304, RuleDiExpressionField = 305, RuleDiGlobalVariableExpression = 306, 
-    RuleDiGlobalVariableExpressionFields = 307, RuleDiGlobalVariableExpressionFieldList = 308, 
-    RuleDiGlobalVariableExpressionField = 309, RuleDiObjCProperty = 310, 
-    RuleDiObjCPropertyFields = 311, RuleDiObjCPropertyFieldList = 312, RuleDiObjCPropertyField = 313, 
-    RuleDiImportedEntity = 314, RuleDiImportedEntityFields = 315, RuleDiImportedEntityFieldList = 316, 
-    RuleDiImportedEntityField = 317, RuleDiMacro = 318, RuleDiMacroFields = 319, 
-    RuleDiMacroFieldList = 320, RuleDiMacroField = 321, RuleDiMacroFile = 322, 
-    RuleDiMacroFileFields = 323, RuleDiMacroFileFieldList = 324, RuleDiMacroFileField = 325, 
-    RuleGenericDINode = 326, RuleGenericDINodeFields = 327, RuleGenericDINodeFieldList = 328, 
-    RuleGenericDINodeField = 329, RuleFileField = 330, RuleIsOptimizedField = 331, 
-    RuleTagField = 332, RuleNameField = 333, RuleSizeField = 334, RuleAlignField = 335, 
-    RuleFlagsField = 336, RuleLineField = 337, RuleScopeField = 338, RuleBaseTypeField = 339, 
-    RuleOffsetField = 340, RuleTemplateParamsField = 341, RuleIntOrMDField = 342, 
-    RuleTypeField = 343, RuleLinkageNameField = 344, RuleIsLocalField = 345, 
-    RuleIsDefinitionField = 346, RuleDeclarationField = 347, RuleColumnField = 348, 
-    RuleTypeMacinfoField = 349, RuleChecksumkind = 350, RuleDiFlagList = 351, 
-    RuleDiFlag = 352, RuleDwarfAttEncoding = 353, RuleDwarfCC = 354, RuleDwarfLang = 355, 
-    RuleDwarfMacinfo = 356, RuleDwarfOp = 357, RuleDwarfTag = 358, RuleDwarfVirtuality = 359, 
-    RuleEmissionKind = 360, RuleTypeValues = 361, RuleTypeValueList = 362, 
-    RuleCommaSepTypeValueList = 363, RuleTypeValue = 364, RuleTypeConsts = 365, 
-    RuleTypeConstList = 366, RuleTypeConst = 367, RuleAlignment = 368, RuleAllocSize = 369, 
-    RuleArgs = 370, RuleArgList = 371, RuleArg = 372, RuleAtomicOrdering = 373, 
-    RuleOptCallingConv = 374, RuleCallingConv = 375, RuleOptComdat = 376, 
-    RuleComdat = 377, RuleDereferenceable = 378, RuleOptDLLStorageClass = 379, 
-    RuleDllStorageClass = 380, RuleOptExact = 381, RuleExceptionArgs = 382, 
-    RuleExceptionArgList = 383, RuleExceptionArg = 384, RuleExceptionScope = 385, 
-    RuleFastMathFlags = 386, RuleFastMathFlagList = 387, RuleFastMathFlag = 388, 
-    RuleFpred = 389, RuleFuncAttrs = 390, RuleFuncAttrList = 391, RuleFuncAttr = 392, 
-    RuleOptInBounds = 393, RuleIndices = 394, RuleIndexList = 395, RuleIndex = 396, 
-    RuleIPred = 397, RuleOptLinkage = 398, RuleLinkage = 399, RuleOptExternLinkage = 400, 
-    RuleExternLinkage = 401, RuleOperandBundles = 402, RuleOperandBundleList = 403, 
-    RuleOperandBundle = 404, RuleOverflowFlags = 405, RuleOverflowFlagList = 406, 
-    RuleOverflowFlag = 407, RuleParamAttrs = 408, RuleParamAttrList = 409, 
-    RuleParamAttr = 410, RuleParams = 411, RuleParamList = 412, RuleParam = 413, 
-    RuleOptPreemptionSpecifier = 414, RulePreemptionSpecifier = 415, RuleReturnAttrs = 416, 
-    RuleReturnAttrList = 417, RuleReturnAttr = 418, RuleSection = 419, RuleStackAlignment = 420, 
-    RuleOptSyncScope = 421, RuleThreadLocal = 422, RuleTlsModel = 423, RuleUnnamedAddr = 424, 
-    RuleVisibility = 425
+    RuleConcreteNonRecType = 46, RulePtrType = 47, RuleVoidType = 48, RuleIntType = 49, 
+    RuleFloatType = 50, RuleFloatKind = 51, RuleMmxType = 52, RuleOptAddrSpace = 53, 
+    RuleAddrSpace = 54, RuleVectorType = 55, RuleLabelType = 56, RuleTokenType = 57, 
+    RuleMetadataType = 58, RuleArrayType = 59, RuleStructType = 60, RuleTypeList = 61, 
+    RuleOpaqueType = 62, RuleNamedType = 63, RuleValue = 64, RuleInlineAsm = 65, 
+    RuleOptSideEffect = 66, RuleOptAlignStack = 67, RuleOptIntelDialect = 68, 
+    RuleConstant = 69, RuleBoolConst = 70, RuleBoolLit = 71, RuleIntConst = 72, 
+    RuleIntLit = 73, RuleFloatConst = 74, RuleNullConst = 75, RuleNoneConst = 76, 
+    RuleStructConst = 77, RuleArrayConst = 78, RuleCharArrayConst = 79, 
+    RuleStringLit = 80, RuleVectorConst = 81, RuleZeroInitializerConst = 82, 
+    RuleUndefConst = 83, RuleBlockAddressConst = 84, RuleConstantExpr = 85, 
+    RuleAddExpr = 86, RuleFAddExpr = 87, RuleSubExpr = 88, RuleFSubExpr = 89, 
+    RuleMulExpr = 90, RuleFMulExpr = 91, RuleUDivExpr = 92, RuleSDivExpr = 93, 
+    RuleFDivExpr = 94, RuleURemExpr = 95, RuleSRemExpr = 96, RuleFRemExpr = 97, 
+    RuleShlExpr = 98, RuleLShrExpr = 99, RuleAshrExpr = 100, RuleAndExpr = 101, 
+    RuleOrExpr = 102, RuleXorExpr = 103, RuleExtractElementExpr = 104, RuleInsertElementExpr = 105, 
+    RuleShuffleVectorExpr = 106, RuleExtractValueExpr = 107, RuleInsertValueExpr = 108, 
+    RuleGetElementPtrExpr = 109, RuleGepConstIndices = 110, RuleGepConstIndexList = 111, 
+    RuleGepConstIndex = 112, RuleOptInrange = 113, RuleTruncExpr = 114, 
+    RuleZExtExpr = 115, RuleSExtExpr = 116, RuleFPTruncExpr = 117, RuleFpExtExpr = 118, 
+    RuleFpToUIExpr = 119, RuleFpToSIExpr = 120, RuleUiToFPExpr = 121, RuleSiToFPExpr = 122, 
+    RulePtrToIntExpr = 123, RuleIntToPtrExpr = 124, RuleBitCastExpr = 125, 
+    RuleAddrSpaceCastExpr = 126, RuleICmpExpr = 127, RuleFCmpExpr = 128, 
+    RuleSelectExpr = 129, RuleBasicBlockList = 130, RuleBasicBlock = 131, 
+    RuleOptLabelIdent = 132, RuleInstructions = 133, RuleInstructionList = 134, 
+    RuleInstruction = 135, RuleValueInstruction = 136, RuleAddInst = 137, 
+    RuleFAddInst = 138, RuleSubInst = 139, RuleFSubInst = 140, RuleMulInst = 141, 
+    RuleFMulInst = 142, RuleUDivInst = 143, RuleSDivInst = 144, RuleFDivInst = 145, 
+    RuleURemInst = 146, RuleSRemInst = 147, RuleFRemInst = 148, RuleShlInst = 149, 
+    RuleLshrInst = 150, RuleAshrInst = 151, RuleAndInst = 152, RuleOrInst = 153, 
+    RuleXorInst = 154, RuleExtractElementInst = 155, RuleInsertElementInst = 156, 
+    RuleShuffleVectorInst = 157, RuleExtractValueInst = 158, RuleInsertValueInst = 159, 
+    RuleAllocaInst = 160, RuleOptInAlloca = 161, RuleOptSwiftError = 162, 
+    RuleLoadInst = 163, RuleStoreInst = 164, RuleFenceInst = 165, RuleCmpXchgInst = 166, 
+    RuleOptWeak = 167, RuleAtomicRMWInst = 168, RuleBinOp = 169, RuleGetElementPtrInst = 170, 
+    RuleTruncInst = 171, RuleZExtInst = 172, RuleSExtInst = 173, RuleFpTruncInst = 174, 
+    RuleFpExtInst = 175, RuleFpToUIInst = 176, RuleFpToSIInst = 177, RuleUiToFPInst = 178, 
+    RuleSiToFPInst = 179, RulePtrToIntInst = 180, RuleIntToPtrInst = 181, 
+    RuleBitCastInst = 182, RuleAddrSpaceCastInst = 183, RuleICmpInst = 184, 
+    RuleFCmpInst = 185, RulePhiInst = 186, RuleIncList = 187, RuleInc = 188, 
+    RuleSelectInst = 189, RuleCallInst = 190, RuleOptTail = 191, RuleVaArgInst = 192, 
+    RuleLandingPadInst = 193, RuleOptCleanup = 194, RuleClauses = 195, RuleClauseList = 196, 
+    RuleClause = 197, RuleCatchPadInst = 198, RuleCleanupPadInst = 199, 
+    RuleTerminator = 200, RuleRetTerm = 201, RuleBrTerm = 202, RuleCondBrTerm = 203, 
+    RuleSwitchTerm = 204, RuleCases = 205, RuleCaseList = 206, RuleLlvmCase = 207, 
+    RuleIndirectBrTerm = 208, RuleLabelList = 209, RuleLabel = 210, RuleInvokeTerm = 211, 
+    RuleResumeTerm = 212, RuleCatchSwitchTerm = 213, RuleCatchRetTerm = 214, 
+    RuleCleanupRetTerm = 215, RuleUnreachableTerm = 216, RuleUnwindTarget = 217, 
+    RuleMdTuple = 218, RuleMdFields = 219, RuleMdFieldList = 220, RuleMdField = 221, 
+    RuleMetadata = 222, RuleMdString = 223, RuleMetadataAttachment = 224, 
+    RuleMdNode = 225, RuleMetadataAttachments = 226, RuleMetadataAttachmentList = 227, 
+    RuleOptCommaSepMetadataAttachmentList = 228, RuleCommaSepMetadataAttachmentList = 229, 
+    RuleSpecializedMDNode = 230, RuleDiCompileUnit = 231, RuleDiCompileUnitFields = 232, 
+    RuleDiCompileUnitFieldList = 233, RuleDiCompileUnitField = 234, RuleDiFile = 235, 
+    RuleDiFileFields = 236, RuleDiFileFieldList = 237, RuleDiFileField = 238, 
+    RuleDiBasicType = 239, RuleDiBasicTypeFields = 240, RuleDiBasicTypeFieldList = 241, 
+    RuleDiBasicTypeField = 242, RuleDiSubroutineType = 243, RuleDiSubroutineTypeFields = 244, 
+    RuleDiSubroutineTypeFieldList = 245, RuleDiSubroutineTypeField = 246, 
+    RuleDiDerivedType = 247, RuleDiDerivedTypeFields = 248, RuleDiDerivedTypeFieldList = 249, 
+    RuleDiDerivedTypeField = 250, RuleDiCompositeType = 251, RuleDiCompositeTypeFields = 252, 
+    RuleDiCompositeTypeFieldList = 253, RuleDiCompositeTypeField = 254, 
+    RuleDiSubrange = 255, RuleDiSubrangeFields = 256, RuleDiSubrangeFieldList = 257, 
+    RuleDiSubrangeField = 258, RuleDiEnumerator = 259, RuleDiEnumeratorFields = 260, 
+    RuleDiEnumeratorFieldList = 261, RuleDiEnumeratorField = 262, RuleDiTemplateTypeParameter = 263, 
+    RuleDiTemplateTypeParameterFields = 264, RuleDiTemplateTypeParameterFieldList = 265, 
+    RuleDiTemplateTypeParameterField = 266, RuleDiTemplateValueParameter = 267, 
+    RuleDiTemplateValueParameterFields = 268, RuleDiTemplateValueParameterFieldList = 269, 
+    RuleDiTemplateValueParameterField = 270, RuleDiModule = 271, RuleDiModuleFields = 272, 
+    RuleDiModuleFieldList = 273, RuleDiModuleField = 274, RuleDiNamespace = 275, 
+    RuleDiNamespaceFields = 276, RuleDiNamespaceFieldList = 277, RuleDiNamespaceField = 278, 
+    RuleDiGlobalVariable = 279, RuleDiGlobalVariableFields = 280, RuleDiGlobalVariableFieldList = 281, 
+    RuleDiGlobalVariableField = 282, RuleDiSubprogram = 283, RuleDiSubprogramFields = 284, 
+    RuleDiSubprogramFieldList = 285, RuleDiSubprogramField = 286, RuleDiLexicalBlock = 287, 
+    RuleDiLexicalBlockFields = 288, RuleDiLexicalBlockFieldList = 289, RuleDiLexicalBlockField = 290, 
+    RuleDiLexicalBlockFile = 291, RuleDiLexicalBlockFileFields = 292, RuleDiLexicalBlockFileFieldList = 293, 
+    RuleDiLexicalBlockFileField = 294, RuleDiLocation = 295, RuleDiLocationFields = 296, 
+    RuleDiLocationFieldList = 297, RuleDiLocationField = 298, RuleDiLocalVariable = 299, 
+    RuleDiLocalVariableFields = 300, RuleDiLocalVariableFieldList = 301, 
+    RuleDiLocalVariableField = 302, RuleDiExpression = 303, RuleDiExpressionFields = 304, 
+    RuleDiExpressionFieldList = 305, RuleDiExpressionField = 306, RuleDiGlobalVariableExpression = 307, 
+    RuleDiGlobalVariableExpressionFields = 308, RuleDiGlobalVariableExpressionFieldList = 309, 
+    RuleDiGlobalVariableExpressionField = 310, RuleDiObjCProperty = 311, 
+    RuleDiObjCPropertyFields = 312, RuleDiObjCPropertyFieldList = 313, RuleDiObjCPropertyField = 314, 
+    RuleDiImportedEntity = 315, RuleDiImportedEntityFields = 316, RuleDiImportedEntityFieldList = 317, 
+    RuleDiImportedEntityField = 318, RuleDiMacro = 319, RuleDiMacroFields = 320, 
+    RuleDiMacroFieldList = 321, RuleDiMacroField = 322, RuleDiMacroFile = 323, 
+    RuleDiMacroFileFields = 324, RuleDiMacroFileFieldList = 325, RuleDiMacroFileField = 326, 
+    RuleGenericDINode = 327, RuleGenericDINodeFields = 328, RuleGenericDINodeFieldList = 329, 
+    RuleGenericDINodeField = 330, RuleFileField = 331, RuleIsOptimizedField = 332, 
+    RuleTagField = 333, RuleNameField = 334, RuleSizeField = 335, RuleAlignField = 336, 
+    RuleFlagsField = 337, RuleLineField = 338, RuleScopeField = 339, RuleBaseTypeField = 340, 
+    RuleOffsetField = 341, RuleTemplateParamsField = 342, RuleIntOrMDField = 343, 
+    RuleTypeField = 344, RuleLinkageNameField = 345, RuleIsLocalField = 346, 
+    RuleIsDefinitionField = 347, RuleDeclarationField = 348, RuleColumnField = 349, 
+    RuleTypeMacinfoField = 350, RuleChecksumkind = 351, RuleDiFlagList = 352, 
+    RuleDiFlag = 353, RuleDwarfAttEncoding = 354, RuleDwarfCC = 355, RuleDwarfLang = 356, 
+    RuleDwarfMacinfo = 357, RuleDwarfOp = 358, RuleDwarfTag = 359, RuleDwarfVirtuality = 360, 
+    RuleEmissionKind = 361, RuleTypeValues = 362, RuleTypeValueList = 363, 
+    RuleCommaSepTypeValueList = 364, RuleTypeValue = 365, RuleTypeConsts = 366, 
+    RuleTypeConstList = 367, RuleTypeConst = 368, RuleAlignment = 369, RuleAllocSize = 370, 
+    RuleArgs = 371, RuleArgList = 372, RuleArg = 373, RuleAtomicOrdering = 374, 
+    RuleOptCallingConv = 375, RuleCallingConv = 376, RuleOptComdat = 377, 
+    RuleComdat = 378, RuleDereferenceable = 379, RuleOptDLLStorageClass = 380, 
+    RuleDllStorageClass = 381, RuleOptExact = 382, RuleExceptionArgs = 383, 
+    RuleExceptionArgList = 384, RuleExceptionArg = 385, RuleExceptionScope = 386, 
+    RuleFastMathFlags = 387, RuleFastMathFlagList = 388, RuleFastMathFlag = 389, 
+    RuleFpred = 390, RuleFuncAttrs = 391, RuleFuncAttrList = 392, RuleFuncAttr = 393, 
+    RuleOptInBounds = 394, RuleIndices = 395, RuleIndexList = 396, RuleIndex = 397, 
+    RuleIPred = 398, RuleOptLinkage = 399, RuleLinkage = 400, RuleOptExternLinkage = 401, 
+    RuleExternLinkage = 402, RuleOperandBundles = 403, RuleOperandBundleList = 404, 
+    RuleOperandBundle = 405, RuleOverflowFlags = 406, RuleOverflowFlagList = 407, 
+    RuleOverflowFlag = 408, RuleParamAttrs = 409, RuleParamAttrList = 410, 
+    RuleParamAttr = 411, RuleSretAttr = 412, RuleParams = 413, RuleParamList = 414, 
+    RuleParam = 415, RuleOptPreemptionSpecifier = 416, RulePreemptionSpecifier = 417, 
+    RuleReturnAttrs = 418, RuleReturnAttrList = 419, RuleReturnAttr = 420, 
+    RuleSection = 421, RuleStackAlignment = 422, RuleOptSyncScope = 423, 
+    RuleThreadLocal = 424, RuleTlsModel = 425, RuleUnnamedAddr = 426, RuleVisibility = 427
   };
 
   explicit LLVMParser(antlr4::TokenStream *input);
@@ -309,6 +310,7 @@ public:
   class MetadataIDContext;
   class LlvmTypeContext;
   class ConcreteNonRecTypeContext;
+  class PtrTypeContext;
   class VoidTypeContext;
   class IntTypeContext;
   class FloatTypeContext;
@@ -673,6 +675,7 @@ public:
   class ParamAttrsContext;
   class ParamAttrListContext;
   class ParamAttrContext;
+  class SretAttrContext;
   class ParamsContext;
   class ParamListContext;
   class ParamContext;
@@ -1448,6 +1451,7 @@ public:
     virtual size_t getRuleIndex() const override;
     IntTypeContext *intType();
     FloatTypeContext *floatType();
+    PtrTypeContext *ptrType();
     VectorTypeContext *vectorType();
     LabelTypeContext *labelType();
     ArrayTypeContext *arrayType();
@@ -1462,6 +1466,19 @@ public:
   };
 
   ConcreteNonRecTypeContext* concreteNonRecType();
+
+  class  PtrTypeContext : public antlr4::ParserRuleContext {
+  public:
+    PtrTypeContext(antlr4::ParserRuleContext *parent, size_t invokingState);
+    virtual size_t getRuleIndex() const override;
+    antlr4::tree::TerminalNode *PTR();
+
+
+    virtual std::any accept(antlr4::tree::ParseTreeVisitor *visitor) override;
+   
+  };
+
+  PtrTypeContext* ptrType();
 
   class  VoidTypeContext : public antlr4::ParserRuleContext {
   public:
@@ -1700,6 +1717,7 @@ public:
     ConstantContext *constant();
     LocalIdentContext *localIdent();
     InlineAsmContext *inlineAsm();
+    antlr4::tree::TerminalNode *POISON();
 
 
     virtual std::any accept(antlr4::tree::ParseTreeVisitor *visitor) override;
@@ -4441,6 +4459,7 @@ public:
     LocalIdentContext* localIdent(size_t i);
     antlr4::tree::TerminalNode *UNWIND();
     OptCommaSepMetadataAttachmentListContext *optCommaSepMetadataAttachmentList();
+    antlr4::tree::TerminalNode *EQSIGN();
 
 
     virtual std::any accept(antlr4::tree::ParseTreeVisitor *visitor) override;
@@ -7632,7 +7651,7 @@ public:
     antlr4::tree::TerminalNode *READONLY();
     antlr4::tree::TerminalNode *RETURNED();
     antlr4::tree::TerminalNode *SIGNEXT();
-    antlr4::tree::TerminalNode *SRET();
+    SretAttrContext *sretAttr();
     antlr4::tree::TerminalNode *SWIFTERROR();
     antlr4::tree::TerminalNode *SWIFTSELF();
     antlr4::tree::TerminalNode *WRITEONLY();
@@ -7644,6 +7663,22 @@ public:
   };
 
   ParamAttrContext* paramAttr();
+
+  class  SretAttrContext : public antlr4::ParserRuleContext {
+  public:
+    SretAttrContext(antlr4::ParserRuleContext *parent, size_t invokingState);
+    virtual size_t getRuleIndex() const override;
+    antlr4::tree::TerminalNode *SRET();
+    antlr4::tree::TerminalNode *LPAREN();
+    LlvmTypeContext *llvmType();
+    antlr4::tree::TerminalNode *RPAREN();
+
+
+    virtual std::any accept(antlr4::tree::ParseTreeVisitor *visitor) override;
+   
+  };
+
+  SretAttrContext* sretAttr();
 
   class  ParamsContext : public antlr4::ParserRuleContext {
   public:
