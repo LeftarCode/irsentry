@@ -16,7 +16,7 @@ set(ANTLR_SOURCES
 )
 
 # Utworzenie pliku wykonywalnego, który zawiera main.cpp oraz pliki wygenerowane przez ANTLR
-add_executable(${PROJECT_NAME} src/main.cpp ${ANTLR_SOURCES} "src/visitors/FunctionExtractorVisitor.h" "src/visitors/FunctionExtractorVisitor.cpp" "src/parsers/FunctionParser.h" "src/parsers/FunctionParser.cpp")
+add_executable(${PROJECT_NAME} src/main.cpp ${ANTLR_SOURCES} "src/visitors/FunctionExtractorVisitor.h" "src/visitors/FunctionExtractorVisitor.cpp" "src/parsers/FunctionParser.h" "src/parsers/FunctionParser.cpp" "src/parsers/InstructionParser.h" "src/parsers/InstructionParser.cpp")
 
 # Linkowanie biblioteki ANTLR4 (nazwa celu zgodna z konfiguracją ANTLR4)
 target_link_libraries(${PROJECT_NAME} PRIVATE antlr4_static)

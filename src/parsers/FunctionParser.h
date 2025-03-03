@@ -2,17 +2,11 @@
 
 #include "../seperated_antlr/LLVMLexer.h"
 #include "../seperated_antlr/LLVMParser.h"
+#include "InstructionParser.h"
 #include <string>
 #include <vector>
 
 namespace irsentry {
-
-/**
- * @brief Represents a single LLVM instruction.
- */
-struct Instruction {
-  std::string text; ///< The textual representation of the instruction.
-};
 
 /**
  * @brief Represents a parameter of an LLVM function.
@@ -75,6 +69,8 @@ class FunctionParser {
    */
   std::vector<BasicBlock>
   parseFunctionBody(LLVMParser::FunctionBodyContext *ctx);
+
+  InstructionParser instructionParser;
 
 public:
   /**

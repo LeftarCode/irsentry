@@ -31,8 +31,8 @@ BasicBlock FunctionParser::parseBasicBlock(LLVMParser::BasicBlockContext *ctx) {
 
   for (auto *instChain = ctx->instructions()->instructionList();
        instChain != nullptr; instChain = instChain->instructionList()) {
-    instructions.insert(instructions.begin(),
-                        Instruction{instChain->instruction()->getText()});
+    auto inst = instructionParser.parseInstruction(instChain->instruction());
+    instructions.insert(instructions.begin(), inst);
   }
 
   if (auto *terminator = ctx->terminator()) {
