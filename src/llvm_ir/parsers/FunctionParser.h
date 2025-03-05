@@ -43,6 +43,16 @@ struct FunctionInfo {
  * as parameters, basic blocks, and the complete function definition.
  */
 class FunctionParser {
+public:
+  /**
+   * @brief Parses an LLVM function definition.
+   * @param ctx Pointer to the function definition context.
+   * @return A FunctionInfo object containing the parsed information including
+   * return type, name, parameters, and basic blocks.
+   */
+  FunctionInfo parseFunction(LLVMParser::FunctionDefContext *ctx);
+
+private:
   /**
    * @brief Parses the function parameters from the function header context.
    * @param ctx Pointer to the function header context.
@@ -71,15 +81,6 @@ class FunctionParser {
   parseFunctionBody(LLVMParser::FunctionBodyContext *ctx);
 
   InstructionParser instructionParser;
-
-public:
-  /**
-   * @brief Parses an LLVM function definition.
-   * @param ctx Pointer to the function definition context.
-   * @return A FunctionInfo object containing the parsed information including
-   * return type, name, parameters, and basic blocks.
-   */
-  FunctionInfo parseFunction(LLVMParser::FunctionDefContext *ctx);
 };
 
 } // namespace irsentry

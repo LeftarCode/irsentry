@@ -14,8 +14,6 @@ namespace irsentry {
  * FunctionParser. Parsed functions are stored in the public 'functions' vector.
  */
 class FunctionExtractorVisitor : public LLVMParserBaseVisitor {
-  /// Instance of FunctionParser used to parse function definitions.
-  FunctionParser fnParser;
 
 public:
   /// Container for storing parsed function information.
@@ -36,6 +34,10 @@ public:
    */
   virtual antlrcpp::Any
   visitFunctionDef(LLVMParser::FunctionDefContext *ctx) override;
+
+private:
+  /// Instance of FunctionParser used to parse function definitions.
+  FunctionParser m_fnParser;
 };
 
 } // namespace irsentry

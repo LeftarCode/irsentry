@@ -4,7 +4,7 @@ namespace irsentry {
 antlrcpp::Any FunctionExtractorVisitor::visitFunctionDef(
     LLVMParser::FunctionDefContext *ctx) {
 
-  FunctionInfo info = fnParser.parseFunction(ctx);
+  FunctionInfo info = m_fnParser.parseFunction(ctx);
   functions.push_back(info);
   return visitChildren(ctx);
 }

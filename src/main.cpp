@@ -8,7 +8,6 @@
 using namespace antlr4;
 using namespace antlr4::tree;
 
-// TODO: Better gramma for param attributes
 int main() {
   const std::string filename = "../../../examples/c/target1/target1.ll";
   std::ifstream file(filename);

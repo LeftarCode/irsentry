@@ -67,7 +67,7 @@ FunctionParser::parseFunction(LLVMParser::FunctionDefContext *ctx) {
   }
 
   if (auto *body = ctx->functionBody()) {
-    info.basicBlocks = this->parseFunctionBody(ctx->functionBody());
+    info.basicBlocks = this->parseFunctionBody(body);
   }
 
   return info;
