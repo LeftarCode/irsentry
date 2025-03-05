@@ -80,7 +80,7 @@ private:
   std::vector<BasicBlock>
   parseFunctionBody(LLVMParser::FunctionBodyContext *ctx);
 
-  InstructionParser instructionParser;
+  InstructionParser m_instructionParser;
 };
 
 } // namespace irsentry

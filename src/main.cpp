@@ -1,6 +1,7 @@
 #include "antlr4-runtime.h"
 #include "llvm_ir/antlr4/LLVMLexer.h"
 #include "llvm_ir/visitors/FunctionExtractorVisitor.h"
+#include "utilities/Logger.h"
 #include <algorithm>
 #include <fstream>
 #include <iostream>
@@ -12,6 +13,7 @@ int main() {
   const std::string filename = "../../../examples/c/target1/target1.ll";
   std::ifstream file(filename);
   if (!file.is_open()) {
+    irsentry::Logger::getInstance().error("Failed to open " + filename);
     throw std::runtime_error("Failed to open " + filename);
   }
 

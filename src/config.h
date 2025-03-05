@@ -4,7 +4,7 @@
 #define IRSENTRY_NAME "IRSentry"
 
 /// Project version.
-#define IRSENTRY_VERSION "1.0.0"
+#define IRSENTRY_VERSION "0.0.1"
 
 /// Project author.
 #define IRSENTRY_AUTHRO "Mateusz Lewczak <leftarcode@gmail.com>"

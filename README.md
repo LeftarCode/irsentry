@@ -19,3 +19,4 @@ cmake --build build --config Debug
 	3. Build binaries,
 	4. Build documentation,
 	5. Upload to GitHub.
+4. Support case where function is defined inside another function (check if that's possible).

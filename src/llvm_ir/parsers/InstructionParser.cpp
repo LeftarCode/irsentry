@@ -1,4 +1,5 @@
 #include "InstructionParser.h"
+#include "../../utilities/Logger.h"
 
 namespace irsentry {
 void InstructionParser::parseStoreInstruction(
@@ -353,7 +354,10 @@ InstructionParser::parseInstruction(LLVMParser::InstructionContext *ctx) {
   } else if (auto *atomicRMWInst = ctx->atomicRMWInst()) {
   } else if (auto *valueInstruction = ctx->valueInstruction()) {
   } else {
-    /*Throw*/
+    Logger::getInstance().error(
+        "Instruction parser occured non-existing instruction");
+    throw std::runtime_error(
+        "Instruction parser occured non-existing instruction");
   }
 
   return Instruction{
