@@ -1,7 +1,7 @@
 #pragma once
 
-#include "../seperated_antlr/LLVMLexer.h"
-#include "../seperated_antlr/LLVMParser.h"
+#include "../antlr4/LLVMLexer.h"
+#include "../antlr4/LLVMParser.h"
 #include "InstructionParser.h"
 #include <string>
 #include <vector>

@@ -1,5 +1,5 @@
 #pragma once
-#include "../seperated_antlr/LLVMParser.h"
+#include "../antlr4/LLVMParser.h"
 
 namespace irsentry {
 /**

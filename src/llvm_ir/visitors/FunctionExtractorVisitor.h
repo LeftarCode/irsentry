@@ -1,7 +1,7 @@
 #pragma once
+#include "../antlr4/LLVMParser.h"
+#include "../antlr4/LLVMParserBaseVisitor.h"
 #include "../parsers/FunctionParser.h"
-#include "../seperated_antlr/LLVMParser.h"
-#include "../seperated_antlr/LLVMParserBaseVisitor.h"
 
 namespace irsentry {
 

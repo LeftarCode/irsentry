@@ -1,6 +1,6 @@
 #include "antlr4-runtime.h"
-#include "seperated_antlr/LLVMLexer.h"
-#include "visitors/FunctionExtractorVisitor.h"
+#include "llvm_ir/antlr4/LLVMLexer.h"
+#include "llvm_ir/visitors/FunctionExtractorVisitor.h"
 #include <algorithm>
 #include <fstream>
 #include <iostream>
@@ -10,7 +10,7 @@ using namespace antlr4::tree;
 
 // TODO: Better gramma for param attributes
 int main() {
-  std::string filename = "../../../examples/rust/target1/target1.ll";
+  const std::string filename = "../../../examples/c/target1/target1.ll";
   std::ifstream file(filename);
   if (!file.is_open()) {
     throw std::runtime_error("Failed to open " + filename);
@@ -32,17 +32,17 @@ int main() {
   irsentry::FunctionExtractorVisitor visitor;
   visitor.visit(tree);
 
-  for (auto func : visitor.functions) {
+  for (const auto &func : visitor.functions) {
     std::cout << "<======================================>" << std::endl;
     std::cout << func.returnType << " " << func.name << "(";
-    for (auto param : func.parameters) {
+    for (const auto &param : func.parameters) {
       std::cout << param.type << " " << param.name;
       std::cout << ", ";
     }
     std::cout << ") {" << std::endl;
-    for (auto basicBlock : func.basicBlocks) {
+    for (const auto &basicBlock : func.basicBlocks) {
       std::cout << basicBlock.label << std::endl;
-      for (auto instr : basicBlock.instructions) {
+      for (const auto &instr : basicBlock.instructions) {
         std::cout << "\t" << instr.text << std::endl;
       }
     }
