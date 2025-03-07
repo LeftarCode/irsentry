@@ -1,13 +1,12 @@
 #!/usr/bin/env python3
 import re
 import sys
+import json
 
 def to_pascal_case(s: str) -> str:
-    """Konwertuje ciąg na PascalCase."""
     return s[0].upper() + s[1:] if s else s
 
 def rule_name_to_struct_name(rule_name: str) -> str:
-    """Z nazwy reguły (np. addInst, storeInst) tworzy nazwę struktury (AddInstruction, StoreInstruction)."""
     if rule_name.endswith("Inst"):
         base = rule_name[:-4]  # usuwa 'Inst'
         return to_pascal_case(base) + "Instruction"
@@ -15,18 +14,6 @@ def rule_name_to_struct_name(rule_name: str) -> str:
         return to_pascal_case(rule_name) + "Instruction"
 
 def parse_grammar(grammar_text: str):
-    """
-    Parsuje tekst gramatyki (.g4) i zwraca listę produkcji w postaci:
-      [
-         (rule_name, alternatives),
-         ...
-      ]
-    Gdzie dla każdej reguły 'alternatives' to lista alternatywnych zapisów,
-    a każdy zapis to lista krotek (token, is_optional).
-    
-    Literały (np. 'store' czy "atomic") oraz proste znaki interpunkcyjne (np. ',') są pomijane.
-    Operator ? (po tokenie) oznacza, że poprzedni token jest opcjonalny.
-    """
     productions = []
     
     for production in grammar_text.split(';'):
@@ -65,20 +52,7 @@ def parse_grammar(grammar_text: str):
         productions.append((rule_name, alternatives))
     return productions
 
-def generate_structs(productions, optional_fields_order):
-    """
-    Dla każdej reguły:
-      - Łączy (union) wszystkie alternatywy, zbierając wystąpienia tokenów.
-      - Dla każdego tokena zapisuje:
-            * max_count – maksymalna liczba wystąpień w pojedynczej alternatywie,
-            * appears_in – liczba alternatyw, w których token wystąpił,
-            * required_in – liczba alternatyw, w których token wystąpił jako wymagany (bez ?).
-      - Ustala, że pole jest wymagane (is_required = True) tylko wtedy, gdy pojawia się we wszystkich alternatywach
-        i w każdej z nich ma przynajmniej jeden występ bez operatora ?.
-      - Jeśli token należy do listy optional_fields_order, traktujemy go jako opcjonalny.
-      
-    Zwracana wartość to lista struktur z polami w kolejności pojawienia się (pierwsze wystąpienie decyduje o kolejności).
-    """
+def generate_structs(productions, settings):
     structs = []
     for rule_name, alternatives in productions:
         total_alts = len(alternatives)
@@ -90,7 +64,7 @@ def generate_structs(productions, optional_fields_order):
                 if token not in ordering:
                     ordering.append(token)
                 if token not in local_counts:
-                    local_counts[token] = {"count": 0, "required": False}
+                    local_counts[token] = {"count": 0, "required": False, "is_boolean": False}
                 local_counts[token]["count"] += 1
                 if not is_opt:
                     local_counts[token]["required"] = True
@@ -113,9 +87,12 @@ def generate_structs(productions, optional_fields_order):
                 appears_in = field_data[token]["appears_in"]
                 required_in = field_data[token]["required_in"]
                 is_required = (appears_in == total_alts and required_in == total_alts)
-                if token in optional_fields_order:
+                is_boolean = False
+                if token in settings["optional_fields_order"]:
                     is_required = False
-                fields.append((token, count, is_required))
+                if token in settings["boolean_fields"]:
+                    is_boolean = True
+                fields.append((token, count, is_required, is_boolean))
         struct_name = rule_name_to_struct_name(rule_name)
         structs.append({
             "rule_name": rule_name,
@@ -125,19 +102,6 @@ def generate_structs(productions, optional_fields_order):
     return structs
 
 def generate_cpp_code(structs):
-    """
-    Generuje kod C++:
-      - Enum InstructionType zawierający nazwy wszystkich struktur.
-      - Dla każdej struktury:
-           * Pole 'InstructionType type;'
-           * Dla każdego pola:
-                - Jeśli pole jest wymagane, generujemy deklarację w postaci:
-                      <Type> <fieldName>;
-                - Jeśli pole jest opcjonalne (czyli nie jest wymagane), to:
-                      - Jeśli nazwa zaczyna się od "opt", przyjmujemy, że typ wyznaczamy jako PascalCase bez "opt".
-                      - W przeciwnym razie opakowujemy typ w std::optional i dodajemy prefiks "opt".
-                - Jeśli pole występuje więcej niż raz, używamy std::array.
-    """
     lines = []
     lines.append("enum InstructionType {")
     enum_names = [s["struct_name"] for s in structs]
@@ -145,20 +109,19 @@ def generate_cpp_code(structs):
     lines.append("};\n")
     
     for s in structs:
-        lines.append("struct {} {{".format(s["struct_name"]))
-        lines.append("    InstructionType type;")
-        for token, count, is_required in s["fields"]:
+        lines.append("class {} : public Instruction {{\npublic:".format(s["struct_name"]))
+        for token, count, is_required, is_boolean in s["fields"]:
             if is_required:
-                type_name = to_pascal_case(token)
+                type_name = "bool" if is_boolean else to_pascal_case(token)
                 field_name = token
                 decl = "{} {}".format(type_name, field_name)
             else:
                 if token.startswith("opt"):
-                    type_name = to_pascal_case(token[3:])
+                    type_name = "bool" if is_boolean else to_pascal_case(token[3:])
                     field_name = token
                     decl = "{} {}".format(type_name, field_name)
                 else:
-                    type_name = to_pascal_case(token)
+                    type_name = "bool" if is_boolean else to_pascal_case(token)
                     field_name = "opt" + to_pascal_case(token)
                     decl = "std::optional<{}> {}".format(type_name, field_name)
             if count > 1:
@@ -178,23 +141,12 @@ def main():
     with open(filename, "r") as f:
         grammar_text = f.read()
     
-    # Lista pól, które mają być traktowane jako opcjonalne niezależnie od alternatyw.
-    optional_fields_order = [
-        "overflowFlags",
-        "fastMathFlags",
-        "optCommaSepMetadataAttachmentList",
-        "optCallingConv",
-        "optTail",
-        "optCleanup",
-        "optSyncScope",
-        "optSwiftError",
-        "optWeak",
-        "optInBounds",
-        "optExact"
-    ]
+    settings = {}
+    with open("./settings.json", "r") as f:
+        settings = json.loads(f.read())
     
     productions = parse_grammar(grammar_text)
-    structs = generate_structs(productions, optional_fields_order)
+    structs = generate_structs(productions, settings)
     cpp_code = generate_cpp_code(structs)
     print(cpp_code)
 

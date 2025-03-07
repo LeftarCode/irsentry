@@ -20,3 +20,10 @@ cmake --build build --config Debug
 	4. Build documentation,
 	5. Upload to GitHub.
 4. Support case where function is defined inside another function (check if that's possible).
+
+# Elementy do opisania
+- Generatory Python'a kodu C++ bazuj¹c na `.g4`,
+- Memory layout (porównanie kilku layoutów) dla:
+	- Klasy i listy instrukcji,
+	- Drzewa binarnego CFG.
+- Porównanie std::variant vs polimorfizm. Porównanie cache miss i hitów, zu¿ycia pamiêci i szybkoœæ przeszukiwania std::vector'a.

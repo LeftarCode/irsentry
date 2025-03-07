@@ -10,7 +10,7 @@ using namespace antlr4;
 using namespace antlr4::tree;
 
 int main() {
-  const std::string filename = "../../../examples/c/target1/target1.ll";
+  const std::string filename = "../../../tests/llvm_ir/target1/target1.ll";
   std::ifstream file(filename);
   if (!file.is_open()) {
     irsentry::Logger::getInstance().error("Failed to open " + filename);

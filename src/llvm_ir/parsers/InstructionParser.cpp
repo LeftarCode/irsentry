@@ -29,7 +29,7 @@ void InstructionParser::parseCmpXchgInstruction(
   bool isVolatile = (ctx->VOLATILE() != nullptr);
 
   auto llvmType = ctx->llvmType();
-  auto optWeak = ctx->optWeak();
+  auto isWeak = (ctx->optWeak()->WEAK() != nullptr);
   auto value = ctx->value();
   auto optSyncScope = ctx->optSyncScope();
   auto atomicOrdering = ctx->atomicOrdering();
@@ -54,13 +54,8 @@ void InstructionParser::parseAtomicRMWInstruction(
 void InstructionParser::parseValueInstruction(
     LLVMParser::ValueInstructionContext *ctx) {
 
+  // Code partially generated with Python script generate_valueinstr_ifs.py
   if (auto *addInst = ctx->addInst()) {
-    auto overflowFlags = addInst->overflowFlags();
-    auto llvmType = addInst->llvmType();
-    auto value = addInst->value();
-    auto optCommaSepMetadataAttachmentList =
-        addInst->optCommaSepMetadataAttachmentList();
-  } else if (auto *addInst = ctx->addInst()) {
     auto overflowFlags = addInst->overflowFlags();
     auto llvmType = addInst->llvmType();
     auto value = addInst->value();
@@ -337,6 +332,11 @@ void InstructionParser::parseValueInstruction(
     auto exceptionArgs = cleanupPadInst->exceptionArgs();
     auto optCommaSepMetadataAttachmentList =
         cleanupPadInst->optCommaSepMetadataAttachmentList();
+  } else {
+    Logger::getInstance().error(
+        "Instruction parser occured non-existing value instruction");
+    throw std::runtime_error(
+        "Instruction parser occured non-existing value instruction");
   }
 }
 
@@ -351,6 +351,7 @@ InstructionParser::parseInstruction(LLVMParser::InstructionContext *ctx) {
   if (auto *storeInst = ctx->storeInst()) {
   } else if (auto *fenceInst = ctx->fenceInst()) {
   } else if (auto *cmpXchgInst = ctx->cmpXchgInst()) {
+    parseCmpXchgInstruction(cmpXchgInst);
   } else if (auto *atomicRMWInst = ctx->atomicRMWInst()) {
   } else if (auto *valueInstruction = ctx->valueInstruction()) {
   } else {

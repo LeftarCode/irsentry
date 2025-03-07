@@ -1,6 +1,16 @@
 import re
 import sys
 
+def to_pascal_case(s: str) -> str:
+    return s[0].upper() + s[1:] if s else s
+
+def token_name_to_praser_name(rule_name: str) -> str:
+    if rule_name.startswith("opt"):
+        base = rule_name[3:]
+        return to_pascal_case(base)
+    else:
+        return to_pascal_case(rule_name)
+
 def generate_cpp_for_rule(rule_name, production):
     tokens = re.findall(r"'[^']*'|\w+", production)
     child_tokens = [token for token in tokens if not (token.startswith("'") and token.endswith("'"))]
@@ -15,7 +25,8 @@ def generate_cpp_for_rule(rule_name, production):
     lines = []
     lines.append(f"else if (auto *{rule_name} = ctx->{rule_name}()) {{")
     for token in unique_child_tokens:
-        lines.append(f"    auto {token} = {rule_name}->{token}();")
+        token_pascal_case = token_name_to_praser_name(token)
+        lines.append(f"    auto {token} = {token_pascal_case}Parser.parse({rule_name}->{token}());")
     
     lines.append(f"    throw std::runtime_error(\"Unimplemented instruction {rule_name}!\");")
     lines.append("}")
