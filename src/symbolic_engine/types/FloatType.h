@@ -1,0 +1,41 @@
+/**
+ * @file FloatDoubleType.h
+ * @brief Defines the FloatType and DoubleType classes.
+ */
+
+#pragma once
+#include "BaseType.h"
+
+/**
+ * @class FloatType
+ * @brief Represents a floating-point data type.
+ */
+class FloatType : public BaseType {
+public:
+  /**
+   * @brief Constructor for FloatType.
+   */
+  FloatType();
+
+  /**
+   * @brief Type alias for the floating-point type.
+   */
+  using var_type = float;
+};
+
+/**
+ * @class DoubleType
+ * @brief Represents a double-precision floating-point data type.
+ */
+class DoubleType : public BaseType {
+public:
+  /**
+   * @brief Constructor for DoubleType.
+   */
+  DoubleType();
+
+  /**
+   * @brief Type alias for the double-precision floating-point type.
+   */
+  using var_type = double;
+};

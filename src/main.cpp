@@ -1,6 +1,8 @@
 #include "antlr4-runtime.h"
 #include "llvm_ir/antlr4/LLVMLexer.h"
 #include "llvm_ir/visitors/FunctionExtractorVisitor.h"
+#include "symbolic_engine/types/UIntegerType.h"
+#include "symbolic_engine/variables/Variable.h"
 #include "utilities/Logger.h"
 #include <algorithm>
 #include <fstream>

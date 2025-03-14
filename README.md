@@ -20,6 +20,7 @@ cmake --build build --config Debug
 	4. Build documentation,
 	5. Upload to GitHub.
 4. Support case where function is defined inside another function (check if that's possible).
+5. Change submodule antlr4 module name from antrl4 to antlr4.
 
 # Elementy do opisania
 - Generatory Python'a kodu C++ bazuj¹c na `.g4`,
