@@ -1,0 +1,37 @@
+/**
+ * @file FAddInstruction.h
+ * @brief Defines the FAddInstruction template class for floating-point
+ * addition.
+ */
+
+#pragma once
+#include "../types/FloatType.h"
+#include "../variables/Variable.h"
+#include "BaseInstruction.h"
+#include <array>
+
+/**
+ * @brief Concept ensuring only allowed floating-point types are used.
+ */
+template <typename T>
+concept AllowedFloat =
+    std::same_as<T, FloatType> || std::same_as<T, DoubleType>;
+
+/**
+ * @class FAddInstruction
+ * @brief Represents an addition instruction for floating-point types.
+ *
+ * @tparam T A type that satisfies the AllowedFloat concept.
+ */
+template <AllowedFloat T> class FAddInstruction : public BaseInstruction {
+public:
+  /**
+   * @brief The result of the addition operation.
+   */
+  Variable<T> result;
+
+  /**
+   * @brief The two operands (addends) involved in the addition.
+   */
+  std::array<Variable<T>, 2> addends;
+};
