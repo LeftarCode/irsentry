@@ -5,7 +5,9 @@
 
 #pragma once
 #include "BaseType.h"
+#include <concepts>
 #include <stdint.h>
+#include <type_traits>
 
 /**
  * @class Integer16Type
@@ -57,3 +59,11 @@ public:
    */
   using var_type = int64_t;
 };
+
+/**
+ * @brief Concept ensuring only allowed integer types are used.
+ */
+template <typename T>
+concept AllowedInt =
+    std::same_as<T, Integer16Type> || std::same_as<T, Integer32Type> ||
+    std::same_as<T, Integer64Type>;

@@ -4,6 +4,7 @@
  */
 
 #pragma once
+#include <type_traits>
 
 /**
  * @enum DataType
@@ -33,3 +34,9 @@ public:
    */
   DataType type;
 };
+
+/**
+ * @brief Concept ensuring the type is derived from BaseType.
+ */
+template <typename T>
+concept InheritedFromBase = std::is_base_of_v<BaseType, T>;

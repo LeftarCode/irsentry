@@ -5,7 +5,9 @@
 
 #pragma once
 #include "BaseType.h"
+#include <concepts>
 #include <stdint.h>
+#include <type_traits>
 
 /**
  * @class UInteger16Type
@@ -57,3 +59,11 @@ public:
    */
   using var_type = uint64_t;
 };
+
+/**
+ * @brief Concept ensuring only allowed unsigned integer types are used.
+ */
+template <typename T>
+concept AllowedUInt =
+    std::same_as<T, UInteger16Type> || std::same_as<T, UInteger32Type> ||
+    std::same_as<T, UInteger64Type>;

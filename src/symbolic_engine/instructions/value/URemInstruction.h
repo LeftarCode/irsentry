@@ -11,14 +11,6 @@
 #include <array>
 
 /**
- * @brief Concept ensuring only allowed unsigned integer types are used.
- */
-template <typename T>
-concept AllowedUInt =
-    std::same_as<T, UInteger16Type> || std::same_as<T, UInteger32Type> ||
-    std::same_as<T, UInteger64Type>;
-
-/**
  * @class URemInstruction
  * @brief Represents an unsigned integer remainder (modulo) instruction.
  *

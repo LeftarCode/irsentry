@@ -11,14 +11,6 @@
 #include <array>
 
 /**
- * @brief Concept ensuring only allowed integer types are used.
- */
-template <typename T>
-concept AllowedInt =
-    std::same_as<T, Integer16Type> || std::same_as<T, Integer32Type> ||
-    std::same_as<T, Integer64Type>;
-
-/**
  * @class SDivInstruction
  * @brief Represents a signed integer division instruction.
  *

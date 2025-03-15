@@ -11,13 +11,6 @@
 #include <array>
 
 /**
- * @brief Concept ensuring only allowed floating-point types are used.
- */
-template <typename T>
-concept AllowedFloat =
-    std::same_as<T, FloatType> || std::same_as<T, DoubleType>;
-
-/**
  * @class FAddInstruction
  * @brief Represents an addition instruction for floating-point types.
  *

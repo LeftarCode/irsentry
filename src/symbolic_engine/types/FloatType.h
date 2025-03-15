@@ -5,6 +5,8 @@
 
 #pragma once
 #include "BaseType.h"
+#include <concepts>
+#include <type_traits>
 
 /**
  * @class FloatType
@@ -39,3 +41,10 @@ public:
    */
   using var_type = double;
 };
+
+/**
+ * @brief Concept ensuring only allowed floating-point types are used.
+ */
+template <typename T>
+concept AllowedFloat =
+    std::same_as<T, FloatType> || std::same_as<T, DoubleType>;
