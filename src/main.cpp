@@ -8,9 +8,6 @@
 #include <fstream>
 #include <iostream>
 
-using namespace antlr4;
-using namespace antlr4::tree;
-
 int main() {
   const std::string filename = "../../../tests/llvm_ir/target1/target1.ll";
   std::ifstream file(filename);
