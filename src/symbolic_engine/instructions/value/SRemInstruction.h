@@ -5,9 +5,9 @@
  */
 
 #pragma once
-#include "../types/IntegerType.h"
-#include "../variables/Variable.h"
-#include "BaseInstruction.h"
+#include "../../types/IntegerType.h"
+#include "../../variables/Variable.h"
+#include "../BaseInstruction.h"
 #include <array>
 
 /**

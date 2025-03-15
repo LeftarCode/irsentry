@@ -53,6 +53,7 @@ orInst
 xorInst
     : 'xor' llvmType value ',' value optCommaSepMetadataAttachmentList
 ;
+// SEPARATOR
 extractElementInst
     : 'extractelement' llvmType value ',' llvmType value optCommaSepMetadataAttachmentList
 ;

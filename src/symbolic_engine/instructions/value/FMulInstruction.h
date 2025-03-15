@@ -5,9 +5,9 @@
  */
 
 #pragma once
-#include "../types/FloatType.h"
-#include "../variables/Variable.h"
-#include "BaseInstruction.h"
+#include "../../types/FloatType.h"
+#include "../../variables/Variable.h"
+#include "../BaseInstruction.h"
 #include <array>
 
 /**

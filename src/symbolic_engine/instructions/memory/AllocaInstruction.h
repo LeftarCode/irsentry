@@ -4,8 +4,8 @@
  */
 
 #pragma once
-#include "../variables/Variable.h"
-#include "BaseInstruction.h"
+#include "../../variables/Variable.h"
+#include "../BaseInstruction.h"
 #include <array>
 
 /**
