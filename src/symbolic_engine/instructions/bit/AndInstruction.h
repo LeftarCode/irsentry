@@ -9,6 +9,7 @@
 #include "../BaseInstruction.h"
 #include <array>
 
+namespace irsentry {
 /**
  * @class XorInstruction
  * @brief Represents a bitwise XOR instruction for integer types.
@@ -27,3 +28,4 @@ public:
    */
   std::array<Variable<T>, 2> operands;
 };
+} // namespace irsentry

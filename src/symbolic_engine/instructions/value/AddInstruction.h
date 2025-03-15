@@ -9,6 +9,7 @@
 #include "../BaseInstruction.h"
 #include <array>
 
+namespace irsentry {
 /**
  * @class AddInstruction
  * @brief Represents an addition instruction for integer types.
@@ -27,3 +28,4 @@ public:
    */
   std::array<Variable<T>, 2> addend;
 };
+} // namespace irsentry

@@ -8,6 +8,7 @@
 #include <optional>
 #include <string>
 
+namespace irsentry {
 /**
  * @brief Concept ensuring the type has a var_type alias.
  */
@@ -49,3 +50,4 @@ template <InheritedFromBaseWithVarType T> struct Variable {
    */
   std::optional<typename T::var_type> optValue;
 };
+} // namespace irsentry

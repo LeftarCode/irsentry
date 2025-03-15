@@ -8,6 +8,7 @@
 #include <concepts>
 #include <type_traits>
 
+namespace irsentry {
 /**
  * @class FloatType
  * @brief Represents a floating-point data type.
@@ -48,3 +49,4 @@ public:
 template <typename T>
 concept AllowedFloat =
     std::same_as<T, FloatType> || std::same_as<T, DoubleType>;
+} // namespace irsentry

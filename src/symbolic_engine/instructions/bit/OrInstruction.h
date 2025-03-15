@@ -9,6 +9,7 @@
 #include "../BaseInstruction.h"
 #include <array>
 
+namespace irsentry {
 /**
  * @class OrInstruction
  * @brief Represents a bitwise OR instruction for integer types.
@@ -27,3 +28,4 @@ public:
    */
   std::array<Variable<T>, 2> operands;
 };
+} // namespace irsentry

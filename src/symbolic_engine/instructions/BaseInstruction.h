@@ -5,6 +5,7 @@
 
 #pragma once
 
+namespace irsentry {
 /**
  * @enum InstructionType
  * @brief Represents different types of instructions.
@@ -75,3 +76,4 @@ public:
    */
   InstructionType type;
 };
+} // namespace irsentry

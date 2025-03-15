@@ -10,6 +10,7 @@
 #include "../BaseInstruction.h"
 #include <array>
 
+namespace irsentry {
 /**
  * @class SubInstruction
  * @brief Represents a floating-point subtraction instruction.
@@ -33,3 +34,4 @@ public:
    */
   Variable<T> subtrahend;
 };
+} // namespace irsentry

@@ -9,6 +9,7 @@
 #include "../BaseInstruction.h"
 #include <array>
 
+namespace irsentry {
 /**
  * @class SubInstruction
  * @brief Represents an integer subtraction instruction.
@@ -32,3 +33,4 @@ public:
    */
   Variable<T> subtrahend;
 };
+} // namespace irsentry

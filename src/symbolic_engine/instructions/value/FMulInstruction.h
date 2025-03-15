@@ -10,6 +10,7 @@
 #include "../BaseInstruction.h"
 #include <array>
 
+namespace irsentry {
 /**
  * @class FMulInstruction
  * @brief Represents a floating-point multiplication instruction.
@@ -33,3 +34,4 @@ public:
    */
   Variable<T> multiplicand;
 };
+} // namespace irsentry

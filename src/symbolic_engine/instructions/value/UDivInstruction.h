@@ -10,6 +10,7 @@
 #include "../BaseInstruction.h"
 #include <array>
 
+namespace irsentry {
 /**
  * @class UDivInstruction
  * @brief Represents an unsigned integer division instruction.
@@ -33,3 +34,4 @@ public:
    */
   Variable<T> divisor;
 };
+} // namespace irsentry

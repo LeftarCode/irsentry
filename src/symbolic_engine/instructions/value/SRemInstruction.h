@@ -10,6 +10,7 @@
 #include "../BaseInstruction.h"
 #include <array>
 
+namespace irsentry {
 /**
  * @class SRemInstruction
  * @brief Represents a signed integer remainder (modulo) instruction.
@@ -33,3 +34,4 @@ public:
    */
   Variable<T> divisor;
 };
+} // namespace irsentry

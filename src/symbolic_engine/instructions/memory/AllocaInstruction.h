@@ -8,6 +8,7 @@
 #include "../BaseInstruction.h"
 #include <array>
 
+namespace irsentry {
 /**
  * @class AllocaInstruction
  * @brief Represents an allocation instruction for memory management.
@@ -37,3 +38,4 @@ public:
    */
   size_t count;
 };
+} // namespace irsentry

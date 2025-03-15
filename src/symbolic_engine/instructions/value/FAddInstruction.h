@@ -10,6 +10,7 @@
 #include "../BaseInstruction.h"
 #include <array>
 
+namespace irsentry {
 /**
  * @class FAddInstruction
  * @brief Represents an addition instruction for floating-point types.
@@ -28,3 +29,4 @@ public:
    */
   std::array<Variable<T>, 2> addends;
 };
+} // namespace irsentry

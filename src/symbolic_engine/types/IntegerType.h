@@ -9,6 +9,7 @@
 #include <stdint.h>
 #include <type_traits>
 
+namespace irsentry {
 /**
  * @class Integer16Type
  * @brief Represents a 16-bit signed integer type.
@@ -67,3 +68,4 @@ template <typename T>
 concept AllowedInt =
     std::same_as<T, Integer16Type> || std::same_as<T, Integer32Type> ||
     std::same_as<T, Integer64Type>;
+} // namespace irsentry

@@ -7,7 +7,7 @@
 #define IRSENTRY_VERSION "0.0.1"
 
 /// Project author.
-#define IRSENTRY_AUTHRO "Mateusz Lewczak <leftarcode@gmail.com>"
+#define IRSENTRY_AUTHOR "Mateusz Lewczak <leftarcode@gmail.com>"
 
 /// Year of project creation/update.
 #define IRSENTRY_COPYRIGHT_YEAR 2025

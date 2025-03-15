@@ -6,6 +6,7 @@
 #pragma once
 #include <type_traits>
 
+namespace irsentry {
 /**
  * @enum DataType
  * @brief Represents different data types that can be used.
@@ -40,3 +41,4 @@ public:
  */
 template <typename T>
 concept InheritedFromBase = std::is_base_of_v<BaseType, T>;
+} // namespace irsentry

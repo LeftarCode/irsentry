@@ -10,6 +10,7 @@
 #include "../BaseInstruction.h"
 #include <array>
 
+namespace irsentry {
 /**
  * @class LShrInstruction
  * @brief Represents a logical right shift instruction for integer types.
@@ -33,3 +34,4 @@ public:
    */
   Variable<T> shift;
 };
+} // namespace irsentry

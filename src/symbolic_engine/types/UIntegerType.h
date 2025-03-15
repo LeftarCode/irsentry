@@ -9,6 +9,7 @@
 #include <stdint.h>
 #include <type_traits>
 
+namespace irsentry {
 /**
  * @class UInteger16Type
  * @brief Represents a 16-bit unsigned integer type.
@@ -67,3 +68,4 @@ template <typename T>
 concept AllowedUInt =
     std::same_as<T, UInteger16Type> || std::same_as<T, UInteger32Type> ||
     std::same_as<T, UInteger64Type>;
+} // namespace irsentry
