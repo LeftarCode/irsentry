@@ -1,23 +1,31 @@
 #include "FunctionParser.h"
+#include "../../utilities/Logger.h"
 
 namespace irsentry {
 std::vector<Parameter> FunctionParser::parseFunctionParameters(
-    LLVMParser::FunctionHeaderContext *ctx) {
+    LLVMParser::FunctionHeaderContext *ctx) const {
   if (!ctx->params()) {
     return {};
+  }
+
+  bool isVaArgs = (ctx->params()->DOTS() != nullptr);
+  if (isVaArgs) {
+    Logger::getInstance().warning("VA arguments are NOT currently supported, "
+                                  "but function has been added");
   }
 
   std::vector<Parameter> params;
   for (auto *paramChain = ctx->params()->paramList(); paramChain != nullptr;
        paramChain = paramChain->paramList()) {
     auto *param = paramChain->param();
-    params.emplace_back(Parameter{param->llvmType()->getText(),
-                                  param->localIdent()->getText()});
+
+    params.emplace_back(Parameter{param->llvmType()->getText(), ""});
   }
   return params;
 }
 
-BasicBlock FunctionParser::parseBasicBlock(LLVMParser::BasicBlockContext *ctx) {
+BasicBlock
+FunctionParser::parseBasicBlock(LLVMParser::BasicBlockContext *ctx) const {
   if (!ctx->instructions()) {
     return {};
   }
@@ -43,7 +51,7 @@ BasicBlock FunctionParser::parseBasicBlock(LLVMParser::BasicBlockContext *ctx) {
 }
 
 std::vector<BasicBlock>
-FunctionParser::parseFunctionBody(LLVMParser::FunctionBodyContext *ctx) {
+FunctionParser::parseFunctionBody(LLVMParser::FunctionBodyContext *ctx) const {
   if (!ctx->basicBlockList()) {
     return {};
   }
@@ -57,7 +65,7 @@ FunctionParser::parseFunctionBody(LLVMParser::FunctionBodyContext *ctx) {
 }
 
 FunctionInfo
-FunctionParser::parseFunction(LLVMParser::FunctionDefContext *ctx) {
+FunctionParser::parseFunction(LLVMParser::FunctionDefContext *ctx) const {
   FunctionInfo info;
 
   if (auto *header = ctx->functionHeader()) {
@@ -68,6 +76,18 @@ FunctionParser::parseFunction(LLVMParser::FunctionDefContext *ctx) {
 
   if (auto *body = ctx->functionBody()) {
     info.basicBlocks = this->parseFunctionBody(body);
+  }
+
+  return info;
+}
+ExternalFunctionInfo FunctionParser::parseExternalFunction(
+    LLVMParser::FunctionDeclContext *ctx) const {
+  ExternalFunctionInfo info;
+
+  if (auto *header = ctx->functionHeader()) {
+    info.returnType = header->llvmType()->getText();
+    info.name = header->globalIdent()->getText();
+    info.parameters = this->parseFunctionParameters(header);
   }
 
   return info;

@@ -18,6 +18,7 @@ namespace irsentry {
  */
 template <AllowedInt T> class XorInstruction : public BaseInstruction {
 public:
+  XorInstruction() { this->type = InstructionType::XorInstruction; }
   /**
    * @brief The result of the bitwise XOR operation.
    */

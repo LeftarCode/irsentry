@@ -1,7 +1,7 @@
-#include "FunctionExtractorVisitor.h"
+#include "FunctionExtractionVisitor.h"
 
 namespace irsentry {
-antlrcpp::Any FunctionExtractorVisitor::visitFunctionDef(
+antlrcpp::Any FunctionExtractionVisitor::visitFunctionDef(
     LLVMParser::FunctionDefContext *ctx) {
 
   FunctionInfo info = m_fnParser.parseFunction(ctx);

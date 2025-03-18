@@ -19,6 +19,7 @@ namespace irsentry {
  */
 template <AllowedFloat T> class FAddInstruction : public BaseInstruction {
 public:
+  FAddInstruction() { this->type = InstructionType::FAddInstruction; }
   /**
    * @brief The result of the addition operation.
    */

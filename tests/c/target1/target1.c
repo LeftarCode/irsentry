@@ -1,14 +1,24 @@
+#include <assert.h>
 #include <stdio.h>
 
-double c = -5.689;
+void dangerousFunction(void) { printf("Dangerous function called!\n"); }
 
-int main() {
-  const char* test = "TEST!";
-  int a = 1000;
-  if (a > 100) {
-    printf(&test[4]);
-    c++;
+int testBitwiseOperations(int x, int y) {
+  if (((x & 0x1F) == 0x1F) && (((y >> 4) & 1) == 1)) {
+    dangerousFunction();
+  } else {
+    assert((x | y) != 0);
   }
-  printf("TEST%n\n", &a);
+  return x ^ y;
+}
+
+int main(void) {
+  int a = 0x1F;
+  int b = 0x10;
+
+  int result = testBitwiseOperations(a, b);
+
+  printf("Result = %d\n", result);
+
   return 0;
 }

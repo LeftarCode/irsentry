@@ -13,7 +13,7 @@ namespace irsentry {
  * visitFunctionDef method to extract and parse function definitions using the
  * FunctionParser. Parsed functions are stored in the public 'functions' vector.
  */
-class FunctionExtractorVisitor : public LLVMParserBaseVisitor {
+class FunctionExtractionVisitor : public LLVMParserBaseVisitor {
 
 public:
   /// Container for storing parsed function information.

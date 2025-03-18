@@ -19,6 +19,7 @@ namespace irsentry {
  */
 template <AllowedInt T> class ShlInstruction : public BaseInstruction {
 public:
+  ShlInstruction() { this->type = InstructionType::ShlInstruction; }
   /**
    * @brief The result of the bitwise left shift operation.
    */

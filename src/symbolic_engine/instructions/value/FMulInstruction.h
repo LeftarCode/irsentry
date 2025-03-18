@@ -19,6 +19,7 @@ namespace irsentry {
  */
 template <AllowedFloat T> class FMulInstruction : public BaseInstruction {
 public:
+	FMulInstruction() { this->type = InstructionType::FMulInstruction; }
   /**
    * @brief The result of the multiplication operation.
    */

@@ -19,6 +19,7 @@ namespace irsentry {
  */
 template <AllowedUInt T> class UDivInstruction : public BaseInstruction {
 public:
+  UDivInstruction() { this->type = InstructionType::UDivInstruction; }
   /**
    * @brief The result of the division operation.
    */

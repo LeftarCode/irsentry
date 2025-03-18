@@ -18,6 +18,7 @@ namespace irsentry {
  */
 template <AllowedInt T> class OrInstruction : public BaseInstruction {
 public:
+  OrInstruction() { this->type = InstructionType::OrInstruction; }
   /**
    * @brief The result of the bitwise OR operation.
    */

@@ -19,6 +19,7 @@ namespace irsentry {
  */
 template <AllowedUInt T> class URemInstruction : public BaseInstruction {
 public:
+  URemInstruction() { this->type = InstructionType::URemInstruction; }
   /**
    * @brief The result of the remainder operation.
    */

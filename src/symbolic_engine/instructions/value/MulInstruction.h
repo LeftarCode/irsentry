@@ -1,6 +1,6 @@
 /**
- * @file SubInstruction.h
- * @brief Defines the SubInstruction template class for integer subtraction.
+ * @file MulInstruction.h
+ * @brief Defines the MulInstruction template class for integer subtraction.
  */
 
 #pragma once
@@ -11,26 +11,22 @@
 
 namespace irsentry {
 /**
- * @class SubInstruction
- * @brief Represents an integer subtraction instruction.
+ * @class MulInstruction
+ * @brief Represents an integer multiplication instruction.
  *
  * @tparam T A type that satisfies the AllowedInt concept.
  */
-template <AllowedInt T> class SubInstruction : public BaseInstruction {
+template <AllowedInt T> class MulInstruction : public BaseInstruction {
 public:
+  MulInstruction() { this->type = InstructionType::MulInstruction; }
   /**
-   * @brief The result of the subtraction operation.
+   * @brief The result of the multiplication operation.
    */
   Variable<T> result;
 
   /**
-   * @brief The minuend (the number from which another number is subtracted).
+   * @brief The array of two multipication operators
    */
-  Variable<T> minuend;
-
-  /**
-   * @brief The subtrahend (the number that is subtracted).
-   */
-  Variable<T> subtrahend;
+  std::array<Variable<T>, 2> operators;
 };
 } // namespace irsentry

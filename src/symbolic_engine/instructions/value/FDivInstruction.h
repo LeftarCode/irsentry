@@ -19,6 +19,7 @@ namespace irsentry {
  */
 template <AllowedFloat T> class FDivInstruction : public BaseInstruction {
 public:
+  FDivInstruction() { this->type = InstructionType::FDivInstruction; }
   /**
    * @brief The result of the division operation.
    */

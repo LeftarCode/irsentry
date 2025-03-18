@@ -19,6 +19,7 @@ namespace irsentry {
  */
 template <AllowedInt T> class AShrInstruction : public BaseInstruction {
 public:
+  AShrInstruction() { this->type = InstructionType::AshrInstruction; }
   /**
    * @brief The result of the arithmetic right shift operation.
    */

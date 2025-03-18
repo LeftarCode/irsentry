@@ -19,6 +19,7 @@ namespace irsentry {
  */
 template <AllowedInt T> class LShrInstruction : public BaseInstruction {
 public:
+  LShrInstruction() { this->type = InstructionType::LShrInstruction; }
   /**
    * @brief The result of the logical right shift operation.
    */

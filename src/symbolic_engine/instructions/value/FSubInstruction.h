@@ -1,6 +1,6 @@
 /**
- * @file SubInstruction.h
- * @brief Defines the SubInstruction template class for floating-point
+ * @file FSubInstruction.h
+ * @brief Defines the FSubInstruction template class for floating-point
  * subtraction.
  */
 
@@ -12,13 +12,14 @@
 
 namespace irsentry {
 /**
- * @class SubInstruction
+ * @class FSubInstruction
  * @brief Represents a floating-point subtraction instruction.
  *
  * @tparam T A type that satisfies the AllowedFloat concept.
  */
-template <AllowedFloat T> class SubInstruction : public BaseInstruction {
+template <AllowedFloat T> class FSubInstruction : public BaseInstruction {
 public:
+  FSubInstruction() { this->type = InstructionType::FSubInstruction; }
   /**
    * @brief The result of the subtraction operation.
    */

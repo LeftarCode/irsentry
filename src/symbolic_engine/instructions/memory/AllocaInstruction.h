@@ -18,6 +18,7 @@ namespace irsentry {
 template <InheritedFromBase T>
 class AllocaInstruction : public BaseInstruction {
 public:
+  AllocaInstruction() { this->type = InstructionType::AllocaInstruction; }
   /**
    * @brief The variable that stores the result of the allocation.
    */

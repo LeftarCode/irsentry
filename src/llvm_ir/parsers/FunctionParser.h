@@ -36,6 +36,12 @@ struct FunctionInfo {
       basicBlocks; ///< The basic blocks forming the function body.
 };
 
+struct ExternalFunctionInfo {
+  std::string returnType;
+  std::string name;
+  std::vector<Parameter> parameters;
+};
+
 /**
  * @brief Parses LLVM function definitions from ANTLR-generated contexts.
  *
@@ -50,7 +56,9 @@ public:
    * @return A FunctionInfo object containing the parsed information including
    * return type, name, parameters, and basic blocks.
    */
-  FunctionInfo parseFunction(LLVMParser::FunctionDefContext *ctx);
+  FunctionInfo parseFunction(LLVMParser::FunctionDefContext *ctx) const;
+  ExternalFunctionInfo
+  parseExternalFunction(LLVMParser::FunctionDeclContext *ctx) const;
 
 private:
   /**
@@ -60,7 +68,7 @@ private:
    * parameters are present.
    */
   std::vector<Parameter>
-  parseFunctionParameters(LLVMParser::FunctionHeaderContext *ctx);
+  parseFunctionParameters(LLVMParser::FunctionHeaderContext *ctx) const;
 
   /**
    * @brief Parses a basic block from the basic block context.
@@ -68,7 +76,7 @@ private:
    * @return A BasicBlock object containing the block's label (if present) and
    * its instructions.
    */
-  BasicBlock parseBasicBlock(LLVMParser::BasicBlockContext *ctx);
+  BasicBlock parseBasicBlock(LLVMParser::BasicBlockContext *ctx) const;
 
   /**
    * @brief Parses the function body by extracting basic blocks from the
@@ -78,9 +86,9 @@ private:
    * blocks are present.
    */
   std::vector<BasicBlock>
-  parseFunctionBody(LLVMParser::FunctionBodyContext *ctx);
+  parseFunctionBody(LLVMParser::FunctionBodyContext *ctx) const;
 
-  InstructionParser m_instructionParser;
+  const InstructionParser m_instructionParser;
 };
 
 } // namespace irsentry

@@ -19,13 +19,13 @@
 #define IRSENTRY_REVISION "abc123"
 
 /// Build date (set automatically).
-#define BUILD_DATE __DATE__
+#define IRSENTRY_BUILD_DATE __DATE__
 
 /// Build time (set automatically).
-#define BUILD_TIME __TIME__
+#define IRSENTRY_BUILD_TIME __TIME__
 
 /// Compiler information.
-#define COMPILER_INFO __VERSION__
+#define IRSENTRY_COMPILER_INFO __VERSION__
 
 /// Macro defining the platform on which the project is compiled.
 #if defined(_WIN32)

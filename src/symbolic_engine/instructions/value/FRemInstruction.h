@@ -19,6 +19,7 @@ namespace irsentry {
  */
 template <AllowedFloat T> class FRemInstruction : public BaseInstruction {
 public:
+  FRemInstruction() { this->type = InstructionType::FRemInstruction; }
   /**
    * @brief The result of the remainder operation.
    */

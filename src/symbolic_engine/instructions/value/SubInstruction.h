@@ -18,6 +18,7 @@ namespace irsentry {
  */
 template <AllowedInt T> class SubInstruction : public BaseInstruction {
 public:
+  SubInstruction() { this->type = InstructionType::SubInstruction; }
   /**
    * @brief The result of the subtraction operation.
    */
