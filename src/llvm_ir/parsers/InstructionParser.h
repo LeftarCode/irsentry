@@ -1,4 +1,5 @@
 #pragma once
+#include "../../symbolic_engine/instructions/value/AddInstruction.h"
 #include "../antlr4/LLVMParser.h"
 
 namespace irsentry {

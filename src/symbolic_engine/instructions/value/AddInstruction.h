@@ -5,11 +5,12 @@
 
 #pragma once
 #include "../../types/IntegerType.h"
-#include "../../variables/Variable.h"
+#include "../../variables/Value.h"
 #include "../BaseInstruction.h"
 #include <array>
 
 namespace irsentry {
+
 /**
  * @class AddInstruction
  * @brief Represents an addition instruction for integer types.
@@ -22,11 +23,12 @@ public:
   /**
    * @brief The result of the addition operation.
    */
-  Variable<T> result;
+  Value<T> result;
 
   /**
    * @brief The two operands (addends) involved in the addition.
    */
-  std::array<Variable<T>, 2> addend;
+  std::array<Value<T>, 2> addend;
 };
+
 } // namespace irsentry

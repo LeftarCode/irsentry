@@ -28,6 +28,8 @@ void IRSentry::init() {
   m_initialized = true;
 }
 
+int IRSentry::run() { return 0; }
+
 void IRSentry::debugPrintModule() const {
   if (!m_initialized) {
     Logger::getInstance().error("Uninitialized IRSentry engine");

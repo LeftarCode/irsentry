@@ -13,6 +13,7 @@ class IRSentry {
 public:
   IRSentry(const IRSentryOptions &irSentryOptions);
   void init();
+  int run();
   void debugPrintModule() const;
 
 private:

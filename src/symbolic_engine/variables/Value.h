@@ -29,16 +29,16 @@ concept InheritedFromBaseWithVarType =
  *
  * @tparam T A type that satisfies the InheritedFromBaseWithVarType concept.
  */
-template <InheritedFromBaseWithVarType T> struct Variable {
+template <InheritedFromBaseWithVarType IRType> struct Value {
   /**
    * @brief Indicates whether the variable is constant.
    */
-  bool isConst;
+  bool isVariable;
 
   /**
    * @brief The type of the variable.
    */
-  T type;
+  using llvmType = IRType;
 
   /**
    * @brief The name of the variable.
@@ -48,6 +48,6 @@ template <InheritedFromBaseWithVarType T> struct Variable {
   /**
    * @brief The optional value of the variable.
    */
-  std::optional<typename T::var_type> optValue;
+  std::optional<typename IRType::dataType> optValue;
 };
 } // namespace irsentry
