@@ -17,9 +17,9 @@ namespace irsentry {
  *
  * @tparam T A type that satisfies the AllowedInt concept.
  */
-template <AllowedInt T> class AddInstruction : public BaseInstruction {
+template <InheritedFromBaseWithDataType T>
+class AddInstruction : public BaseInstruction {
 public:
-  AddInstruction() { this->type = InstructionType::AddInstruction; }
   /**
    * @brief The result of the addition operation.
    */

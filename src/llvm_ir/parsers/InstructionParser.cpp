@@ -1,5 +1,6 @@
 #include "InstructionParser.h"
 #include "../../utilities/Logger.h"
+#include <memory>
 
 namespace irsentry {
 void InstructionParser::parseStoreInstruction(
@@ -59,18 +60,47 @@ void InstructionParser::parseAtomicRMWInstruction(
   throw std::runtime_error("Unimplemented instruction: atomicrmw");
 }
 
-void InstructionParser::parseValueInstruction(
+BaseInstruction *
+InstructionParser::parseAddInstr(LLVMParser::AddInstContext *ctx) const {
+  auto overflowFlags = ctx->overflowFlags();
+  auto llvmType = ctx->llvmType();
+  auto value = ctx->value();
+
+  auto parsedType = m_typeParser.parseType(llvmType);
+  // BaseInstruction *addInstr = nullptr;
+  // if (parsedType == DataType::Int16) {
+  //   auto *addInstrTemp = new AddInstruction<Integer16Type>();
+  //   addInstrTemp->addend[0] =
+  //   m_valueParser.parseValue<Integer16Type>(value[0]);
+  //   addInstrTemp->addend[1] =
+  //   m_valueParser.parseValue<Integer16Type>(value[1]); addInstr =
+  //   addInstrTemp;
+  // } else if (parsedType == DataType::Int32) {
+  //   auto *addInstrTemp = new AddInstruction<Integer32Type>();
+  //   addInstrTemp->addend[0] =
+  //   m_valueParser.parseValue<Integer32Type>(value[0]);
+  //   addInstrTemp->addend[1] =
+  //   m_valueParser.parseValue<Integer32Type>(value[1]); addInstr =
+  //   addInstrTemp;
+  // } else if (parsedType == DataType::Int64) {
+  //   auto *addInstrTemp = new AddInstruction<Integer64Type>();
+  //   addInstrTemp->addend[0] =
+  //   m_valueParser.parseValue<Integer64Type>(value[0]);
+  //   addInstrTemp->addend[1] =
+  //   m_valueParser.parseValue<Integer64Type>(value[1]); addInstr =
+  //   addInstrTemp;
+  // }
+  AddInstruction<Integer16Type> *val = new AddInstruction<Integer16Type>();
+
+  return nullptr;
+}
+
+BaseInstruction *InstructionParser::parseValueInstruction(
     LLVMParser::ValueInstructionContext *ctx) const {
 
   // Code partially generated with Python script generate_valueinstr_ifs.py
   if (auto *addInst = ctx->addInst()) {
-    auto overflowFlags = addInst->overflowFlags();
-    auto llvmType = addInst->llvmType();
-    auto value = addInst->value();
-    auto optCommaSepMetadataAttachmentList =
-        addInst->optCommaSepMetadataAttachmentList();
-
-    throw std::runtime_error("Unimplemented instruction: add");
+    return parseAddInstr(addInst);
   } else if (auto *fAddInst = ctx->fAddInst()) {
     auto fastMathFlags = fAddInst->fastMathFlags();
     auto llvmType = fAddInst->llvmType();
@@ -457,6 +487,7 @@ InstructionParser::parseInstruction(LLVMParser::InstructionContext *ctx) const {
     parseCmpXchgInstruction(cmpXchgInst);
   } else if (auto *atomicRMWInst = ctx->atomicRMWInst()) {
   } else if (auto *valueInstruction = ctx->valueInstruction()) {
+    parseValueInstruction(valueInstruction);
   } else {
     Logger::getInstance().error(
         "Instruction parser occured non-existing instruction");

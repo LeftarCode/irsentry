@@ -10,44 +10,44 @@
 
 namespace irsentry {
 /**
- * @brief Concept ensuring the type has a var_type alias.
+ * @brief Concept ensuring the type has a data_type alias.
  */
 template <typename T>
-concept HasVarType = requires { typename T::var_type; };
+concept HasDataType = requires { typename T::data_type; };
 
 /**
- * @brief Concept ensuring the type is derived from BaseType and has a var_type
+ * @brief Concept ensuring the type is derived from BaseType and has a data_type
  * alias.
  */
 template <typename T>
-concept InheritedFromBaseWithVarType =
-    std::is_base_of_v<BaseType, T> && HasVarType<T>;
+concept InheritedFromBaseWithDataType =
+    std::is_base_of_v<BaseType, T> && HasDataType<T>;
 
 /**
  * @struct Variable
  * @brief Represents a variable with an optional value.
  *
- * @tparam T A type that satisfies the InheritedFromBaseWithVarType concept.
+ * @tparam T A type that satisfies the InheritedFromBaseWithDataType concept.
  */
-template <InheritedFromBaseWithVarType IRType> struct Value {
+template <InheritedFromBaseWithDataType IRType> struct Value {
   /**
-   * @brief Indicates whether the variable is constant.
+   * @brief Indicates whether the value is variable expression.
    */
   bool isVariable;
 
   /**
    * @brief The type of the variable.
    */
-  using llvmType = IRType;
+  using llvm_type = IRType;
 
   /**
    * @brief The name of the variable.
    */
-  std::string name;
+  std::optional<std::string> optName;
 
   /**
    * @brief The optional value of the variable.
    */
-  std::optional<typename IRType::dataType> optValue;
+  std::optional<typename IRType::data_type> optValue;
 };
 } // namespace irsentry

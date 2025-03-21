@@ -24,7 +24,7 @@ public:
   /**
    * @brief Type alias for a 16-bit signed integer.
    */
-  using var_type = int16_t;
+  using data_type = int16_t;
 };
 
 /**
@@ -41,7 +41,7 @@ public:
   /**
    * @brief Type alias for a 32-bit signed integer.
    */
-  using var_type = int32_t;
+  using data_type = int32_t;
 };
 
 /**
@@ -58,7 +58,7 @@ public:
   /**
    * @brief Type alias for a 64-bit signed integer.
    */
-  using var_type = int64_t;
+  using data_type = int64_t;
 };
 
 /**

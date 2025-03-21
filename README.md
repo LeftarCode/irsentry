@@ -49,6 +49,7 @@ This indicates the parameter is required to be an immediate value. This must be 
 16. Write more requirements that are needed to build the tools (like LLVM).
 17. Adjust all CMake condtions to work with Linux and macOS.
 18. Write small step-by-step tutorial how to build that tool.
+19. Delete UnsignedIntegers!
 # Elementy do opisania
 - Generatory Python'a kodu C++ bazuj�c na `.g4`,
 - Memory layout (por�wnanie kilku layout�w) dla:

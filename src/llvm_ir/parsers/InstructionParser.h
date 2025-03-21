@@ -1,6 +1,8 @@
 #pragma once
 #include "../../symbolic_engine/instructions/value/AddInstruction.h"
 #include "../antlr4/LLVMParser.h"
+#include "TypeParser.h"
+#include "ValueParser.h"
 
 namespace irsentry {
 
@@ -91,7 +93,13 @@ private:
    * @param ctx Pointer to the LLVMParser::ValueInstructionContext containing
    * the value instruction.
    */
-  void parseValueInstruction(LLVMParser::ValueInstructionContext *ctx) const;
+  BaseInstruction *
+  parseValueInstruction(LLVMParser::ValueInstructionContext *ctx) const;
+
+  BaseInstruction *parseAddInstr(LLVMParser::AddInstContext *ctx) const;
+
+  const TypeParser m_typeParser;
+  ValueParser m_valueParser;
 };
 
 } // namespace irsentry
