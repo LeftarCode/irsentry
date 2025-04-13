@@ -4,7 +4,7 @@
  */
 
 #pragma once
-#include "../../variables/Variable.h"
+#include "../../variables/Value.h"
 #include "../BaseInstruction.h"
 #include <array>
 
@@ -22,7 +22,7 @@ public:
   /**
    * @brief The variable that stores the result of the allocation.
    */
-  Variable<T> result;
+  Value<T> result;
 
   /**
    * @brief The type of the returned allocated object.

@@ -6,7 +6,7 @@
 
 #pragma once
 #include "../../types/IntegerType.h"
-#include "../../variables/Variable.h"
+#include "../../variables/Value.h"
 #include "../BaseInstruction.h"
 #include <array>
 
@@ -17,22 +17,23 @@ namespace irsentry {
  *
  * @tparam T A type that satisfies the AllowedInt concept.
  */
-template <AllowedInt T> class SDivInstruction : public BaseInstruction {
+template <irsentry::InheritedFromBaseWithDataType T>
+class SDivInstruction : public BaseInstruction {
 public:
-  SDivInstruction() { this->type = InstructionType::SDivInstruction; }
+  SDivInstruction() { this->instrType = InstrType::SDivInstrType; }
   /**
    * @brief The result of the division operation.
    */
-  Variable<T> result;
+  Value<T> result;
 
   /**
    * @brief The dividend (numerator) in the division operation.
    */
-  Variable<T> dividend;
+  Value<T> dividend;
 
   /**
    * @brief The divisor (denominator) in the division operation.
    */
-  Variable<T> divisor;
+  Value<T> divisor;
 };
 } // namespace irsentry

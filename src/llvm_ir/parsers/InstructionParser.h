@@ -1,21 +1,14 @@
 #pragma once
-#include "../../symbolic_engine/instructions/value/AddInstruction.h"
+#include "../../symbolic_engine/instructions/Instructions.h"
+#include "../../symbolic_engine/types/BaseType.h"
+#include "../../symbolic_engine/types/IntegerType.h"
+#include "../../symbolic_engine/variables/Value.h"
 #include "../antlr4/LLVMParser.h"
 #include "TypeParser.h"
 #include "ValueParser.h"
+#include <array>
 
 namespace irsentry {
-
-/**
- * @brief Represents a single LLVM instruction.
- *
- * This structure encapsulates the result variable name (if any) and the textual
- * representation of an LLVM instruction.
- */
-struct Instruction {
-  std::string resultVar; ///< The name of the result variable, if applicable.
-  std::string text;      ///< The textual representation of the instruction.
-};
 
 /**
  * @brief Parses LLVM instructions using ANTLR4 generated contexts.
@@ -37,53 +30,9 @@ public:
    * instruction.
    * @return An Instruction object containing parsed instruction details.
    */
-  Instruction parseInstruction(LLVMParser::InstructionContext *ctx) const;
+  BaseInstruction *parseInstruction(LLVMParser::InstructionContext *ctx) const;
 
 private:
-  /**
-   * @brief Parses a store instruction.
-   *
-   * Processes a store instruction context from ANTLR4 and extracts relevant
-   * details.
-   *
-   * @param ctx Pointer to the LLVMParser::StoreInstContext containing the store
-   * instruction.
-   */
-  void parseStoreInstruction(LLVMParser::StoreInstContext *ctx) const;
-
-  /**
-   * @brief Parses a fence instruction.
-   *
-   * Processes a fence instruction context from ANTLR4 and extracts relevant
-   * details.
-   *
-   * @param ctx Pointer to the LLVMParser::FenceInstContext containing the fence
-   * instruction.
-   */
-  void parseFenceInstruction(LLVMParser::FenceInstContext *ctx) const;
-
-  /**
-   * @brief Parses a cmpxchg instruction.
-   *
-   * Processes a cmpxchg instruction context from ANTLR4 and extracts relevant
-   * details.
-   *
-   * @param ctx Pointer to the LLVMParser::CmpXchgInstContext containing the
-   * cmpxchg instruction.
-   */
-  void parseCmpXchgInstruction(LLVMParser::CmpXchgInstContext *ctx) const;
-
-  /**
-   * @brief Parses an atomic RMW instruction.
-   *
-   * Processes an atomic RMW instruction context from ANTLR4 and extracts
-   * relevant details.
-   *
-   * @param ctx Pointer to the LLVMParser::AtomicRMWInstContext containing the
-   * atomic RMW instruction.
-   */
-  void parseAtomicRMWInstruction(LLVMParser::AtomicRMWInstContext *ctx) const;
-
   /**
    * @brief Parses a value instruction.
    *
@@ -97,6 +46,13 @@ private:
   parseValueInstruction(LLVMParser::ValueInstructionContext *ctx) const;
 
   BaseInstruction *parseAddInstr(LLVMParser::AddInstContext *ctx) const;
+  BaseInstruction *parseFAddInstr(LLVMParser::FAddInstContext *ctx) const;
+  BaseInstruction *parseSubInstr(LLVMParser::SubInstContext *ctx) const;
+  BaseInstruction *parseFSubInstr(LLVMParser::FSubInstContext *ctx) const;
+  BaseInstruction *parseMulInstr(LLVMParser::MulInstContext *ctx) const;
+  BaseInstruction *parseFMulInstr(LLVMParser::FMulInstContext *ctx) const;
+  BaseInstruction *parseUDivInstr(LLVMParser::UDivInstContext *ctx) const;
+  BaseInstruction *parseSDivInstr(LLVMParser::SDivInstContext *ctx) const;
 
   const TypeParser m_typeParser;
   ValueParser m_valueParser;

@@ -3,6 +3,7 @@
 #include "llvm_ir/antlr4/LLVMLexer.h"
 #include "llvm_ir/antlr4/LLVMParser.h"
 #include "llvm_ir/parsers/ModuleParser.h"
+#include "symbolic_engine/instructions/value/AddInstruction.h"
 
 namespace irsentry {
 IRSentry::IRSentry(const IRSentryOptions &irSentryOptions)
@@ -49,7 +50,6 @@ void IRSentry::debugPrintModule() const {
     for (const auto &basicBlock : func.basicBlocks) {
       std::cout << basicBlock.label << std::endl;
       for (const auto &instr : basicBlock.instructions) {
-        std::cout << "\t" << instr.text << std::endl;
       }
     }
     std::cout << "}" << std::endl;

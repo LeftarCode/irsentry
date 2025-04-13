@@ -24,7 +24,7 @@ public:
   /**
    * @brief Type alias for a 16-bit unsigned integer.
    */
-  using var_type = uint16_t;
+  using data_type = uint16_t;
 };
 
 /**
@@ -41,7 +41,7 @@ public:
   /**
    * @brief Type alias for a 32-bit unsigned integer.
    */
-  using var_type = uint32_t;
+  using data_type = uint32_t;
 };
 
 /**
@@ -58,7 +58,7 @@ public:
   /**
    * @brief Type alias for a 64-bit unsigned integer.
    */
-  using var_type = uint64_t;
+  using data_type = uint64_t;
 };
 
 /**

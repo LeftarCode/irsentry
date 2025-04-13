@@ -5,7 +5,7 @@
 
 #pragma once
 #include "../../types/IntegerType.h"
-#include "../../variables/Variable.h"
+#include "../../variables/Value.h"
 #include "../BaseInstruction.h"
 #include <array>
 
@@ -22,11 +22,11 @@ public:
   /**
    * @brief The result of the bitwise AND operation.
    */
-  Variable<T> result;
+  Value<T> result;
 
   /**
    * @brief The two operands involved in the AND operation.
    */
-  std::array<Variable<T>, 2> operands;
+  std::array<Value<T>, 2> operands;
 };
 } // namespace irsentry

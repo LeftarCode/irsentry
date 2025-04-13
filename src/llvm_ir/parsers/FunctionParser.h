@@ -21,7 +21,7 @@ struct Parameter {
  */
 struct BasicBlock {
   std::string label; ///< The label of the basic block.
-  std::vector<Instruction>
+  std::vector<BaseInstruction *>
       instructions; ///< List of instructions in the basic block.
 };
 

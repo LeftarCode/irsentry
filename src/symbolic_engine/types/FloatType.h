@@ -23,7 +23,7 @@ public:
   /**
    * @brief Type alias for the floating-point type.
    */
-  using var_type = float;
+  using data_type = float;
 };
 
 /**
@@ -40,7 +40,7 @@ public:
   /**
    * @brief Type alias for the double-precision floating-point type.
    */
-  using var_type = double;
+  using data_type = double;
 };
 
 /**

@@ -34,7 +34,7 @@ public:
   /**
    * @brief The type of data this object represents.
    */
-  DataType type;
+  DataType dataType;
 };
 
 /**

@@ -6,7 +6,7 @@
 
 #pragma once
 #include "../../types/FloatType.h"
-#include "../../variables/Variable.h"
+#include "../../variables/Value.h"
 #include "../BaseInstruction.h"
 #include <array>
 
@@ -17,22 +17,18 @@ namespace irsentry {
  *
  * @tparam T A type that satisfies the AllowedFloat concept.
  */
-template <AllowedFloat T> class FMulInstruction : public BaseInstruction {
+template <irsentry::InheritedFromBaseWithDataType T>
+class FMulInstruction : public BaseInstruction {
 public:
-	FMulInstruction() { this->type = InstructionType::FMulInstruction; }
+  FMulInstruction() { this->instrType = InstrType::FMulInstrType; }
   /**
    * @brief The result of the multiplication operation.
    */
-  Variable<T> result;
+  Value<T> result;
 
   /**
-   * @brief The multiplier in the multiplication operation.
+   * @brief The array of two multipication operators
    */
-  Variable<T> multiplier;
-
-  /**
-   * @brief The multiplicand in the multiplication operation.
-   */
-  Variable<T> multiplicand;
+  std::array<Value<T>, 2> operators;
 };
 } // namespace irsentry

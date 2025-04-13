@@ -31,7 +31,7 @@ FunctionParser::parseBasicBlock(LLVMParser::BasicBlockContext *ctx) const {
   }
 
   std::string blockLabel = "";
-  std::vector<Instruction> instructions{};
+  std::vector<BaseInstruction *> instructions{};
 
   if (auto *label = ctx->optLabelIdent()) {
     blockLabel = label->getText();
@@ -44,7 +44,8 @@ FunctionParser::parseBasicBlock(LLVMParser::BasicBlockContext *ctx) const {
   }
 
   if (auto *terminator = ctx->terminator()) {
-    instructions.emplace_back(Instruction{terminator->getText()});
+    // TODO: Fixme
+    instructions.emplace_back(nullptr);
   }
 
   return BasicBlock{blockLabel, std::move(instructions)};

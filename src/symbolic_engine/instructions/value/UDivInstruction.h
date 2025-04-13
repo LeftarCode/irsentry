@@ -6,7 +6,7 @@
 
 #pragma once
 #include "../../types/UIntegerType.h"
-#include "../../variables/Variable.h"
+#include "../../variables/Value.h"
 #include "../BaseInstruction.h"
 #include <array>
 
@@ -17,22 +17,23 @@ namespace irsentry {
  *
  * @tparam T A type that satisfies the AllowedUInt concept.
  */
-template <AllowedUInt T> class UDivInstruction : public BaseInstruction {
+template <irsentry::InheritedFromBaseWithDataType T>
+class UDivInstruction : public BaseInstruction {
 public:
-  UDivInstruction() { this->type = InstructionType::UDivInstruction; }
+  UDivInstruction() { this->instrType = InstrType::UDivInstrType; }
   /**
    * @brief The result of the division operation.
    */
-  Variable<T> result;
+  Value<T> result;
 
   /**
    * @brief The dividend (numerator) in the division operation.
    */
-  Variable<T> dividend;
+  Value<T> dividend;
 
   /**
    * @brief The divisor (denominator) in the division operation.
    */
-  Variable<T> divisor;
+  Value<T> divisor;
 };
 } // namespace irsentry

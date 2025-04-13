@@ -5,7 +5,7 @@
 
 #pragma once
 #include "../../types/IntegerType.h"
-#include "../../variables/Variable.h"
+#include "../../variables/Value.h"
 #include "../BaseInstruction.h"
 #include <array>
 
@@ -16,22 +16,23 @@ namespace irsentry {
  *
  * @tparam T A type that satisfies the AllowedInt concept.
  */
-template <AllowedInt T> class SubInstruction : public BaseInstruction {
+template <irsentry::InheritedFromBaseWithDataType T>
+class SubInstruction : public irsentry::BaseInstruction {
 public:
-  SubInstruction() { this->type = InstructionType::SubInstruction; }
+  SubInstruction() { this->instrType = InstrType::SubInstrType; }
   /**
    * @brief The result of the subtraction operation.
    */
-  Variable<T> result;
+  irsentry::Value<T> result;
 
   /**
    * @brief The minuend (the number from which another number is subtracted).
    */
-  Variable<T> minuend;
+  irsentry::Value<T> minuend;
 
   /**
    * @brief The subtrahend (the number that is subtracted).
    */
-  Variable<T> subtrahend;
+  irsentry::Value<T> subtrahend;
 };
 } // namespace irsentry

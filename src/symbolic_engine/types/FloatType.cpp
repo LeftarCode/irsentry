@@ -2,6 +2,6 @@
 #include <stdexcept>
 
 namespace irsentry {
-FloatType::FloatType() { this->type = DataType::Float; }
-DoubleType::DoubleType() { this->type = DataType::Double; }
+FloatType::FloatType() { this->dataType = DataType::Float; }
+DoubleType::DoubleType() { this->dataType = DataType::Double; }
 } // namespace irsentry

@@ -13,6 +13,7 @@ public:
       Value<IRType> newValue;
       newValue.isVariable = true;
       newValue.optName = std::optional<std::string>{localIdent->getText()};
+      return newValue;
     } else if (auto inlineAsm = ctx->inlineAsm()) {
       throw std::runtime_error("Unimplemented value: inlineAsm");
     } else if (auto poison = ctx->POISON()) {

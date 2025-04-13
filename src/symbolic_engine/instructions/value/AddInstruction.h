@@ -4,7 +4,6 @@
  */
 
 #pragma once
-#include "../../types/IntegerType.h"
 #include "../../variables/Value.h"
 #include "../BaseInstruction.h"
 #include <array>
@@ -17,18 +16,21 @@ namespace irsentry {
  *
  * @tparam T A type that satisfies the AllowedInt concept.
  */
-template <InheritedFromBaseWithDataType T>
-class AddInstruction : public BaseInstruction {
+template <irsentry::InheritedFromBaseWithDataType T>
+class AddInstruction : public irsentry::BaseInstruction {
 public:
+  AddInstruction() : result{}, addend{} {
+    this->instrType = InstrType::AddInstrType;
+  }
   /**
    * @brief The result of the addition operation.
    */
-  Value<T> result;
+  irsentry::Value<T> result;
 
   /**
    * @brief The two operands (addends) involved in the addition.
    */
-  std::array<Value<T>, 2> addend;
+  std::array<irsentry::Value<T>, 2> addend;
 };
 
 } // namespace irsentry

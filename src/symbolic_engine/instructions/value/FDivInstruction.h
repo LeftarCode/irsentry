@@ -6,7 +6,7 @@
 
 #pragma once
 #include "../../types/FloatType.h"
-#include "../../variables/Variable.h"
+#include "../../variables/Value.h"
 #include "../BaseInstruction.h"
 #include <array>
 
@@ -19,20 +19,20 @@ namespace irsentry {
  */
 template <AllowedFloat T> class FDivInstruction : public BaseInstruction {
 public:
-  FDivInstruction() { this->type = InstructionType::FDivInstruction; }
+  FDivInstruction() { this->type = InstrType::FDivInstrType; }
   /**
    * @brief The result of the division operation.
    */
-  Variable<T> result;
+  Value<T> result;
 
   /**
    * @brief The dividend (numerator) in the division operation.
    */
-  Variable<T> dividend;
+  Value<T> dividend;
 
   /**
    * @brief The divisor (denominator) in the division operation.
    */
-  Variable<T> divisor;
+  Value<T> divisor;
 };
 } // namespace irsentry

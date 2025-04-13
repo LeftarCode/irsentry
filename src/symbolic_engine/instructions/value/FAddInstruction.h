@@ -6,7 +6,7 @@
 
 #pragma once
 #include "../../types/FloatType.h"
-#include "../../variables/Variable.h"
+#include "../../variables/Value.h"
 #include "../BaseInstruction.h"
 #include <array>
 
@@ -17,17 +17,18 @@ namespace irsentry {
  *
  * @tparam T A type that satisfies the AllowedFloat concept.
  */
-template <AllowedFloat T> class FAddInstruction : public BaseInstruction {
+template <irsentry::InheritedFromBaseWithDataType T>
+class FAddInstruction : public BaseInstruction {
 public:
-  FAddInstruction() { this->type = InstructionType::FAddInstruction; }
+  FAddInstruction() { this->instrType = InstrType::FAddInstrType; }
   /**
    * @brief The result of the addition operation.
    */
-  Variable<T> result;
+  Value<T> result;
 
   /**
    * @brief The two operands (addends) involved in the addition.
    */
-  std::array<Variable<T>, 2> addends;
+  std::array<Value<T>, 2> addends;
 };
 } // namespace irsentry

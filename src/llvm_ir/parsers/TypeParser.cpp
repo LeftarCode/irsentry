@@ -44,11 +44,11 @@ DataType TypeParser::parseConcreteNonRecType(
 }
 DataType TypeParser::parseIntType(LLVMParser::IntTypeContext *ctx) const {
   std::string intTypeStr = ctx->INT_TYPE()->getText();
-  if (intTypeStr.compare("i16")) {
+  if (intTypeStr.compare("i16") == 0) {
     return DataType::Int16;
-  } else if (intTypeStr.compare("i32")) {
+  } else if (intTypeStr.compare("i32") == 0) {
     return DataType::Int32;
-  } else if (intTypeStr.compare("i64")) {
+  } else if (intTypeStr.compare("i64") == 0) {
     return DataType::Int64;
   } else {
     throw std::runtime_error("Unimplemented int datatype: unknown");

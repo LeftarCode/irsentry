@@ -30,6 +30,7 @@ concept InheritedFromBaseWithDataType =
  * @tparam T A type that satisfies the InheritedFromBaseWithDataType concept.
  */
 template <InheritedFromBaseWithDataType IRType> struct Value {
+  Value() = default;
   /**
    * @brief Indicates whether the value is variable expression.
    */
