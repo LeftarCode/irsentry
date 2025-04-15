@@ -15,25 +15,30 @@ namespace irsentry {
  * @class SDivInstruction
  * @brief Represents a signed integer division instruction.
  *
- * @tparam T A type that satisfies the AllowedInt concept.
  */
-template <irsentry::InheritedFromBaseWithDataType T>
 class SDivInstruction : public BaseInstruction {
 public:
-  SDivInstruction() { this->instrType = InstrType::SDivInstrType; }
+  SDivInstruction(DataType dataType) {
+    this->instrType = InstrType::SDivInstrType;
+    this->dataType = dataType;
+
+    result = Value(dataType);
+    dividend = Value(dataType);
+    divisor = Value(dataType);
+  }
   /**
    * @brief The result of the division operation.
    */
-  Value<T> result;
+  Value result;
 
   /**
    * @brief The dividend (numerator) in the division operation.
    */
-  Value<T> dividend;
+  Value dividend;
 
   /**
    * @brief The divisor (denominator) in the division operation.
    */
-  Value<T> divisor;
+  Value divisor;
 };
 } // namespace irsentry

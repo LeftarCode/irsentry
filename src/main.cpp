@@ -23,7 +23,7 @@
 ///
 
 int main(int argc, char **argv) {
-  const std::string filename = "../../../tests/llvm_ir/target1/target1.ll";
+  const std::string filename = "../../../tests/c/target1/target1.ll";
 
   irsentry::IRSentryOptions options;
   options.filename = filename;

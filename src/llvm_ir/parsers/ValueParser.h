@@ -1,18 +1,20 @@
 #pragma once
+#include "../../symbolic_engine/types/Types.h"
 #include "../../symbolic_engine/variables/Value.h"
 #include "../antlr4/LLVMParser.h"
 
 namespace irsentry {
 class ValueParser {
 public:
-  template <InheritedFromBaseWithDataType IRType>
-  Value<IRType> parseValue(LLVMParser::ValueContext *ctx) const {
+  Value parseValue(DataType dataType, LLVMParser::ValueContext *ctx) const {
     if (auto constant = ctx->constant()) {
-      return parseConstant<IRType>(constant);
+      return parseConstant(dataType, constant);
     } else if (auto localIdent = ctx->localIdent()) {
-      Value<IRType> newValue;
+      Value newValue;
       newValue.isVariable = true;
+      newValue.dataType = dataType;
       newValue.optName = std::optional<std::string>{localIdent->getText()};
+
       return newValue;
     } else if (auto inlineAsm = ctx->inlineAsm()) {
       throw std::runtime_error("Unimplemented value: inlineAsm");
@@ -22,17 +24,17 @@ public:
   }
 
 private:
-  template <InheritedFromBaseWithDataType IRType>
-  Value<IRType> parseConstant(LLVMParser::ConstantContext *ctx) const {
-    Value<IRType> newValue;
+  Value parseConstant(DataType dataType,
+                      LLVMParser::ConstantContext *ctx) const {
+    Value newValue;
     newValue.isVariable = false;
 
     if (auto boolConst = ctx->boolConst()) {
       throw std::runtime_error("Unimplemented value: boolConst");
     } else if (auto intConst = ctx->intConst()) {
-      typename IRType::data_type intValue =
-          std::stoi(intConst->INT_LIT()->getText());
-      newValue.optValue = std::optional<typename IRType::data_type>{intValue};
+      TypeVariant intValue = std::stoi(intConst->INT_LIT()->getText());
+      newValue.dataType = dataType;
+      newValue.optValue = std::optional<TypeVariant>{intValue};
       return newValue;
     } else if (auto floatConst = ctx->floatConst()) {
       throw std::runtime_error("Unimplemented value: floatConst");

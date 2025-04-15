@@ -15,24 +15,30 @@ namespace irsentry {
  * @class FDivInstruction
  * @brief Represents a floating-point division instruction.
  *
- * @tparam T A type that satisfies the AllowedFloat concept.
  */
-template <AllowedFloat T> class FDivInstruction : public BaseInstruction {
+class FDivInstruction : public BaseInstruction {
 public:
-  FDivInstruction() { this->type = InstrType::FDivInstrType; }
+  FDivInstruction(DataType dataType) {
+    this->instrType = InstrType::FDivInstrType;
+    this->dataType = dataType;
+
+    result = Value(dataType);
+    dividend = Value(dataType);
+    divisor = Value(dataType);
+  }
   /**
    * @brief The result of the division operation.
    */
-  Value<T> result;
+  Value result;
 
   /**
    * @brief The dividend (numerator) in the division operation.
    */
-  Value<T> dividend;
+  Value dividend;
 
   /**
    * @brief The divisor (denominator) in the division operation.
    */
-  Value<T> divisor;
+  Value divisor;
 };
 } // namespace irsentry

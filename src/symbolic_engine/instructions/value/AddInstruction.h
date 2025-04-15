@@ -14,23 +14,26 @@ namespace irsentry {
  * @class AddInstruction
  * @brief Represents an addition instruction for integer types.
  *
- * @tparam T A type that satisfies the AllowedInt concept.
  */
-template <irsentry::InheritedFromBaseWithDataType T>
-class AddInstruction : public irsentry::BaseInstruction {
+class AddInstruction : public BaseInstruction {
 public:
-  AddInstruction() : result{}, addend{} {
+  AddInstruction(DataType dataType) {
     this->instrType = InstrType::AddInstrType;
+    this->dataType = dataType;
+
+    result = Value(dataType);
+    addends[0] = Value(dataType);
+    addends[1] = Value(dataType);
   }
   /**
    * @brief The result of the addition operation.
    */
-  irsentry::Value<T> result;
+  Value result;
 
   /**
    * @brief The two operands (addends) involved in the addition.
    */
-  std::array<irsentry::Value<T>, 2> addend;
+  std::array<Value, 2> addends;
 };
 
 } // namespace irsentry

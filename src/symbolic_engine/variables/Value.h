@@ -4,7 +4,7 @@
  */
 
 #pragma once
-#include "../types/BaseType.h"
+#include "../types/Types.h"
 #include <optional>
 #include <string>
 
@@ -29,17 +29,15 @@ concept InheritedFromBaseWithDataType =
  *
  * @tparam T A type that satisfies the InheritedFromBaseWithDataType concept.
  */
-template <InheritedFromBaseWithDataType IRType> struct Value {
+struct Value {
   Value() = default;
+  Value(DataType dataType);
+
+  DataType dataType;
   /**
    * @brief Indicates whether the value is variable expression.
    */
   bool isVariable;
-
-  /**
-   * @brief The type of the variable.
-   */
-  using llvm_type = IRType;
 
   /**
    * @brief The name of the variable.
@@ -49,6 +47,6 @@ template <InheritedFromBaseWithDataType IRType> struct Value {
   /**
    * @brief The optional value of the variable.
    */
-  std::optional<typename IRType::data_type> optValue;
+  std::optional<TypeVariant> optValue;
 };
 } // namespace irsentry

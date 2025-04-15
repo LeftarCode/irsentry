@@ -5,7 +5,7 @@
 
 #pragma once
 #include "../../types/IntegerType.h"
-#include "../../variables/Variable.h"
+#include "../../variables/Value.h"
 #include "../BaseInstruction.h"
 #include <array>
 
@@ -14,19 +14,25 @@ namespace irsentry {
  * @class OrInstruction
  * @brief Represents a bitwise OR instruction for integer types.
  *
- * @tparam T A type that satisfies the AllowedInt concept.
  */
-template <AllowedInt T> class OrInstruction : public BaseInstruction {
+class OrInstruction : public BaseInstruction {
 public:
-  OrInstruction() { this->type = InstructionType::OrInstruction; }
+  OrInstruction(DataType dataType) {
+    this->instrType = InstrType::OrInstrType;
+    this->dataType = dataType;
+
+    result = Value(dataType);
+    operators[0] = Value(dataType);
+    operators[1] = Value(dataType);
+  }
   /**
    * @brief The result of the bitwise OR operation.
    */
-  Variable<T> result;
+  Value result;
 
   /**
    * @brief The two operands involved in the OR operation.
    */
-  std::array<Variable<T>, 2> operands;
+  std::array<Value, 2> operators;
 };
 } // namespace irsentry

@@ -7,6 +7,7 @@
 #include "../../types/IntegerType.h"
 #include "../../variables/Value.h"
 #include "../BaseInstruction.h"
+#include "CmpPred.h"
 #include <array>
 
 namespace irsentry {
@@ -15,16 +16,18 @@ namespace irsentry {
  * @brief Represents a bitwise AND instruction for integer types.
  *
  */
-class AndInstruction : public BaseInstruction {
+class FCmpInstruction : public BaseInstruction {
 public:
-  AndInstruction(DataType dataType) {
-    this->instrType = InstrType::AndInstrType;
+  FCmpInstruction(FCmpPred cmpPred, DataType dataType) {
+    this->instrType = InstrType::FCmpInstrType;
     this->dataType = dataType;
+    this->cmpPred = cmpPred;
 
-    result = Value(dataType);
+    result = Value(DataType::Boolean);
     operators[0] = Value(dataType);
     operators[1] = Value(dataType);
   }
+  FCmpPred cmpPred;
   /**
    * @brief The result of the bitwise AND operation.
    */

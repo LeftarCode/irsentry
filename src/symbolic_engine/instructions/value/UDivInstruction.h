@@ -15,25 +15,30 @@ namespace irsentry {
  * @class UDivInstruction
  * @brief Represents an unsigned integer division instruction.
  *
- * @tparam T A type that satisfies the AllowedUInt concept.
  */
-template <irsentry::InheritedFromBaseWithDataType T>
 class UDivInstruction : public BaseInstruction {
 public:
-  UDivInstruction() { this->instrType = InstrType::UDivInstrType; }
+  UDivInstruction(DataType dataType) {
+    this->instrType = InstrType::UDivInstrType;
+    this->dataType = dataType;
+
+    result = Value(dataType);
+    dividend = Value(dataType);
+    divisor = Value(dataType);
+  }
   /**
    * @brief The result of the division operation.
    */
-  Value<T> result;
+  Value result;
 
   /**
    * @brief The dividend (numerator) in the division operation.
    */
-  Value<T> dividend;
+  Value dividend;
 
   /**
    * @brief The divisor (denominator) in the division operation.
    */
-  Value<T> divisor;
+  Value divisor;
 };
 } // namespace irsentry

@@ -14,14 +14,13 @@ namespace irsentry {
  * @brief Represents an allocation instruction for memory management.
  *
  */
-class AllocaInstruction : public BaseInstruction {
+class CastInstruction : public BaseInstruction {
 public:
-  AllocaInstruction(DataType dataTypeAllocation, DataType dataTypeNumElements) {
-    this->instrType = InstrType::AllocaInstrType;
+  CastInstruction(DataType dataTypeFrom, DataType dataTypeTo) {
+    this->instrType = InstrType::CastInstrType;
 
-    result = Value(DataType::Ptr);
-    allocatedType = dataTypeAllocation;
-    numElements = Value(dataTypeNumElements);
+    result = Value(dataTypeTo);
+    from = Value(dataTypeFrom);
   }
   /**
    * @brief The variable that stores the result of the allocation.
@@ -31,11 +30,6 @@ public:
   /**
    * @brief The type being allocated in memory.
    */
-  DataType allocatedType;
-
-  /**
-   * @brief The number of elements allocated.
-   */
-  Value numElements;
+  Value from;
 };
 } // namespace irsentry

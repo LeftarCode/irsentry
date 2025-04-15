@@ -43,28 +43,29 @@ enum InstrType {
   CmpXchgInstrType,        /**< Atomic compare and exchange instruction */
   AtomicRMWInstrType,      /**< Atomic read-modify-write instruction */
   GetElementPtrInstrType,  /**< Get element pointer instruction */
-  TruncInstrType,          /**< Integer truncation instruction */
-  ZExtInstrType,           /**< Zero extension instruction */
-  SExtInstrType,           /**< Sign extension instruction */
-  FpTruncInstrType,        /**< Floating-point truncation instruction */
-  FpExtInstrType,          /**< Floating-point extension instruction */
-  FpToUIInstrType,         /**< Floating-point to unsigned integer conversion */
-  FpToSIInstrType,         /**< Floating-point to signed integer conversion */
-  UiToFPInstrType,         /**< Unsigned integer to floating-point conversion */
-  SiToFPInstrType,         /**< Signed integer to floating-point conversion */
-  PtrToIntInstrType,       /**< Pointer to integer conversion */
-  IntToPtrInstrType,       /**< Integer to pointer conversion */
-  BitCastInstrType,        /**< Bitwise type cast */
-  AddrSpaceCastInstrType,  /**< Address space cast instruction */
-  ICmpInstrType,           /**< Integer comparison instruction */
-  FCmpInstrType,           /**< Floating-point comparison instruction */
-  PhiInstrType,            /**< Phi node instruction */
-  SelectInstrType,         /**< Select instruction */
-  CallInstrType,           /**< Function call instruction */
-  VaArgInstrType,          /**< Variadic argument instruction */
-  LandingPadInstrType,     /**< Exception handling landing pad instruction */
-  CatchPadInstrType,       /**< Exception handling catch pad instruction */
-  CleanupPadInstrType      /**< Exception handling cleanup pad instruction */
+  // TruncInstrType,          /**< Integer truncation instruction */
+  // ZExtInstrType,           /**< Zero extension instruction */
+  // SExtInstrType,           /**< Sign extension instruction */
+  // FpTruncInstrType,        /**< Floating-point truncation instruction */
+  // FpExtInstrType,          /**< Floating-point extension instruction */
+  // FpToUIInstrType,         /**< Floating-point to unsigned integer conversion
+  // */ FpToSIInstrType,         /**< Floating-point to signed integer
+  // conversion */ UiToFPInstrType,         /**< Unsigned integer to
+  // floating-point conversion */ SiToFPInstrType,         /**< Signed integer
+  // to floating-point conversion */ PtrToIntInstrType,       /**< Pointer to
+  // integer conversion */ IntToPtrInstrType,       /**< Integer to pointer
+  // conversion */ BitCastInstrType,        /**< Bitwise type cast */
+  CastInstrType,          /**< Generic type cast */
+  AddrSpaceCastInstrType, /**< Address space cast instruction */
+  ICmpInstrType,          /**< Integer comparison instruction */
+  FCmpInstrType,          /**< Floating-point comparison instruction */
+  PhiInstrType,           /**< Phi node instruction */
+  SelectInstrType,        /**< Select instruction */
+  CallInstrType,          /**< Function call instruction */
+  VaArgInstrType,         /**< Variadic argument instruction */
+  LandingPadInstrType,    /**< Exception handling landing pad instruction */
+  CatchPadInstrType,      /**< Exception handling catch pad instruction */
+  CleanupPadInstrType     /**< Exception handling cleanup pad instruction */
 };
 
 /**
@@ -78,5 +79,6 @@ public:
    * @brief The type of instruction this object represents.
    */
   InstrType instrType;
+  DataType dataType;
 };
 } // namespace irsentry

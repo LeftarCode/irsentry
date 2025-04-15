@@ -5,7 +5,7 @@
 
 #pragma once
 #include "../../types/IntegerType.h"
-#include "../../variables/Variable.h"
+#include "../../variables/Value.h"
 #include "../BaseInstruction.h"
 #include <array>
 
@@ -14,19 +14,25 @@ namespace irsentry {
  * @class XorInstruction
  * @brief Represents a bitwise XOR instruction for integer types.
  *
- * @tparam T A type that satisfies the AllowedInt concept.
  */
-template <AllowedInt T> class XorInstruction : public BaseInstruction {
+class XorInstruction : public BaseInstruction {
 public:
-  XorInstruction() { this->type = InstructionType::XorInstruction; }
+  XorInstruction(DataType dataType) {
+    this->instrType = InstrType::XorInstrType;
+    this->dataType = dataType;
+
+    result = Value(dataType);
+    operators[0] = Value(dataType);
+    operators[1] = Value(dataType);
+  }
   /**
    * @brief The result of the bitwise XOR operation.
    */
-  Variable<T> result;
+  Value result;
 
   /**
    * @brief The two operands involved in the XOR operation.
    */
-  std::array<Variable<T>, 2> operands;
+  std::array<Value, 2> operators;
 };
 } // namespace irsentry

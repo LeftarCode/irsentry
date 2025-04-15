@@ -6,7 +6,7 @@
 
 #pragma once
 #include "../../types/IntegerType.h"
-#include "../../variables/Variable.h"
+#include "../../variables/Value.h"
 #include "../BaseInstruction.h"
 #include <array>
 
@@ -15,24 +15,30 @@ namespace irsentry {
  * @class LShrInstruction
  * @brief Represents a logical right shift instruction for integer types.
  *
- * @tparam T A type that satisfies the AllowedInt concept.
  */
-template <AllowedInt T> class LShrInstruction : public BaseInstruction {
+class LShrInstruction : public BaseInstruction {
 public:
-  LShrInstruction() { this->type = InstructionType::LShrInstruction; }
+  LShrInstruction(DataType dataType) {
+    this->instrType = InstrType::LshrInstrType;
+    this->dataType = dataType;
+
+    result = Value(dataType);
+    value = Value(dataType);
+    shift = Value(dataType);
+  }
   /**
    * @brief The result of the logical right shift operation.
    */
-  Variable<T> result;
+  Value result;
 
   /**
    * @brief The value to be shifted.
    */
-  Variable<T> value;
+  Value value;
 
   /**
    * @brief The number of bits to shift.
    */
-  Variable<T> shift;
+  Value shift;
 };
 } // namespace irsentry

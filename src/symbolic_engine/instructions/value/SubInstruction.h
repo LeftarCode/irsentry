@@ -14,25 +14,30 @@ namespace irsentry {
  * @class SubInstruction
  * @brief Represents an integer subtraction instruction.
  *
- * @tparam T A type that satisfies the AllowedInt concept.
  */
-template <irsentry::InheritedFromBaseWithDataType T>
-class SubInstruction : public irsentry::BaseInstruction {
+class SubInstruction : public BaseInstruction {
 public:
-  SubInstruction() { this->instrType = InstrType::SubInstrType; }
+  SubInstruction(DataType dataType) {
+    this->instrType = InstrType::SubInstrType;
+    this->dataType = dataType;
+
+    result = Value(dataType);
+    minuend = Value(dataType);
+    subtrahend = Value(dataType);
+  }
   /**
    * @brief The result of the subtraction operation.
    */
-  irsentry::Value<T> result;
+  Value result;
 
   /**
    * @brief The minuend (the number from which another number is subtracted).
    */
-  irsentry::Value<T> minuend;
+  Value minuend;
 
   /**
    * @brief The subtrahend (the number that is subtracted).
    */
-  irsentry::Value<T> subtrahend;
+  Value subtrahend;
 };
 } // namespace irsentry

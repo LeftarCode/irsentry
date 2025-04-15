@@ -15,25 +15,30 @@ namespace irsentry {
  * @class FSubInstruction
  * @brief Represents a floating-point subtraction instruction.
  *
- * @tparam T A type that satisfies the AllowedFloat concept.
  */
-template <irsentry::InheritedFromBaseWithDataType T>
 class FSubInstruction : public BaseInstruction {
 public:
-  FSubInstruction() { this->instrType = InstrType::FSubInstrType; }
+  FSubInstruction(DataType dataType) {
+    this->instrType = InstrType::FSubInstrType;
+    this->dataType = dataType;
+
+    result = Value(dataType);
+    minuend = Value(dataType);
+    subtrahend = Value(dataType);
+  }
   /**
    * @brief The result of the subtraction operation.
    */
-  Value<T> result;
+  Value result;
 
   /**
    * @brief The minuend (the number from which another number is subtracted).
    */
-  Value<T> minuend;
+  Value minuend;
 
   /**
    * @brief The subtrahend (the number that is subtracted).
    */
-  Value<T> subtrahend;
+  Value subtrahend;
 };
 } // namespace irsentry

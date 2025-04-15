@@ -15,20 +15,24 @@ namespace irsentry {
  * @class FAddInstruction
  * @brief Represents an addition instruction for floating-point types.
  *
- * @tparam T A type that satisfies the AllowedFloat concept.
  */
-template <irsentry::InheritedFromBaseWithDataType T>
 class FAddInstruction : public BaseInstruction {
 public:
-  FAddInstruction() { this->instrType = InstrType::FAddInstrType; }
+  FAddInstruction(DataType dataType) {
+    this->instrType = InstrType::FAddInstrType;
+
+    result = Value(dataType);
+    addends[0] = Value(dataType);
+    addends[1] = Value(dataType);
+  }
   /**
    * @brief The result of the addition operation.
    */
-  Value<T> result;
+  Value result;
 
   /**
    * @brief The two operands (addends) involved in the addition.
    */
-  std::array<Value<T>, 2> addends;
+  std::array<Value, 2> addends;
 };
 } // namespace irsentry

@@ -6,7 +6,7 @@
 
 #pragma once
 #include "../../types/IntegerType.h"
-#include "../../variables/Variable.h"
+#include "../../variables/Value.h"
 #include "../BaseInstruction.h"
 #include <array>
 
@@ -15,24 +15,30 @@ namespace irsentry {
  * @class SRemInstruction
  * @brief Represents a signed integer remainder (modulo) instruction.
  *
- * @tparam T A type that satisfies the AllowedInt concept.
  */
-template <AllowedInt T> class SRemInstruction : public BaseInstruction {
+class SRemInstruction : public BaseInstruction {
 public:
-  SRemInstruction() { this->type = InstructionType::SRemInstruction; }
+  SRemInstruction(DataType dataType) {
+    this->instrType = InstrType::SRemInstrType;
+    this->dataType = dataType;
+
+    result = Value(dataType);
+    dividend = Value(dataType);
+    divisor = Value(dataType);
+  }
   /**
    * @brief The result of the remainder operation.
    */
-  Variable<T> result;
+  Value result;
 
   /**
    * @brief The dividend (numerator) in the remainder operation.
    */
-  Variable<T> dividend;
+  Value dividend;
 
   /**
    * @brief The divisor (denominator) in the remainder operation.
    */
-  Variable<T> divisor;
+  Value divisor;
 };
 } // namespace irsentry

@@ -43,17 +43,21 @@ This indicates the parameter is required to be an immediate value. This must be 
 12. Update documentation for all classes.
 13. Organize CMake files
 14. Make CMake more flexible, add some options eg.:
-	1. Add option to build irsentry with static linking oraz dynamic.
-	1. 
+	1. Add option to build irsentry with static linking or dynamic.
 15. Test CMake under Linux and macOS.
 16. Write more requirements that are needed to build the tools (like LLVM).
 17. Adjust all CMake condtions to work with Linux and macOS.
 18. Write small step-by-step tutorial how to build that tool.
 19. Delete UnsignedIntegers!
 # Elementy do opisania
-- Generatory Python'a kodu C++ bazuj�c na `.g4`,
-- Memory layout (por�wnanie kilku layout�w) dla:
+- Generatory Python'a kodu C++ bazujac na `.g4`,
+- Memory layout (por�wnanie kilku layoutow) dla:
 	- Klasy i listy instrukcji,
 	- Drzewa binarnego CFG.
-- Por�wnanie std::variant vs polimorfizm. Por�wnanie cache miss i hit�w, zu�ycia pami�ci i szybko�� przeszukiwania std::vector'a.
-- Unrolling wyra�e� zagnie�d�onych
+- Por�wnanie std::variant vs polimorfizm. Por�wnanie cache miss i hitow, zuzycia pamieci i szybkosc przeszukiwania std::vector'a.
+- Unrolling wyrazen zagniezdzonych
+- Dlaczego zrezygnowałem z templateów dla parseCastInstr
+
+# Reference
+https://gieseanw.wordpress.com/2018/12/29/stop-reimplementing-the-virtual-table-and-start-using-double-dispatch/
+https://stackoverflow.com/questions/17923683/why-does-stdarray-not-have-an-constructor-that-takes-a-value-for-the-array-to

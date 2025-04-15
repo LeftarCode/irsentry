@@ -13,6 +13,9 @@ namespace irsentry {
  */
 enum DataType {
   Void,
+  Vector,
+  Boolean,
+  Label,
   Int16,  /**< 16-bit signed integer */
   Int32,  /**< 32-bit signed integer */
   Int64,  /**< 64-bit signed integer */
@@ -22,7 +25,8 @@ enum DataType {
   Float,  /**< Single-precision floating point */
   Double, /**< Double-precision floating point */
   Array,  /**< Represents an array type */
-  Struct  /**< Represents a structured data type */
+  Struct, /**< Represents a structured data type */
+  Ptr     /**< Represents a pointer */
 };
 
 /**

@@ -15,20 +15,25 @@ namespace irsentry {
  * @class FMulInstruction
  * @brief Represents a floating-point multiplication instruction.
  *
- * @tparam T A type that satisfies the AllowedFloat concept.
  */
-template <irsentry::InheritedFromBaseWithDataType T>
 class FMulInstruction : public BaseInstruction {
 public:
-  FMulInstruction() { this->instrType = InstrType::FMulInstrType; }
+  FMulInstruction(DataType dataType) {
+    this->instrType = InstrType::FMulInstrType;
+    this->dataType = dataType;
+
+    result = Value(dataType);
+    operators[0] = Value(dataType);
+    operators[1] = Value(dataType);
+  }
   /**
    * @brief The result of the multiplication operation.
    */
-  Value<T> result;
+  Value result;
 
   /**
    * @brief The array of two multipication operators
    */
-  std::array<Value<T>, 2> operators;
+  std::array<Value, 2> operators;
 };
 } // namespace irsentry

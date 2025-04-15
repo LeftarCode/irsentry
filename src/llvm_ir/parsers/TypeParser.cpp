@@ -7,7 +7,7 @@ DataType TypeParser::parseType(LLVMParser::LlvmTypeContext *ctx) const {
   } else if (auto concreteNonRecType = ctx->concreteNonRecType()) {
     return parseConcreteNonRecType(concreteNonRecType);
   } else if (auto star = ctx->STAR()) {
-    throw std::runtime_error("Unimplemented datatype: pointer");
+    return DataType::Ptr;
   } else if (auto star = ctx->LPAREN()) {
     throw std::runtime_error("Unimplemented datatype: funcType");
   } else if (auto metadataType = ctx->metadataType()) {
@@ -23,15 +23,15 @@ DataType TypeParser::parseConcreteNonRecType(
   } else if (auto floatType = ctx->floatType()) {
     return parseFloatType(floatType);
   } else if (auto ptrType = ctx->ptrType()) {
-    throw std::runtime_error("Unimplemented datatype: ptr");
+    return DataType::Ptr;
   } else if (auto vectorType = ctx->vectorType()) {
-    throw std::runtime_error("Unimplemented datatype: vectorType");
+    return DataType::Vector;
   } else if (auto labelType = ctx->labelType()) {
-    throw std::runtime_error("Unimplemented datatype: labelType");
+    return DataType::Label;
   } else if (auto arrayType = ctx->arrayType()) {
-    throw std::runtime_error("Unimplemented datatype: arrayType");
+    return DataType::Array;
   } else if (auto structType = ctx->structType()) {
-    throw std::runtime_error("Unimplemented datatype: structType");
+    return DataType::Struct;
   } else if (auto namedType = ctx->namedType()) {
     throw std::runtime_error("Unimplemented datatype: namedType");
   } else if (auto mmxType = ctx->mmxType()) {
@@ -54,7 +54,9 @@ DataType TypeParser::parseIntType(LLVMParser::IntTypeContext *ctx) const {
     throw std::runtime_error("Unimplemented int datatype: unknown");
   }
 }
+
 DataType TypeParser::parseFloatType(LLVMParser::FloatTypeContext *ctx) const {
   return DataType::Float;
 }
+
 } // namespace irsentry

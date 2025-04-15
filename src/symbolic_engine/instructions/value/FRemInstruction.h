@@ -6,7 +6,7 @@
 
 #pragma once
 #include "../../types/FloatType.h"
-#include "../../variables/Variable.h"
+#include "../../variables/Value.h"
 #include "../BaseInstruction.h"
 #include <array>
 
@@ -15,24 +15,30 @@ namespace irsentry {
  * @class FRemInstruction
  * @brief Represents a floating-point remainder (modulo) instruction.
  *
- * @tparam T A type that satisfies the AllowedFloat concept.
  */
-template <AllowedFloat T> class FRemInstruction : public BaseInstruction {
+class FRemInstruction : public BaseInstruction {
 public:
-  FRemInstruction() { this->type = InstructionType::FRemInstruction; }
+  FRemInstruction(DataType dataType) {
+    this->instrType = InstrType::FRemInstrType;
+    this->dataType = dataType;
+
+    result = Value(dataType);
+    dividend = Value(dataType);
+    divisor = Value(dataType);
+  }
   /**
    * @brief The result of the remainder operation.
    */
-  Variable<T> result;
+  Value result;
 
   /**
    * @brief The dividend (numerator) in the remainder operation.
    */
-  Variable<T> dividend;
+  Value dividend;
 
   /**
    * @brief The divisor (denominator) in the remainder operation.
    */
-  Variable<T> divisor;
+  Value divisor;
 };
 } // namespace irsentry
