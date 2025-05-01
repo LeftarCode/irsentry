@@ -5,7 +5,6 @@
 
 #pragma once
 #include "../../variables/Value.h"
-#include "../BaseInstruction.h"
 #include <array>
 
 namespace irsentry {
@@ -14,14 +13,14 @@ namespace irsentry {
  * @brief Represents an allocation instruction for memory management.
  *
  */
-class AllocaInstruction : public BaseInstruction {
+class AllocaInstruction {
 public:
-  AllocaInstruction(DataType dataTypeAllocation, DataType dataTypeNumElements) {
-    this->instrType = InstrType::AllocaInstrType;
+  AllocaInstruction(SEETypeDefPtr dataTypeAllocation,
+                    Value dataTypeNumElements) {
 
-    result = Value(DataType::Ptr);
+    result = Value(SEETypeDef::makePointer(dataTypeAllocation));
     allocatedType = dataTypeAllocation;
-    numElements = Value(dataTypeNumElements);
+    numElements = dataTypeNumElements;
   }
   /**
    * @brief The variable that stores the result of the allocation.
@@ -31,7 +30,7 @@ public:
   /**
    * @brief The type being allocated in memory.
    */
-  DataType allocatedType;
+  SEETypeDefPtr allocatedType;
 
   /**
    * @brief The number of elements allocated.

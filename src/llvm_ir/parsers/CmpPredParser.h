@@ -5,6 +5,7 @@
 namespace irsentry {
 class CmpPredParser {
 public:
+  CmpPredParser() {};
   ICmpPred parseICmpPred(LLVMParser::IPredContext *ctx) const;
   FCmpPred parseFCmpPred(LLVMParser::FpredContext *ctx) const;
 };

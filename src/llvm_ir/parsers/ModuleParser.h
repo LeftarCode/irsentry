@@ -16,6 +16,7 @@ struct Module {
 
 class ModuleParser {
 public:
+  ModuleParser() {};
   std::unique_ptr<Module>
   parseModule(LLVMParser::ModuleContext *moduleContext) const;
 

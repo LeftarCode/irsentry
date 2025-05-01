@@ -4,7 +4,7 @@ target datalayout = "e-m:e-p270:32:32-p271:32:32-p272:64:64-i64:64-f80:128-n8:16
 target triple = "x86_64-pc-linux-gnu"
 
 ; Function Attrs: mustprogress noinline optnone uwtable
-define dso_local void @_Z8phi_demob(i1 noundef zeroext %0) #0 {
+define dso_local void @_Z8phi_demob(i1 zeroext %0) #0 {
   %2 = alloca i8, align 1
   %3 = alloca i32, align 4
   %4 = zext i1 %0 to i8
@@ -14,28 +14,28 @@ define dso_local void @_Z8phi_demob(i1 noundef zeroext %0) #0 {
   br i1 %6, label %7, label %9
 
 7:                                                ; preds = %1
-  %8 = call noundef i32 @_Z4getAv()
+  %8 = call i32 @_Z4getAv()
   store i32 %8, i32* %3, align 4
   br label %11
 
 9:                                                ; preds = %1
-  %10 = call noundef i32 @_Z4getBv()
+  %10 = call i32 @_Z4getBv()
   store i32 %10, i32* %3, align 4
   br label %11
 
 11:                                               ; preds = %9, %7
   %12 = load i32, i32* %3, align 4
-  call void @_Z3usei(i32 noundef %12)
+  call void @_Z3usei(i32 %12)
   ret void
 }
 
-declare noundef i32 @_Z4getAv() #1
+declare i32 @_Z4getAv() #1
 
-declare noundef i32 @_Z4getBv() #1
+declare i32 @_Z4getBv() #1
 
-declare void @_Z3usei(i32 noundef) #1
+declare void @_Z3usei(i32) #1
 
-attributes #0 = { mustprogress noinline optnone uwtable "frame-pointer"="all" "min-legal-vector-width"="0" "no-trapping-math"="true" "stack-protector-buffer-size"="8" "target-cpu"="x86-64" "target-features"="+cx8,+fxsr,+mmx,+sse,+sse2,+x87" "tune-cpu"="generic" }
+attributes #0 = { noinline optnone uwtable "frame-pointer"="all" "min-legal-vector-width"="0" "no-trapping-math"="true" "stack-protector-buffer-size"="8" "target-cpu"="x86-64" "target-features"="+cx8,+fxsr,+mmx,+sse,+sse2,+x87" "tune-cpu"="generic" }
 attributes #1 = { "frame-pointer"="all" "no-trapping-math"="true" "stack-protector-buffer-size"="8" "target-cpu"="x86-64" "target-features"="+cx8,+fxsr,+mmx,+sse,+sse2,+x87" "tune-cpu"="generic" }
 
 !llvm.module.flags = !{!0, !1, !2, !3, !4}

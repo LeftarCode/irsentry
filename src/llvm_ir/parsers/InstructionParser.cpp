@@ -5,439 +5,411 @@
 
 namespace irsentry {
 
-BaseInstruction *
+SEEInstruction
 InstructionParser::parseAddInstr(LLVMParser::AddInstContext *ctx) const {
   const auto llvmType = ctx->llvmType();
   const auto value = ctx->value();
-
   const auto parsedType = m_typeParser.parseType(llvmType);
-  auto *addInstr = new AddInstruction(parsedType);
 
-  addInstr->addends[0] = m_valueParser.parseValue(parsedType, value[0]);
-  addInstr->addends[1] = m_valueParser.parseValue(parsedType, value[1]);
+  auto instr = ValueInstruction(ValueInstrType::AddInstrType, parsedType);
+  instr.operators[0] = m_valueParser.parseValue(parsedType, value[0]);
+  instr.operators[1] = m_valueParser.parseValue(parsedType, value[1]);
 
-  return addInstr;
+  return instr;
 }
 
-BaseInstruction *
+SEEInstruction
 InstructionParser::parseFAddInstr(LLVMParser::FAddInstContext *ctx) const {
-  auto llvmType = ctx->llvmType();
-  auto value = ctx->value();
+  const auto llvmType = ctx->llvmType();
+  const auto values = ctx->value();
+  const auto parsedType = m_typeParser.parseType(llvmType);
 
-  auto parsedType = m_typeParser.parseType(llvmType);
-  auto *faddInstr = new FAddInstruction(parsedType);
+  ValueInstruction instr{ValueInstrType::FAddInstrType, parsedType};
+  instr.operators[0] = m_valueParser.parseValue(parsedType, values[0]);
+  instr.operators[1] = m_valueParser.parseValue(parsedType, values[1]);
 
-  faddInstr->addends[0] = m_valueParser.parseValue(parsedType, value[0]);
-  faddInstr->addends[1] = m_valueParser.parseValue(parsedType, value[1]);
-
-  return faddInstr;
+  return instr;
 }
 
-BaseInstruction *
+SEEInstruction
 InstructionParser::parseSubInstr(LLVMParser::SubInstContext *ctx) const {
-  auto llvmType = ctx->llvmType();
-  auto value = ctx->value();
+  const auto llvmType = ctx->llvmType();
+  const auto values = ctx->value();
+  const auto parsedType = m_typeParser.parseType(llvmType);
 
-  auto parsedType = m_typeParser.parseType(llvmType);
-  auto *subInstr = new SubInstruction(parsedType);
+  ValueInstruction instr{ValueInstrType::SubInstrType, parsedType};
+  instr.operators[0] = m_valueParser.parseValue(parsedType, values[0]);
+  instr.operators[1] = m_valueParser.parseValue(parsedType, values[1]);
 
-  subInstr->minuend = m_valueParser.parseValue(parsedType, value[0]);
-  subInstr->subtrahend = m_valueParser.parseValue(parsedType, value[1]);
-
-  return subInstr;
+  return instr;
 }
 
-BaseInstruction *
+SEEInstruction
 InstructionParser::parseFSubInstr(LLVMParser::FSubInstContext *ctx) const {
-  auto llvmType = ctx->llvmType();
-  auto value = ctx->value();
+  const auto llvmType = ctx->llvmType();
+  const auto values = ctx->value();
+  const auto parsedType = m_typeParser.parseType(llvmType);
 
-  auto parsedType = m_typeParser.parseType(llvmType);
-  auto *fsubInstr = new FSubInstruction(parsedType);
+  ValueInstruction instr{ValueInstrType::FSubInstrType, parsedType};
+  instr.operators[0] = m_valueParser.parseValue(parsedType, values[0]);
+  instr.operators[1] = m_valueParser.parseValue(parsedType, values[1]);
 
-  fsubInstr->minuend = m_valueParser.parseValue(parsedType, value[0]);
-  fsubInstr->subtrahend = m_valueParser.parseValue(parsedType, value[1]);
-
-  return fsubInstr;
+  return instr;
 }
 
-BaseInstruction *
+SEEInstruction
 InstructionParser::parseMulInstr(LLVMParser::MulInstContext *ctx) const {
-  auto llvmType = ctx->llvmType();
-  auto value = ctx->value();
+  const auto llvmType = ctx->llvmType();
+  const auto values = ctx->value();
+  const auto parsedType = m_typeParser.parseType(llvmType);
 
-  auto parsedType = m_typeParser.parseType(llvmType);
-  auto *mulInstr = new MulInstruction(parsedType);
+  ValueInstruction instr{ValueInstrType::MulInstrType, parsedType};
+  instr.operators[0] = m_valueParser.parseValue(parsedType, values[0]);
+  instr.operators[1] = m_valueParser.parseValue(parsedType, values[1]);
 
-  mulInstr->operators[0] = m_valueParser.parseValue(parsedType, value[0]);
-  mulInstr->operators[1] = m_valueParser.parseValue(parsedType, value[1]);
-
-  return mulInstr;
+  return instr;
 }
 
-BaseInstruction *
+SEEInstruction
 InstructionParser::parseFMulInstr(LLVMParser::FMulInstContext *ctx) const {
-  auto llvmType = ctx->llvmType();
-  auto value = ctx->value();
+  const auto llvmType = ctx->llvmType();
+  const auto values = ctx->value();
+  const auto parsedType = m_typeParser.parseType(llvmType);
 
-  auto parsedType = m_typeParser.parseType(llvmType);
-  auto *fmulInstr = new FMulInstruction(parsedType);
+  ValueInstruction instr{ValueInstrType::FMulInstrType, parsedType};
+  instr.operators[0] = m_valueParser.parseValue(parsedType, values[0]);
+  instr.operators[1] = m_valueParser.parseValue(parsedType, values[1]);
 
-  fmulInstr->operators[0] = m_valueParser.parseValue(parsedType, value[0]);
-  fmulInstr->operators[1] = m_valueParser.parseValue(parsedType, value[1]);
-
-  return fmulInstr;
+  return instr;
 }
 
-BaseInstruction *
+SEEInstruction
 InstructionParser::parseUDivInstr(LLVMParser::UDivInstContext *ctx) const {
-  auto llvmType = ctx->llvmType();
-  auto value = ctx->value();
+  const auto llvmType = ctx->llvmType();
+  const auto values = ctx->value();
+  const auto parsedType = m_typeParser.parseType(llvmType);
 
-  auto parsedType = m_typeParser.parseType(llvmType);
-  auto *udivInstr = new UDivInstruction(parsedType);
+  ValueInstruction instr{ValueInstrType::UDivInstrType, parsedType};
+  instr.operators[0] =
+      m_valueParser.parseValue(parsedType, values[0]); // dividend
+  instr.operators[1] =
+      m_valueParser.parseValue(parsedType, values[1]); // divisor
 
-  udivInstr->dividend = m_valueParser.parseValue(parsedType, value[0]);
-  udivInstr->divisor = m_valueParser.parseValue(parsedType, value[1]);
-
-  return udivInstr;
+  return instr;
 }
 
-BaseInstruction *
+SEEInstruction
 InstructionParser::parseSDivInstr(LLVMParser::SDivInstContext *ctx) const {
-  auto llvmType = ctx->llvmType();
-  auto value = ctx->value();
+  const auto llvmType = ctx->llvmType();
+  const auto values = ctx->value();
+  const auto parsedType = m_typeParser.parseType(llvmType);
 
-  auto parsedType = m_typeParser.parseType(llvmType);
-  auto *sdivInstr = new SDivInstruction(parsedType);
+  ValueInstruction instr{ValueInstrType::SDivInstrType, parsedType};
+  instr.operators[0] = m_valueParser.parseValue(parsedType, values[0]);
+  instr.operators[1] = m_valueParser.parseValue(parsedType, values[1]);
 
-  sdivInstr->dividend = m_valueParser.parseValue(parsedType, value[0]);
-  sdivInstr->divisor = m_valueParser.parseValue(parsedType, value[1]);
-
-  return sdivInstr;
+  return instr;
 }
 
-BaseInstruction *
+SEEInstruction
 InstructionParser::parseFDivInstr(LLVMParser::FDivInstContext *ctx) const {
-  auto llvmType = ctx->llvmType();
-  auto value = ctx->value();
+  const auto llvmType = ctx->llvmType();
+  const auto values = ctx->value();
+  const auto parsedType = m_typeParser.parseType(llvmType);
 
-  auto parsedType = m_typeParser.parseType(llvmType);
-  auto *fdivInstr = new FDivInstruction(parsedType);
+  ValueInstruction instr{ValueInstrType::FDivInstrType, parsedType};
+  instr.operators[0] = m_valueParser.parseValue(parsedType, values[0]);
+  instr.operators[1] = m_valueParser.parseValue(parsedType, values[1]);
 
-  fdivInstr->dividend = m_valueParser.parseValue(parsedType, value[0]);
-  fdivInstr->divisor = m_valueParser.parseValue(parsedType, value[1]);
-
-  return fdivInstr;
+  return instr;
 }
 
-BaseInstruction *
+SEEInstruction
 InstructionParser::parseURemInstr(LLVMParser::URemInstContext *ctx) const {
-  auto llvmType = ctx->llvmType();
-  auto value = ctx->value();
+  const auto llvmType = ctx->llvmType();
+  const auto values = ctx->value();
+  const auto parsedType = m_typeParser.parseType(llvmType);
 
-  auto parsedType = m_typeParser.parseType(llvmType);
-  auto *uremInstr = new URemInstruction(parsedType);
+  auto instr = ValueInstruction(ValueInstrType::URemInstrType, parsedType);
+  instr.operators[0] = m_valueParser.parseValue(parsedType, values[0]);
+  instr.operators[1] = m_valueParser.parseValue(parsedType, values[1]);
 
-  uremInstr->dividend = m_valueParser.parseValue(parsedType, value[0]);
-  uremInstr->divisor = m_valueParser.parseValue(parsedType, value[1]);
-
-  return uremInstr;
+  return instr;
 }
 
-BaseInstruction *
+SEEInstruction
 InstructionParser::parseSRemInstr(LLVMParser::SRemInstContext *ctx) const {
-  auto llvmType = ctx->llvmType();
-  auto value = ctx->value();
+  const auto llvmType = ctx->llvmType();
+  const auto values = ctx->value();
+  const auto parsedType = m_typeParser.parseType(llvmType);
 
-  auto parsedType = m_typeParser.parseType(llvmType);
-  auto *sremInstr = new SRemInstruction(parsedType);
+  auto instr = ValueInstruction(ValueInstrType::SRemInstrType, parsedType);
+  instr.operators[0] = m_valueParser.parseValue(parsedType, values[0]);
+  instr.operators[1] = m_valueParser.parseValue(parsedType, values[1]);
 
-  sremInstr->dividend = m_valueParser.parseValue(parsedType, value[0]);
-  sremInstr->divisor = m_valueParser.parseValue(parsedType, value[1]);
-
-  return sremInstr;
+  return instr;
 }
 
-BaseInstruction *
+SEEInstruction
 InstructionParser::parseFRemInstr(LLVMParser::FRemInstContext *ctx) const {
-  auto llvmType = ctx->llvmType();
-  auto value = ctx->value();
+  const auto llvmType = ctx->llvmType();
+  const auto values = ctx->value();
+  const auto parsedType = m_typeParser.parseType(llvmType);
 
-  auto parsedType = m_typeParser.parseType(llvmType);
-  auto *fremInstr = new FRemInstruction(parsedType);
+  auto instr = ValueInstruction(ValueInstrType::FRemInstrType, parsedType);
+  instr.operators[0] = m_valueParser.parseValue(parsedType, values[0]);
+  instr.operators[1] = m_valueParser.parseValue(parsedType, values[1]);
 
-  fremInstr->dividend = m_valueParser.parseValue(parsedType, value[0]);
-  fremInstr->divisor = m_valueParser.parseValue(parsedType, value[1]);
-
-  return fremInstr;
+  return instr;
 }
 
-BaseInstruction *
+SEEInstruction
 InstructionParser::parseShlInstr(LLVMParser::ShlInstContext *ctx) const {
   auto llvmType = ctx->llvmType();
   auto value = ctx->value();
 
   auto parsedType = m_typeParser.parseType(llvmType);
-  auto *shlInstr = new ShlInstruction(parsedType);
+  auto instr = BitwiseInstruction(BitwiseInstrType::ShlInstrType, parsedType);
 
-  shlInstr->value = m_valueParser.parseValue(parsedType, value[0]);
-  shlInstr->shift = m_valueParser.parseValue(parsedType, value[1]);
+  instr.operators[0] = m_valueParser.parseValue(parsedType, value[0]);
+  instr.operators[0] = m_valueParser.parseValue(parsedType, value[1]);
 
-  return shlInstr;
+  return instr;
 }
 
-BaseInstruction *
+SEEInstruction
 InstructionParser::parseLShrInstr(LLVMParser::LshrInstContext *ctx) const {
-  auto llvmType = ctx->llvmType();
-  auto value = ctx->value();
+  const auto llvmType = ctx->llvmType();
+  const auto values = ctx->value();
+  const auto parsedType = m_typeParser.parseType(llvmType);
 
-  auto parsedType = m_typeParser.parseType(llvmType);
-  auto *lshrInstr = new LShrInstruction(parsedType);
+  BitwiseInstruction instr{BitwiseInstrType::LShrInstrType, parsedType};
+  instr.operators[0] = m_valueParser.parseValue(parsedType, values[0]);
+  instr.operators[1] = m_valueParser.parseValue(parsedType, values[1]);
 
-  lshrInstr->value = m_valueParser.parseValue(parsedType, value[0]);
-  lshrInstr->shift = m_valueParser.parseValue(parsedType, value[1]);
-
-  return lshrInstr;
+  return instr;
 }
 
-BaseInstruction *
+SEEInstruction
 InstructionParser::parseAShrInstr(LLVMParser::AshrInstContext *ctx) const {
-  auto llvmType = ctx->llvmType();
-  auto value = ctx->value();
+  const auto llvmType = ctx->llvmType();
+  const auto values = ctx->value();
+  const auto parsedType = m_typeParser.parseType(llvmType);
 
-  auto parsedType = m_typeParser.parseType(llvmType);
-  auto *ashrInstr = new AShrInstruction(parsedType);
+  BitwiseInstruction instr{BitwiseInstrType::AShrInstrType, parsedType};
+  instr.operators[0] = m_valueParser.parseValue(parsedType, values[0]);
+  instr.operators[1] = m_valueParser.parseValue(parsedType, values[1]);
 
-  ashrInstr->value = m_valueParser.parseValue(parsedType, value[0]);
-  ashrInstr->shift = m_valueParser.parseValue(parsedType, value[1]);
-
-  return ashrInstr;
+  return instr;
 }
 
-BaseInstruction *
+SEEInstruction
 InstructionParser::parseAndInstr(LLVMParser::AndInstContext *ctx) const {
-  auto llvmType = ctx->llvmType();
-  auto value = ctx->value();
+  const auto llvmType = ctx->llvmType();
+  const auto values = ctx->value();
+  const auto parsedType = m_typeParser.parseType(llvmType);
 
-  auto parsedType = m_typeParser.parseType(llvmType);
-  auto *andInstr = new AndInstruction(parsedType);
+  BitwiseInstruction instr{BitwiseInstrType::AndInstrType, parsedType};
+  instr.operators[0] = m_valueParser.parseValue(parsedType, values[0]);
+  instr.operators[1] = m_valueParser.parseValue(parsedType, values[1]);
 
-  andInstr->operators[0] = m_valueParser.parseValue(parsedType, value[0]);
-  andInstr->operators[1] = m_valueParser.parseValue(parsedType, value[1]);
-
-  return andInstr;
+  return instr;
 }
 
-BaseInstruction *
+SEEInstruction
 InstructionParser::parseOrInstr(LLVMParser::OrInstContext *ctx) const {
-  auto llvmType = ctx->llvmType();
-  auto value = ctx->value();
+  const auto llvmType = ctx->llvmType();
+  const auto values = ctx->value();
+  const auto parsedType = m_typeParser.parseType(llvmType);
 
-  auto parsedType = m_typeParser.parseType(llvmType);
-  auto *orInstr = new OrInstruction(parsedType);
+  BitwiseInstruction instr{BitwiseInstrType::OrInstrType, parsedType};
+  instr.operators[0] = m_valueParser.parseValue(parsedType, values[0]);
+  instr.operators[1] = m_valueParser.parseValue(parsedType, values[1]);
 
-  orInstr->operators[0] = m_valueParser.parseValue(parsedType, value[0]);
-  orInstr->operators[1] = m_valueParser.parseValue(parsedType, value[1]);
-
-  return orInstr;
+  return instr;
 }
 
-BaseInstruction *
+SEEInstruction
 InstructionParser::parseXorInstr(LLVMParser::XorInstContext *ctx) const {
-  auto llvmType = ctx->llvmType();
-  auto value = ctx->value();
+  const auto llvmType = ctx->llvmType();
+  const auto values = ctx->value();
+  const auto parsedType = m_typeParser.parseType(llvmType);
 
-  auto parsedType = m_typeParser.parseType(llvmType);
-  auto *xorInstr = new XorInstruction(parsedType);
+  BitwiseInstruction instr{BitwiseInstrType::XorInstrType, parsedType};
+  instr.operators[0] = m_valueParser.parseValue(parsedType, values[0]);
+  instr.operators[1] = m_valueParser.parseValue(parsedType, values[1]);
 
-  xorInstr->operators[0] = m_valueParser.parseValue(parsedType, value[0]);
-  xorInstr->operators[1] = m_valueParser.parseValue(parsedType, value[1]);
-
-  return xorInstr;
+  return instr;
 }
 
-BaseInstruction *
+SEEInstruction
 InstructionParser::parseCastInstr(LLVMParser::TruncInstContext *ctx) const {
   auto llvmType = ctx->llvmType();
   auto value = ctx->value();
-
   auto fromType = m_typeParser.parseType(llvmType[0]);
   auto toType = m_typeParser.parseType(llvmType[1]);
 
-  auto *castInstr = new CastInstruction(fromType, toType);
+  auto instr = CastInstruction(fromType, toType);
+  instr.from = m_valueParser.parseValue(fromType, value);
 
-  castInstr->from = m_valueParser.parseValue(fromType, value);
-
-  return castInstr;
+  return instr;
 }
 
-BaseInstruction *
+SEEInstruction
 InstructionParser::parseCastInstr(LLVMParser::ZExtInstContext *ctx) const {
-  auto llvmType = ctx->llvmType();
-  auto value = ctx->value();
+  const auto llvmType = ctx->llvmType();
+  const auto value = ctx->value();
 
-  auto fromType = m_typeParser.parseType(llvmType[0]);
-  auto toType = m_typeParser.parseType(llvmType[1]);
+  const auto fromType = m_typeParser.parseType(llvmType[0]);
+  const auto toType = m_typeParser.parseType(llvmType[1]);
 
-  auto *castInstr = new CastInstruction(fromType, toType);
+  auto instr = CastInstruction(fromType, toType);
+  instr.from = m_valueParser.parseValue(fromType, value);
 
-  castInstr->from = m_valueParser.parseValue(fromType, value);
-
-  return castInstr;
+  return instr;
 }
 
-BaseInstruction *
+SEEInstruction
 InstructionParser::parseCastInstr(LLVMParser::SExtInstContext *ctx) const {
-  auto llvmType = ctx->llvmType();
-  auto value = ctx->value();
+  const auto llvmType = ctx->llvmType();
+  const auto value = ctx->value();
 
-  auto fromType = m_typeParser.parseType(llvmType[0]);
-  auto toType = m_typeParser.parseType(llvmType[1]);
+  const auto fromType = m_typeParser.parseType(llvmType[0]);
+  const auto toType = m_typeParser.parseType(llvmType[1]);
 
-  auto *castInstr = new CastInstruction(fromType, toType);
+  auto instr = CastInstruction(fromType, toType);
+  instr.from = m_valueParser.parseValue(fromType, value);
 
-  castInstr->from = m_valueParser.parseValue(fromType, value);
-
-  return castInstr;
+  return instr;
 }
 
-BaseInstruction *
+SEEInstruction
 InstructionParser::parseCastInstr(LLVMParser::FpTruncInstContext *ctx) const {
-  auto llvmType = ctx->llvmType();
-  auto value = ctx->value();
+  const auto llvmType = ctx->llvmType();
+  const auto value = ctx->value();
 
-  auto fromType = m_typeParser.parseType(llvmType[0]);
-  auto toType = m_typeParser.parseType(llvmType[1]);
+  const auto fromType = m_typeParser.parseType(llvmType[0]);
+  const auto toType = m_typeParser.parseType(llvmType[1]);
 
-  auto *castInstr = new CastInstruction(fromType, toType);
+  auto instr = CastInstruction(fromType, toType);
+  instr.from = m_valueParser.parseValue(fromType, value);
 
-  castInstr->from = m_valueParser.parseValue(fromType, value);
-
-  return castInstr;
+  return instr;
 }
 
-BaseInstruction *
+SEEInstruction
 InstructionParser::parseCastInstr(LLVMParser::FpExtInstContext *ctx) const {
-  auto llvmType = ctx->llvmType();
-  auto value = ctx->value();
+  const auto llvmType = ctx->llvmType();
+  const auto value = ctx->value();
 
-  auto fromType = m_typeParser.parseType(llvmType[0]);
-  auto toType = m_typeParser.parseType(llvmType[1]);
+  const auto fromType = m_typeParser.parseType(llvmType[0]);
+  const auto toType = m_typeParser.parseType(llvmType[1]);
 
-  auto *castInstr = new CastInstruction(fromType, toType);
+  auto instr = CastInstruction(fromType, toType);
+  instr.from = m_valueParser.parseValue(fromType, value);
 
-  castInstr->from = m_valueParser.parseValue(fromType, value);
-
-  return castInstr;
+  return instr;
 }
 
-BaseInstruction *
+SEEInstruction
 InstructionParser::parseCastInstr(LLVMParser::FpToUIInstContext *ctx) const {
-  auto llvmType = ctx->llvmType();
-  auto value = ctx->value();
+  const auto llvmType = ctx->llvmType();
+  const auto value = ctx->value();
 
-  auto fromType = m_typeParser.parseType(llvmType[0]);
-  auto toType = m_typeParser.parseType(llvmType[1]);
+  const auto fromType = m_typeParser.parseType(llvmType[0]);
+  const auto toType = m_typeParser.parseType(llvmType[1]);
 
-  auto *castInstr = new CastInstruction(fromType, toType);
+  auto instr = CastInstruction(fromType, toType);
+  instr.from = m_valueParser.parseValue(fromType, value);
 
-  castInstr->from = m_valueParser.parseValue(fromType, value);
-
-  return castInstr;
+  return instr;
 }
 
-BaseInstruction *
+SEEInstruction
 InstructionParser::parseCastInstr(LLVMParser::FpToSIInstContext *ctx) const {
-  auto llvmType = ctx->llvmType();
-  auto value = ctx->value();
+  const auto llvmType = ctx->llvmType();
+  const auto value = ctx->value();
 
-  auto fromType = m_typeParser.parseType(llvmType[0]);
-  auto toType = m_typeParser.parseType(llvmType[1]);
+  const auto fromType = m_typeParser.parseType(llvmType[0]);
+  const auto toType = m_typeParser.parseType(llvmType[1]);
 
-  auto *castInstr = new CastInstruction(fromType, toType);
+  auto instr = CastInstruction(fromType, toType);
+  instr.from = m_valueParser.parseValue(fromType, value);
 
-  castInstr->from = m_valueParser.parseValue(fromType, value);
-
-  return castInstr;
+  return instr;
 }
 
-BaseInstruction *
+SEEInstruction
 InstructionParser::parseCastInstr(LLVMParser::UiToFPInstContext *ctx) const {
-  auto llvmType = ctx->llvmType();
-  auto value = ctx->value();
+  const auto llvmType = ctx->llvmType();
+  const auto value = ctx->value();
 
-  auto fromType = m_typeParser.parseType(llvmType[0]);
-  auto toType = m_typeParser.parseType(llvmType[1]);
+  const auto fromType = m_typeParser.parseType(llvmType[0]);
+  const auto toType = m_typeParser.parseType(llvmType[1]);
 
-  auto *castInstr = new CastInstruction(fromType, toType);
+  auto instr = CastInstruction(fromType, toType);
+  instr.from = m_valueParser.parseValue(fromType, value);
 
-  castInstr->from = m_valueParser.parseValue(fromType, value);
-
-  return castInstr;
+  return instr;
 }
 
-BaseInstruction *
+SEEInstruction
 InstructionParser::parseCastInstr(LLVMParser::SiToFPInstContext *ctx) const {
-  auto llvmType = ctx->llvmType();
-  auto value = ctx->value();
+  const auto llvmType = ctx->llvmType();
+  const auto value = ctx->value();
 
-  auto fromType = m_typeParser.parseType(llvmType[0]);
-  auto toType = m_typeParser.parseType(llvmType[1]);
+  const auto fromType = m_typeParser.parseType(llvmType[0]);
+  const auto toType = m_typeParser.parseType(llvmType[1]);
 
-  auto *castInstr = new CastInstruction(fromType, toType);
+  auto instr = CastInstruction(fromType, toType);
+  instr.from = m_valueParser.parseValue(fromType, value);
 
-  castInstr->from = m_valueParser.parseValue(fromType, value);
-
-  return castInstr;
+  return instr;
 }
 
-BaseInstruction *
+SEEInstruction
 InstructionParser::parseCastInstr(LLVMParser::PtrToIntInstContext *ctx) const {
-  auto llvmType = ctx->llvmType();
-  auto value = ctx->value();
+  const auto llvmType = ctx->llvmType();
+  const auto value = ctx->value();
 
-  auto fromType = m_typeParser.parseType(llvmType[0]);
-  auto toType = m_typeParser.parseType(llvmType[1]);
+  const auto fromType = m_typeParser.parseType(llvmType[0]);
+  const auto toType = m_typeParser.parseType(llvmType[1]);
 
-  auto *castInstr = new CastInstruction(fromType, toType);
+  auto instr = CastInstruction(fromType, toType);
+  instr.from = m_valueParser.parseValue(fromType, value);
 
-  castInstr->from = m_valueParser.parseValue(fromType, value);
-
-  return castInstr;
+  return instr;
 }
 
-BaseInstruction *
+SEEInstruction
 InstructionParser::parseCastInstr(LLVMParser::IntToPtrInstContext *ctx) const {
-  auto llvmType = ctx->llvmType();
-  auto value = ctx->value();
+  const auto llvmType = ctx->llvmType();
+  const auto value = ctx->value();
 
-  auto fromType = m_typeParser.parseType(llvmType[0]);
-  auto toType = m_typeParser.parseType(llvmType[1]);
+  const auto fromType = m_typeParser.parseType(llvmType[0]);
+  const auto toType = m_typeParser.parseType(llvmType[1]);
 
-  auto *castInstr = new CastInstruction(fromType, toType);
+  auto instr = CastInstruction(fromType, toType);
+  instr.from = m_valueParser.parseValue(fromType, value);
 
-  castInstr->from = m_valueParser.parseValue(fromType, value);
-
-  return castInstr;
+  return instr;
 }
 
-BaseInstruction *
+SEEInstruction
 InstructionParser::parseCastInstr(LLVMParser::BitCastInstContext *ctx) const {
-  auto llvmType = ctx->llvmType();
-  auto value = ctx->value();
+  const auto llvmType = ctx->llvmType();
+  const auto value = ctx->value();
 
-  auto fromType = m_typeParser.parseType(llvmType[0]);
-  auto toType = m_typeParser.parseType(llvmType[1]);
+  const auto fromType = m_typeParser.parseType(llvmType[0]);
+  const auto toType = m_typeParser.parseType(llvmType[1]);
 
-  auto *castInstr = new CastInstruction(fromType, toType);
+  auto instr = CastInstruction(fromType, toType);
+  instr.from = m_valueParser.parseValue(fromType, value);
 
-  castInstr->from = m_valueParser.parseValue(fromType, value);
-
-  return castInstr;
+  return instr;
 }
 
-BaseInstruction *
+SEEInstruction
 InstructionParser::parseICmpInstr(LLVMParser::ICmpInstContext *ctx) const {
   auto llvmType = ctx->llvmType();
   auto value = ctx->value();
@@ -445,15 +417,15 @@ InstructionParser::parseICmpInstr(LLVMParser::ICmpInstContext *ctx) const {
   auto parsedType = m_typeParser.parseType(llvmType);
   auto pred = m_cmpPredParser.parseICmpPred(ctx->iPred());
 
-  auto *castInstr = new ICmpInstruction(pred, parsedType);
+  auto instr = ICmpInstruction(pred, parsedType);
 
-  castInstr->operators[0] = m_valueParser.parseValue(parsedType, value[0]);
-  castInstr->operators[1] = m_valueParser.parseValue(parsedType, value[1]);
+  instr.operators[0] = m_valueParser.parseValue(parsedType, value[0]);
+  instr.operators[1] = m_valueParser.parseValue(parsedType, value[1]);
 
-  return castInstr;
+  return instr;
 }
 
-BaseInstruction *
+SEEInstruction
 InstructionParser::parseFCmpInstr(LLVMParser::FCmpInstContext *ctx) const {
   auto llvmType = ctx->llvmType();
   auto value = ctx->value();
@@ -461,15 +433,131 @@ InstructionParser::parseFCmpInstr(LLVMParser::FCmpInstContext *ctx) const {
   auto parsedType = m_typeParser.parseType(llvmType);
   auto pred = m_cmpPredParser.parseFCmpPred(ctx->fpred());
 
-  auto *castInstr = new FCmpInstruction(pred, parsedType);
+  auto instr = FCmpInstruction(pred, parsedType);
 
-  castInstr->operators[0] = m_valueParser.parseValue(parsedType, value[0]);
-  castInstr->operators[1] = m_valueParser.parseValue(parsedType, value[1]);
+  instr.operators[0] = m_valueParser.parseValue(parsedType, value[0]);
+  instr.operators[1] = m_valueParser.parseValue(parsedType, value[1]);
 
-  return castInstr;
+  return instr;
 }
 
-BaseInstruction *InstructionParser::parseValueInstruction(
+SEEInstruction
+InstructionParser::parseCallInstr(LLVMParser::CallInstContext *ctx) const {
+  auto llvmType = ctx->llvmType();
+  auto value = ctx->value();
+  auto returnType = m_typeParser.parseType(llvmType);
+  auto funcName = ctx->value()->getText();
+
+  if (auto dots = ctx->args()->DOTS()) {
+    throw std::runtime_error("InstructionParser: Calling VA arguments are NOT "
+                             "currently supported, but function will be added");
+  }
+
+  std::vector<Value> args;
+  for (auto *argsChain = ctx->args()->argList(); argsChain != nullptr;
+       argsChain = argsChain->argList()) {
+    auto *arg = argsChain->arg();
+
+    SEETypeDefPtr argType;
+    if (auto *argLLVMType = arg->llvmType()) {
+      argType = m_typeParser.parseType(argLLVMType);
+    } else if (auto *concreteType = arg->concreteNonRecType()) {
+      argType = m_typeParser.parseConcreteType(concreteType);
+    }
+
+    auto argument = m_valueParser.parseValue(argType, arg->value());
+    args.emplace_back(argument);
+  }
+
+  auto instr = CallInstruction(returnType, funcName, args);
+  return instr;
+}
+
+SEEInstruction
+InstructionParser::parseLoadInstr(LLVMParser::LoadInstContext *ctx) const {
+  auto llvmType = ctx->llvmType();
+  auto value = ctx->value();
+
+  auto resultType = m_typeParser.parseType(llvmType[0]);
+  auto fromType = m_typeParser.parseType(llvmType[1]);
+  auto fromValue = m_valueParser.parseValue(fromType, value);
+
+  auto instr = LoadInstruction(resultType, fromValue);
+
+  return instr;
+}
+
+SEEInstruction
+InstructionParser::parseStoreInstr(LLVMParser::StoreInstContext *ctx) const {
+  auto llvmType = ctx->llvmType();
+  auto value = ctx->value();
+
+  auto whatType = m_typeParser.parseType(llvmType[0]);
+  auto whereType = m_typeParser.parseType(llvmType[1]);
+
+  auto whatValue = m_valueParser.parseValue(whatType, value[0]);
+  auto whereValue = m_valueParser.parseValue(whereType, value[1]);
+
+  auto instr = StoreInstruction(whatValue, whereValue);
+
+  return instr;
+}
+
+SEEInstruction
+InstructionParser::parseAllocaInstr(LLVMParser::AllocaInstContext *ctx) const {
+  auto llvmType = ctx->llvmType();
+  auto value = ctx->value();
+
+  auto allocationType = m_typeParser.parseType(llvmType[0]);
+  auto numType = SEETypeDef::makeScalar(ScalarType::Int32);
+  auto numValue = Value(numType);
+  numValue.isVariable = false;
+  numValue.optValue = 1;
+  if (llvmType.size() == 2) {
+    numType = m_typeParser.parseType(llvmType[1]);
+    numValue = m_valueParser.parseValue(numType, ctx->value());
+  }
+
+  auto instr = AllocaInstruction(allocationType, numValue);
+
+  return instr;
+}
+
+SEEInstruction InstructionParser::parseGEPInstr(
+    LLVMParser::GetElementPtrInstContext *ctx) const {
+  auto llvmType = ctx->llvmType();
+  auto value = ctx->value();
+
+  auto resultType = m_typeParser.parseType(llvmType[0]);
+  auto fromType = m_typeParser.parseType(llvmType[1]);
+  auto fromValue = m_valueParser.parseValue(fromType, value);
+
+  auto instr = GetElementPtrInstruction(resultType, fromValue);
+
+  return instr;
+}
+
+SEEInstruction InstructionParser::parseExtractValueInstr(
+    LLVMParser::ExtractValueInstContext *ctx) const {
+  auto llvmType = ctx->llvmType();
+  auto value = ctx->value();
+
+  auto resultType = m_typeParser.parseType(llvmType);
+  auto fromValue = m_valueParser.parseValue(resultType, value);
+
+  std::vector<size_t> idxs;
+  for (auto *idxList = ctx->indexList(); idxList != nullptr;
+       idxList = idxList->indexList()) {
+    auto *idxToken = idxList->index();
+    size_t idx = std::stoi(idxToken->INT_LIT()->getText());
+    idxs.emplace_back(idx);
+  }
+
+  auto instr = ExtractValueInstruction(resultType, fromValue, idxs);
+  return instr;
+}
+
+SEEInstruction InstructionParser::parseValueInstruction(
     LLVMParser::ValueInstructionContext *ctx) const {
 
   if (auto *addInst = ctx->addInst()) {
@@ -515,15 +603,15 @@ BaseInstruction *InstructionParser::parseValueInstruction(
   } else if (auto *shuffleVectorInst = ctx->shuffleVectorInst()) {
     throw std::runtime_error("Unimplemented instruction: shuffle vector");
   } else if (auto *extractValueInst = ctx->extractValueInst()) {
-    throw std::runtime_error("Unimplemented instruction: extract value");
+    throw std::runtime_error("Unimplemented instruction: insert value");
   } else if (auto *insertValueInst = ctx->insertValueInst()) {
     throw std::runtime_error("Unimplemented instruction: insert value");
   } else if (auto *allocaInst = ctx->allocaInst()) {
-    throw std::runtime_error("Unimplemented instruction: alloca");
+    return parseAllocaInstr(allocaInst);
   } else if (auto *loadInst = ctx->loadInst()) {
-    throw std::runtime_error("Unimplemented instruction: load");
+    return parseLoadInstr(loadInst);
   } else if (auto *getElementPtrInst = ctx->getElementPtrInst()) {
-    throw std::runtime_error("Unimplemented instruction: getelementptr");
+    return parseGEPInstr(getElementPtrInst);
   } else if (auto *truncInst = ctx->truncInst()) {
     return parseCastInstr(truncInst);
   } else if (auto *zExtInst = ctx->zExtInst()) {
@@ -559,7 +647,7 @@ BaseInstruction *InstructionParser::parseValueInstruction(
   } else if (auto *selectInst = ctx->selectInst()) {
     throw std::runtime_error("Unimplemented instruction: select");
   } else if (auto *callInst = ctx->callInst()) {
-    throw std::runtime_error("Unimplemented instruction: call");
+    return parseCallInstr(callInst);
   } else if (auto *vaArgInst = ctx->vaArgInst()) {
     throw std::runtime_error("Unimplemented instruction: vaargs");
   } else if (auto *landingPadInst = ctx->landingPadInst()) {
@@ -575,7 +663,7 @@ BaseInstruction *InstructionParser::parseValueInstruction(
       "Instruction parser occured unknown value instruction");
 }
 
-BaseInstruction *
+SEEInstruction
 InstructionParser::parseInstruction(LLVMParser::InstructionContext *ctx) const {
 
   std::string resultVar = "";
@@ -584,13 +672,13 @@ InstructionParser::parseInstruction(LLVMParser::InstructionContext *ctx) const {
   }
 
   if (auto *storeInst = ctx->storeInst()) {
-    std::runtime_error("Unimplemented instruction: store");
+    return parseStoreInstr(storeInst);
   } else if (auto *fenceInst = ctx->fenceInst()) {
-    std::runtime_error("Unimplemented instruction: fence");
+    throw std::runtime_error("Unimplemented instruction: fence");
   } else if (auto *cmpXchgInst = ctx->cmpXchgInst()) {
-    std::runtime_error("Unimplemented instruction: cmpxchg");
+    throw std::runtime_error("Unimplemented instruction: cmpxchg");
   } else if (auto *atomicRMWInst = ctx->atomicRMWInst()) {
-    std::runtime_error("Unimplemented instruction: atomicrmw");
+    throw std::runtime_error("Unimplemented instruction: atomicrmw");
   } else if (auto *valueInstruction = ctx->valueInstruction()) {
     return parseValueInstruction(valueInstruction);
   } else {

@@ -1,3 +1,4 @@
+
 /**
  * @file XorInstruction.h
  * @brief Defines the XorInstruction template class for bitwise AND operation.
@@ -5,26 +6,36 @@
 
 #pragma once
 #include "../../variables/Value.h"
-#include "CmpPred.h"
 #include <array>
 
 namespace irsentry {
+
+enum class BitwiseInstrType {
+  AndInstrType,
+  AShrInstrType,
+  LShrInstrType,
+  OrInstrType,
+  ShlInstrType,
+  XorInstrType
+};
+
 /**
  * @class AndInstruction
  * @brief Represents a bitwise AND instruction for integer types.
  *
  */
-class FCmpInstruction {
-public:
-  FCmpInstruction() = default;
-  FCmpInstruction(FCmpPred cmpPred, SEETypeDefPtr dataType) {
-    this->cmpPred = cmpPred;
+class BitwiseInstruction {
+  BitwiseInstrType bitwiseInstrType;
 
-    result = Value(SEETypeDef::makeScalar(ScalarType::Boolean));
+public:
+  BitwiseInstruction() = default;
+  BitwiseInstruction(BitwiseInstrType bitwiseIntrType, SEETypeDefPtr dataType) {
+    this->bitwiseInstrType = bitwiseIntrType;
+
+    result = Value(dataType);
     operators[0] = Value(dataType);
     operators[1] = Value(dataType);
   }
-  FCmpPred cmpPred;
   /**
    * @brief The result of the bitwise AND operation.
    */

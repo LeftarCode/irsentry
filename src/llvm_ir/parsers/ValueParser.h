@@ -1,12 +1,13 @@
 #pragma once
-#include "../../symbolic_engine/types/Types.h"
 #include "../../symbolic_engine/variables/Value.h"
 #include "../antlr4/LLVMParser.h"
 
 namespace irsentry {
 class ValueParser {
 public:
-  Value parseValue(DataType dataType, LLVMParser::ValueContext *ctx) const {
+  ValueParser() {};
+  Value parseValue(SEETypeDefPtr dataType,
+                   LLVMParser::ValueContext *ctx) const {
     if (auto constant = ctx->constant()) {
       return parseConstant(dataType, constant);
     } else if (auto localIdent = ctx->localIdent()) {
@@ -21,10 +22,12 @@ public:
     } else if (auto poison = ctx->POISON()) {
       throw std::runtime_error("Unimplemented value: poison");
     }
+
+    throw std::runtime_error("Unimplemented value: unknown");
   }
 
 private:
-  Value parseConstant(DataType dataType,
+  Value parseConstant(SEETypeDefPtr dataType,
                       LLVMParser::ConstantContext *ctx) const {
     Value newValue;
     newValue.isVariable = false;
@@ -53,7 +56,9 @@ private:
     } else if (auto zeroInitializerConst = ctx->zeroInitializerConst()) {
       throw std::runtime_error("Unimplemented value: zeroInitializerConst");
     } else if (auto globalIdent = ctx->globalIdent()) {
-      throw std::runtime_error("Unimplemented value: globalIdent");
+      newValue.isVariable = true;
+      newValue.optName = globalIdent->GLOBAL_IDENT()->getText();
+      return newValue;
     } else if (auto undefConst = ctx->undefConst()) {
       throw std::runtime_error("Unimplemented value: undefConst");
     } else if (auto blockAddressConst = ctx->blockAddressConst()) {

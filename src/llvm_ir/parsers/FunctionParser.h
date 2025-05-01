@@ -21,7 +21,7 @@ struct Parameter {
  */
 struct BasicBlock {
   std::string label; ///< The label of the basic block.
-  std::vector<BaseInstruction *>
+  std::vector<SEEInstruction>
       instructions; ///< List of instructions in the basic block.
 };
 
@@ -50,6 +50,7 @@ struct ExternalFunctionInfo {
  */
 class FunctionParser {
 public:
+  FunctionParser() {};
   /**
    * @brief Parses an LLVM function definition.
    * @param ctx Pointer to the function definition context.

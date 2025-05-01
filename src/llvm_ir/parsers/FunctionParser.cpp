@@ -11,7 +11,7 @@ std::vector<Parameter> FunctionParser::parseFunctionParameters(
   bool isVaArgs = (ctx->params()->DOTS() != nullptr);
   if (isVaArgs) {
     Logger::getInstance().warning("VA arguments are NOT currently supported, "
-                                  "but function has been added");
+                                  "but function will be added");
   }
 
   std::vector<Parameter> params;
@@ -31,7 +31,7 @@ FunctionParser::parseBasicBlock(LLVMParser::BasicBlockContext *ctx) const {
   }
 
   std::string blockLabel = "";
-  std::vector<BaseInstruction *> instructions{};
+  std::vector<SEEInstruction> instructions{};
 
   if (auto *label = ctx->optLabelIdent()) {
     blockLabel = label->getText();

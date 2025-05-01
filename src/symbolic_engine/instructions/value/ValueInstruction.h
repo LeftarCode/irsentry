@@ -1,25 +1,42 @@
+
 /**
  * @file XorInstruction.h
  * @brief Defines the XorInstruction template class for bitwise AND operation.
  */
 
 #pragma once
-#include "../../types/IntegerType.h"
 #include "../../variables/Value.h"
-#include "../BaseInstruction.h"
 #include <array>
 
 namespace irsentry {
+
+enum class ValueInstrType {
+  AddInstrType,
+  FAddInstrType,
+  FDivInstrType,
+  FMulInstrType,
+  FRemInstrType,
+  FSubInstrType,
+  MulInstrType,
+  SDivInstrType,
+  SRemInstrType,
+  SubInstrType,
+  UDivInstrType,
+  URemInstrType
+};
+
 /**
  * @class AndInstruction
  * @brief Represents a bitwise AND instruction for integer types.
  *
  */
-class AndInstruction : public BaseInstruction {
+class ValueInstruction {
+  ValueInstrType valueInstrType;
+
 public:
-  AndInstruction(DataType dataType) {
-    this->instrType = InstrType::AndInstrType;
-    this->dataType = dataType;
+  ValueInstruction() = default;
+  ValueInstruction(ValueInstrType valueInstrType, SEETypeDefPtr dataType) {
+    this->valueInstrType = valueInstrType;
 
     result = Value(dataType);
     operators[0] = Value(dataType);

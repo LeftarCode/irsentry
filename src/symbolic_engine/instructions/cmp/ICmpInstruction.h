@@ -4,9 +4,7 @@
  */
 
 #pragma once
-#include "../../types/IntegerType.h"
 #include "../../variables/Value.h"
-#include "../BaseInstruction.h"
 #include "CmpPred.h"
 #include <array>
 
@@ -16,14 +14,13 @@ namespace irsentry {
  * @brief Represents a bitwise AND instruction for integer types.
  *
  */
-class ICmpInstruction : public BaseInstruction {
+class ICmpInstruction {
 public:
-  ICmpInstruction(ICmpPred cmpPred, DataType dataType) {
-    this->instrType = InstrType::ICmpInstrType;
-    this->dataType = dataType;
+  ICmpInstruction() = default;
+  ICmpInstruction(ICmpPred cmpPred, SEETypeDefPtr dataType) {
     this->cmpPred = cmpPred;
 
-    result = Value(DataType::Boolean);
+    result = Value(SEETypeDef::makeScalar(ScalarType::Boolean));
     operators[0] = Value(dataType);
     operators[1] = Value(dataType);
   }

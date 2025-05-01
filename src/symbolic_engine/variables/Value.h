@@ -4,24 +4,11 @@
  */
 
 #pragma once
-#include "../types/Types.h"
+#include "../types/SEETypeDef.h"
 #include <optional>
 #include <string>
 
 namespace irsentry {
-/**
- * @brief Concept ensuring the type has a data_type alias.
- */
-template <typename T>
-concept HasDataType = requires { typename T::data_type; };
-
-/**
- * @brief Concept ensuring the type is derived from BaseType and has a data_type
- * alias.
- */
-template <typename T>
-concept InheritedFromBaseWithDataType =
-    std::is_base_of_v<BaseType, T> && HasDataType<T>;
 
 /**
  * @struct Variable
@@ -29,15 +16,16 @@ concept InheritedFromBaseWithDataType =
  *
  * @tparam T A type that satisfies the InheritedFromBaseWithDataType concept.
  */
-struct Value {
-  Value() = default;
-  Value(DataType dataType);
+class Value {
+public:
+  Value() {};
+  Value(SEETypeDefPtr dataTypePtr);
 
-  DataType dataType;
+  SEETypeDefPtr dataType;
   /**
    * @brief Indicates whether the value is variable expression.
    */
-  bool isVariable;
+  bool isVariable = false;
 
   /**
    * @brief The name of the variable.

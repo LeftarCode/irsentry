@@ -3,7 +3,7 @@
 #include "llvm_ir/antlr4/LLVMLexer.h"
 #include "llvm_ir/antlr4/LLVMParser.h"
 #include "llvm_ir/parsers/ModuleParser.h"
-#include "symbolic_engine/instructions/value/AddInstruction.h"
+#include "llvm_ir/transforms/IRTransformer.h"
 
 namespace irsentry {
 IRSentry::IRSentry(const IRSentryOptions &irSentryOptions)
@@ -16,10 +16,19 @@ void IRSentry::init() {
   std::string sourceCode =
       sourceCodeReader.loadFromFile(m_irSentryOptions.filename);
 
+  IRTransformer transformer;
+  transformer.loadCodeFromString(sourceCode);
+  transformer.breakConstantExprs();
+  sourceCode = transformer.getTransformedSourceCode();
+
   antlr4::ANTLRInputStream inputStream(sourceCode);
   LLVMLexer lexer(&inputStream);
   antlr4::CommonTokenStream tokens(&lexer);
   LLVMParser parser(&tokens);
+
+  if (parser.getNumberOfSyntaxErrors() > 0) {
+    throw std::runtime_error("ANTLR4 found syntax errors.");
+  }
 
   LLVMParser::ModuleContext *tree = parser.module();
 

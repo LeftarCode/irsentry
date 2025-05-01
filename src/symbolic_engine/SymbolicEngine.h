@@ -4,7 +4,7 @@
  */
 
 #pragma once
-#include "instructions/BaseInstruction.h"
+#include "instructions/Instructions.h"
 #include <vector>
 
 /**
@@ -21,14 +21,14 @@ class SymbolicEngine {
   /**
    * @brief Stores a list of instructions for symbolic execution.
    */
-  std::vector<BaseInstruction *> instructions;
+  std::vector<SEEInstruction> instructions;
 
 public:
   /**
    * @brief Adds an instruction to the symbolic execution engine.
    * @param instr Pointer to the instruction to be added.
    */
-  void addInstruction(BaseInstruction *instr);
+  void addInstruction(SEEInstruction instr);
 
   /**
    * @brief Solves the symbolic execution problem using the given instructions.

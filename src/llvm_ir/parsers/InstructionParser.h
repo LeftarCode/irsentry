@@ -1,7 +1,5 @@
 #pragma once
 #include "../../symbolic_engine/instructions/Instructions.h"
-#include "../../symbolic_engine/types/BaseType.h"
-#include "../../symbolic_engine/types/IntegerType.h"
 #include "../../symbolic_engine/variables/Value.h"
 #include "../antlr4/LLVMParser.h"
 #include "CmpPredParser.h"
@@ -20,6 +18,7 @@ namespace irsentry {
  */
 class InstructionParser {
 public:
+  InstructionParser() {};
   /**
    * @brief Parses an LLVM instruction.
    *
@@ -31,7 +30,7 @@ public:
    * instruction.
    * @return An Instruction object containing parsed instruction details.
    */
-  BaseInstruction *parseInstruction(LLVMParser::InstructionContext *ctx) const;
+  SEEInstruction parseInstruction(LLVMParser::InstructionContext *ctx) const;
 
 private:
   /**
@@ -43,43 +42,51 @@ private:
    * @param ctx Pointer to the LLVMParser::ValueInstructionContext containing
    * the value instruction.
    */
-  BaseInstruction *
+  SEEInstruction
   parseValueInstruction(LLVMParser::ValueInstructionContext *ctx) const;
 
-  BaseInstruction *parseAddInstr(LLVMParser::AddInstContext *ctx) const;
-  BaseInstruction *parseFAddInstr(LLVMParser::FAddInstContext *ctx) const;
-  BaseInstruction *parseSubInstr(LLVMParser::SubInstContext *ctx) const;
-  BaseInstruction *parseFSubInstr(LLVMParser::FSubInstContext *ctx) const;
-  BaseInstruction *parseMulInstr(LLVMParser::MulInstContext *ctx) const;
-  BaseInstruction *parseFMulInstr(LLVMParser::FMulInstContext *ctx) const;
-  BaseInstruction *parseUDivInstr(LLVMParser::UDivInstContext *ctx) const;
-  BaseInstruction *parseSDivInstr(LLVMParser::SDivInstContext *ctx) const;
-  BaseInstruction *parseFDivInstr(LLVMParser::FDivInstContext *ctx) const;
-  BaseInstruction *parseURemInstr(LLVMParser::URemInstContext *ctx) const;
-  BaseInstruction *parseSRemInstr(LLVMParser::SRemInstContext *ctx) const;
-  BaseInstruction *parseFRemInstr(LLVMParser::FRemInstContext *ctx) const;
-  BaseInstruction *parseShlInstr(LLVMParser::ShlInstContext *ctx) const;
-  BaseInstruction *parseLShrInstr(LLVMParser::LshrInstContext *ctx) const;
-  BaseInstruction *parseAShrInstr(LLVMParser::AshrInstContext *ctx) const;
-  BaseInstruction *parseAndInstr(LLVMParser::AndInstContext *ctx) const;
-  BaseInstruction *parseOrInstr(LLVMParser::OrInstContext *ctx) const;
-  BaseInstruction *parseXorInstr(LLVMParser::XorInstContext *ctx) const;
+  SEEInstruction parseAddInstr(LLVMParser::AddInstContext *ctx) const;
+  SEEInstruction parseFAddInstr(LLVMParser::FAddInstContext *ctx) const;
+  SEEInstruction parseSubInstr(LLVMParser::SubInstContext *ctx) const;
+  SEEInstruction parseFSubInstr(LLVMParser::FSubInstContext *ctx) const;
+  SEEInstruction parseMulInstr(LLVMParser::MulInstContext *ctx) const;
+  SEEInstruction parseFMulInstr(LLVMParser::FMulInstContext *ctx) const;
+  SEEInstruction parseUDivInstr(LLVMParser::UDivInstContext *ctx) const;
+  SEEInstruction parseSDivInstr(LLVMParser::SDivInstContext *ctx) const;
+  SEEInstruction parseFDivInstr(LLVMParser::FDivInstContext *ctx) const;
+  SEEInstruction parseURemInstr(LLVMParser::URemInstContext *ctx) const;
+  SEEInstruction parseSRemInstr(LLVMParser::SRemInstContext *ctx) const;
+  SEEInstruction parseFRemInstr(LLVMParser::FRemInstContext *ctx) const;
+  SEEInstruction parseShlInstr(LLVMParser::ShlInstContext *ctx) const;
+  SEEInstruction parseLShrInstr(LLVMParser::LshrInstContext *ctx) const;
+  SEEInstruction parseAShrInstr(LLVMParser::AshrInstContext *ctx) const;
+  SEEInstruction parseAndInstr(LLVMParser::AndInstContext *ctx) const;
+  SEEInstruction parseOrInstr(LLVMParser::OrInstContext *ctx) const;
+  SEEInstruction parseXorInstr(LLVMParser::XorInstContext *ctx) const;
 
-  BaseInstruction *parseCastInstr(LLVMParser::TruncInstContext *ctx) const;
-  BaseInstruction *parseCastInstr(LLVMParser::ZExtInstContext *ctx) const;
-  BaseInstruction *parseCastInstr(LLVMParser::SExtInstContext *ctx) const;
-  BaseInstruction *parseCastInstr(LLVMParser::FpTruncInstContext *ctx) const;
-  BaseInstruction *parseCastInstr(LLVMParser::FpExtInstContext *ctx) const;
-  BaseInstruction *parseCastInstr(LLVMParser::FpToUIInstContext *ctx) const;
-  BaseInstruction *parseCastInstr(LLVMParser::FpToSIInstContext *ctx) const;
-  BaseInstruction *parseCastInstr(LLVMParser::UiToFPInstContext *ctx) const;
-  BaseInstruction *parseCastInstr(LLVMParser::SiToFPInstContext *ctx) const;
-  BaseInstruction *parseCastInstr(LLVMParser::PtrToIntInstContext *ctx) const;
-  BaseInstruction *parseCastInstr(LLVMParser::IntToPtrInstContext *ctx) const;
-  BaseInstruction *parseCastInstr(LLVMParser::BitCastInstContext *ctx) const;
+  SEEInstruction parseCastInstr(LLVMParser::TruncInstContext *ctx) const;
+  SEEInstruction parseCastInstr(LLVMParser::ZExtInstContext *ctx) const;
+  SEEInstruction parseCastInstr(LLVMParser::SExtInstContext *ctx) const;
+  SEEInstruction parseCastInstr(LLVMParser::FpTruncInstContext *ctx) const;
+  SEEInstruction parseCastInstr(LLVMParser::FpExtInstContext *ctx) const;
+  SEEInstruction parseCastInstr(LLVMParser::FpToUIInstContext *ctx) const;
+  SEEInstruction parseCastInstr(LLVMParser::FpToSIInstContext *ctx) const;
+  SEEInstruction parseCastInstr(LLVMParser::UiToFPInstContext *ctx) const;
+  SEEInstruction parseCastInstr(LLVMParser::SiToFPInstContext *ctx) const;
+  SEEInstruction parseCastInstr(LLVMParser::PtrToIntInstContext *ctx) const;
+  SEEInstruction parseCastInstr(LLVMParser::IntToPtrInstContext *ctx) const;
+  SEEInstruction parseCastInstr(LLVMParser::BitCastInstContext *ctx) const;
 
-  BaseInstruction *parseICmpInstr(LLVMParser::ICmpInstContext *ctx) const;
-  BaseInstruction *parseFCmpInstr(LLVMParser::FCmpInstContext *ctx) const;
+  SEEInstruction parseICmpInstr(LLVMParser::ICmpInstContext *ctx) const;
+  SEEInstruction parseFCmpInstr(LLVMParser::FCmpInstContext *ctx) const;
+
+  SEEInstruction parseCallInstr(LLVMParser::CallInstContext *ctx) const;
+  SEEInstruction parseLoadInstr(LLVMParser::LoadInstContext *ctx) const;
+  SEEInstruction parseStoreInstr(LLVMParser::StoreInstContext *ctx) const;
+  SEEInstruction parseAllocaInstr(LLVMParser::AllocaInstContext *ctx) const;
+  SEEInstruction parseGEPInstr(LLVMParser::GetElementPtrInstContext *ctx) const;
+  SEEInstruction
+  parseExtractValueInstr(LLVMParser::ExtractValueInstContext *ctx) const;
 
   const TypeParser m_typeParser;
   const ValueParser m_valueParser;

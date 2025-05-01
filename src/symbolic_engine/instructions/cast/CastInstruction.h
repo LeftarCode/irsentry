@@ -5,7 +5,6 @@
 
 #pragma once
 #include "../../variables/Value.h"
-#include "../BaseInstruction.h"
 #include <array>
 
 namespace irsentry {
@@ -14,10 +13,10 @@ namespace irsentry {
  * @brief Represents an allocation instruction for memory management.
  *
  */
-class CastInstruction : public BaseInstruction {
+class CastInstruction {
 public:
-  CastInstruction(DataType dataTypeFrom, DataType dataTypeTo) {
-    this->instrType = InstrType::CastInstrType;
+  CastInstruction() = default;
+  CastInstruction(SEETypeDefPtr dataTypeFrom, SEETypeDefPtr dataTypeTo) {
 
     result = Value(dataTypeTo);
     from = Value(dataTypeFrom);

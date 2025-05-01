@@ -2,7 +2,7 @@
 #pragma once
 
 namespace irsentry {
-void SymbolicEngine::addInstruction(BaseInstruction *instr) {
+void SymbolicEngine::addInstruction(SEEInstruction instr) {
   instructions.push_back(instr);
 }
 void SymbolicEngine::solve() {}
