@@ -25,15 +25,15 @@ DataType TypeParser::parseConcreteNonRecType(
   } else if (auto ptrType = ctx->ptrType()) {
     return DataType::Ptr;
   } else if (auto vectorType = ctx->vectorType()) {
-    return DataType::Vector;
+    throw std::runtime_error("Unimplemented datatype: vector");
   } else if (auto labelType = ctx->labelType()) {
-    return DataType::Label;
+    throw std::runtime_error("Unimplemented datatype: label");
   } else if (auto arrayType = ctx->arrayType()) {
     return DataType::Array;
   } else if (auto structType = ctx->structType()) {
     return DataType::Struct;
   } else if (auto namedType = ctx->namedType()) {
-    throw std::runtime_error("Unimplemented datatype: namedType");
+    return DataType::Named;
   } else if (auto mmxType = ctx->mmxType()) {
     throw std::runtime_error("Unimplemented datatype: mmxType");
   } else if (auto tokenType = ctx->tokenType()) {
@@ -44,14 +44,16 @@ DataType TypeParser::parseConcreteNonRecType(
 }
 DataType TypeParser::parseIntType(LLVMParser::IntTypeContext *ctx) const {
   std::string intTypeStr = ctx->INT_TYPE()->getText();
-  if (intTypeStr.compare("i16") == 0) {
+  if (intTypeStr.compare("i1") == 0 && intTypeStr.size() == 2) {
+    return DataType::Boolean;
+  } else if (intTypeStr.compare("i16") == 0 && intTypeStr.size() == 3) {
     return DataType::Int16;
-  } else if (intTypeStr.compare("i32") == 0) {
+  } else if (intTypeStr.compare("i32") == 0 && intTypeStr.size() == 3) {
     return DataType::Int32;
-  } else if (intTypeStr.compare("i64") == 0) {
+  } else if (intTypeStr.compare("i64") == 0 && intTypeStr.size() == 3) {
     return DataType::Int64;
   } else {
-    throw std::runtime_error("Unimplemented int datatype: unknown");
+    throw std::runtime_error("Unimplemented int datatype: " + intTypeStr);
   }
 }
 

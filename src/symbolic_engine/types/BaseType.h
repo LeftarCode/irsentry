@@ -13,9 +13,8 @@ namespace irsentry {
  */
 enum DataType {
   Void,
-  Vector,
   Boolean,
-  Label,
+  Named,
   Int16,  /**< 16-bit signed integer */
   Int32,  /**< 32-bit signed integer */
   Int64,  /**< 64-bit signed integer */

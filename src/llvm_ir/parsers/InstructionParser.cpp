@@ -593,6 +593,8 @@ InstructionParser::parseInstruction(LLVMParser::InstructionContext *ctx) const {
     std::runtime_error("Unimplemented instruction: atomicrmw");
   } else if (auto *valueInstruction = ctx->valueInstruction()) {
     return parseValueInstruction(valueInstruction);
+  } else {
+    throw std::runtime_error("Instruction parser occured unknown instruction");
   }
 
   Logger::getInstance().error(

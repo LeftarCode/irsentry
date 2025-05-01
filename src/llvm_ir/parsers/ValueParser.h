@@ -13,7 +13,7 @@ public:
       Value newValue;
       newValue.isVariable = true;
       newValue.dataType = dataType;
-      newValue.optName = std::optional<std::string>{localIdent->getText()};
+      newValue.optName = localIdent->getText();
 
       return newValue;
     } else if (auto inlineAsm = ctx->inlineAsm()) {
@@ -34,7 +34,7 @@ private:
     } else if (auto intConst = ctx->intConst()) {
       TypeVariant intValue = std::stoi(intConst->INT_LIT()->getText());
       newValue.dataType = dataType;
-      newValue.optValue = std::optional<TypeVariant>{intValue};
+      newValue.optValue = intValue;
       return newValue;
     } else if (auto floatConst = ctx->floatConst()) {
       throw std::runtime_error("Unimplemented value: floatConst");
