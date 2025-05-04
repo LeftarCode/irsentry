@@ -1,4 +1,3 @@
-// IRTransformer.cpp
 #include "IRTransformer.h"
 #include "llvm/AsmParser/Parser.h"
 #include "llvm/IR/LLVMContext.h"

@@ -4,7 +4,7 @@
 #include <iostream>
 
 int main(int argc, char **argv) {
-  const std::string filename = "../../../tests/c/target3/target3.ll";
+  const std::string filename = "../../../tests/rust/target1/target1.ll";
 
   irsentry::IRSentryOptions options;
   options.filename = filename;
