@@ -63,16 +63,6 @@ using TypeInfo = std::variant<ScalarInfo, ArrayInfo, PointerInfo, VectorInfo,
                               StructInfo, FuncInfo, NamedInfo>;
 
 class SEETypeDef {
-  enum VariantIndex : size_t {
-    Scalar = 0,
-    Array = 1,
-    Pointer = 2,
-    Struct = 3,
-    Vector = 4,
-    Function = 5,
-    Named = 6
-  };
-
 public:
   SEETypeDef() {};
   TypeInfo info;

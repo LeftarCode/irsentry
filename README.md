@@ -57,6 +57,7 @@ This indicates the parameter is required to be an immediate value. This must be 
 - Por�wnanie std::variant vs polimorfizm. Por�wnanie cache miss i hitow, zuzycia pamieci i szybkosc przeszukiwania std::vector'a.
 - Unrolling wyrazen zagniezdzonych
 - Dlaczego zrezygnowałem z templateów dla parseCastInstr
+- Rozszerzalnosc technik przetwrzania LLVM IR
 
 # Reference
 https://gieseanw.wordpress.com/2018/12/29/stop-reimplementing-the-virtual-table-and-start-using-double-dispatch/

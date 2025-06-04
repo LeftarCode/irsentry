@@ -6,16 +6,19 @@ SEETypeDefPtr SEETypeDef::makeScalar(ScalarType t) {
   p->info = ScalarInfo{t};
   return p;
 }
+
 SEETypeDefPtr SEETypeDef::makeArray(uint64_t n, SEETypeDefPtr elem) {
   auto p = std::make_shared<SEETypeDef>();
   p->info = ArrayInfo{n, std::move(elem)};
   return p;
 }
+
 SEETypeDefPtr SEETypeDef::makeVector(uint64_t n, SEETypeDefPtr elem) {
   auto p = std::make_shared<SEETypeDef>();
   p->info = VectorInfo{n, std::move(elem)};
   return p;
 }
+
 SEETypeDefPtr SEETypeDef::makeStruct(StructInfo fields) {
   auto p = std::make_shared<SEETypeDef>();
   p->info = std::move(fields);
@@ -45,15 +48,19 @@ SEETypeDefPtr SEETypeDef::makeNamed(std::string name) {
 bool SEETypeDef::isScalar() const {
   return std::holds_alternative<ScalarInfo>(info);
 }
+
 bool SEETypeDef::isArray() const {
   return std::holds_alternative<ArrayInfo>(info);
 }
+
 bool SEETypeDef::isVector() const {
   return std::holds_alternative<VectorInfo>(info);
 }
+
 bool SEETypeDef::isStruct() const {
   return std::holds_alternative<StructInfo>(info);
 }
+
 bool SEETypeDef::isPointer() const {
   return std::holds_alternative<PointerInfo>(info);
 }

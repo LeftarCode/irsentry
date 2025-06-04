@@ -1,19 +1,10 @@
-/**
- * @file XorInstruction.h
- * @brief Defines the XorInstruction template class for bitwise AND operation.
- */
-
 #pragma once
 #include "../../variables/Value.h"
 #include "CmpPred.h"
 #include <array>
 
 namespace irsentry {
-/**
- * @class AndInstruction
- * @brief Represents a bitwise AND instruction for integer types.
- *
- */
+
 class ICmpInstruction {
 public:
   ICmpInstruction() = default;
@@ -24,15 +15,9 @@ public:
     operators[0] = Value(dataType);
     operators[1] = Value(dataType);
   }
-  ICmpPred cmpPred;
-  /**
-   * @brief The result of the bitwise AND operation.
-   */
-  Value result;
 
-  /**
-   * @brief The two operands involved in the AND operation.
-   */
+  ICmpPred cmpPred;
+  Value result;
   std::array<Value, 2> operators;
 };
 } // namespace irsentry

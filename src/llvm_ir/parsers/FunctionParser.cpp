@@ -4,29 +4,35 @@
 namespace irsentry {
 std::vector<Parameter> FunctionParser::parseFunctionParameters(
     LLVMParser::FunctionHeaderContext *ctx) const {
-  if (!ctx->params()) {
+  if (ctx == nullptr || ctx->params() == nullptr) {
     return {};
   }
 
   bool isVaArgs = (ctx->params()->DOTS() != nullptr);
   if (isVaArgs) {
-    Logger::getInstance().warning("VA arguments are NOT currently supported, "
-                                  "but function will be added");
+    Logger::getInstance().warning(
+        std::format("VA arguments are NOT currently supported, "
+                    "but function will be analysed"));
   }
 
   std::vector<Parameter> params;
   for (auto *paramChain = ctx->params()->paramList(); paramChain != nullptr;
        paramChain = paramChain->paramList()) {
     auto *param = paramChain->param();
+    std::string paramName = "";
+    if (auto localIdent = param->localIdent()) {
+      paramName = localIdent->getText();
+    }
 
-    params.emplace_back(Parameter{param->llvmType()->getText(), ""});
+    params.emplace_back(
+        Parameter{m_typeParser.parseType(param->llvmType()), paramName});
   }
   return params;
 }
 
 BasicBlock
 FunctionParser::parseBasicBlock(LLVMParser::BasicBlockContext *ctx) const {
-  if (!ctx->instructions()) {
+  if (ctx == nullptr || ctx->instructions() == nullptr) {
     return {};
   }
 
@@ -34,7 +40,10 @@ FunctionParser::parseBasicBlock(LLVMParser::BasicBlockContext *ctx) const {
   std::vector<SEEInstruction> instructions{};
 
   if (auto *label = ctx->optLabelIdent()) {
-    blockLabel = label->getText();
+    blockLabel = "%" + label->getText();
+    if (!blockLabel.empty() && blockLabel.back() == ':') {
+      blockLabel.pop_back();
+    }
   }
 
   for (auto *instChain = ctx->instructions()->instructionList();
@@ -44,8 +53,8 @@ FunctionParser::parseBasicBlock(LLVMParser::BasicBlockContext *ctx) const {
   }
 
   if (auto *terminator = ctx->terminator()) {
-    // TODO: Fixme
-    instructions.emplace_back(nullptr);
+    auto inst = m_instructionParser.parseTerminator(terminator);
+    instructions.emplace_back(inst);
   }
 
   return BasicBlock{blockLabel, std::move(instructions)};
@@ -70,25 +79,26 @@ FunctionParser::parseFunction(LLVMParser::FunctionDefContext *ctx) const {
   FunctionInfo info;
 
   if (auto *header = ctx->functionHeader()) {
-    info.returnType = header->llvmType()->getText();
+    info.returnType = m_typeParser.parseType(header->llvmType());
     info.name = header->globalIdent()->getText();
-    info.parameters = this->parseFunctionParameters(header);
+    info.parameters = parseFunctionParameters(header);
   }
 
   if (auto *body = ctx->functionBody()) {
-    info.basicBlocks = this->parseFunctionBody(body);
+    info.basicBlocks = parseFunctionBody(body);
   }
 
   return info;
 }
+
 ExternalFunctionInfo FunctionParser::parseExternalFunction(
     LLVMParser::FunctionDeclContext *ctx) const {
   ExternalFunctionInfo info;
 
   if (auto *header = ctx->functionHeader()) {
-    info.returnType = header->llvmType()->getText();
+    info.returnType = m_typeParser.parseType(header->llvmType());
     info.name = header->globalIdent()->getText();
-    info.parameters = this->parseFunctionParameters(header);
+    info.parameters = parseFunctionParameters(header);
   }
 
   return info;

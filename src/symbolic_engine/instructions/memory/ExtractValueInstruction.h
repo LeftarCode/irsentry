@@ -4,11 +4,6 @@
 #include <vector>
 
 namespace irsentry {
-/**
- * @class AllocaInstruction
- * @brief Represents an allocation instruction for memory management.
- *
- */
 
 class ExtractValueInstruction {
 public:

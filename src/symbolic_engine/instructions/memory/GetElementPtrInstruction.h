@@ -3,11 +3,6 @@
 #include <array>
 
 namespace irsentry {
-/**
- * @class AllocaInstruction
- * @brief Represents an allocation instruction for memory management.
- *
- */
 
 class GetElementPtrInstruction {
 public:

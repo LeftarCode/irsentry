@@ -6,22 +6,33 @@
 #include "llvm/IR/LLVMContext.h"
 #include "llvm/IR/Module.h"
 
+#include "BaseModulePass.h"
+
 #include <memory>
 #include <string>
 #include <tuple>
 #include <vector>
 
-using InstrIdxConstExprTuple =
-    std::tuple<llvm::Instruction *, unsigned, llvm::ConstantExpr *>;
+namespace irsentry {
+
+template <typename T>
+concept IsModulePass = std::derived_from<T, BaseModulePass>;
 
 class IRTransformer {
+public:
+  template <IsModulePass T, typename... Args>
+  void registerPass(Args &&...args) {
+    auto ptr = std::make_unique<T>(std::forward<Args>(args)...);
+    m_passes.emplace_back(std::move(ptr));
+  }
+
+  void loadCodeFromString(const std::string &sourceCode);
+  void transform();
+  std::string getTransformedSourceCode() const;
+
+private:
   llvm::LLVMContext m_context;
   std::unique_ptr<llvm::Module> m_module;
-
-public:
-  void loadCodeFromString(const std::string &sourceCode);
-
-  void breakConstantExprs();
-
-  std::string getTransformedSourceCode() const;
+  std::vector<std::unique_ptr<BaseModulePass>> m_passes;
 };
+} // namespace irsentry

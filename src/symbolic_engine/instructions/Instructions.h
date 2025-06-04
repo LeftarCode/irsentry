@@ -9,6 +9,8 @@
 #include "memory/GetElementPtrInstruction.h"
 #include "memory/LoadInstruction.h"
 #include "memory/StoreInstruction.h"
+#include "terminator/BrTerminator.h"
+#include "terminator/RetTerminator.h"
 #include "value/ValueInstruction.h"
 #include <memory>
 #include <new>
@@ -21,7 +23,8 @@ using SEEInstruction =
     std::variant<void *, BitwiseInstruction, CastInstruction, FCmpInstruction,
                  ICmpInstruction, ValueInstruction, CallInstruction,
                  LoadInstruction, StoreInstruction, AllocaInstruction,
-                 GetElementPtrInstruction, ExtractValueInstruction>;
+                 GetElementPtrInstruction, ExtractValueInstruction,
+                 BrTerminator, RetTerminator>;
 } // namespace irsentry
 
 namespace irsentry {}

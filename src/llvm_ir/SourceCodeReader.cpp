@@ -1,23 +1,25 @@
 #include "SourceCodeReader.h"
 #include "../utilities/Logger.h"
 #include <fstream>
-#include <sstream>
 
 namespace irsentry {
-std::string SourceCodeReader::loadFromFile(const std::string &filename) const {
-  std::ifstream file(filename);
-  if (!file.is_open()) {
-    irsentry::Logger::getInstance().error("Failed to open LLVM IR file: " +
-                                          filename);
-    throw std::runtime_error("Failed to open LLVM IR file: " + filename);
+std::string
+SourceCodeReader::loadFromFile(const std::filesystem::path &filename) const {
+  if (!std::filesystem::exists(filename)) {
+    throw std::runtime_error("Failed to open LLVM IR file: " +
+                             filename.string());
   }
 
-  std::string line;
-  std::stringstream content;
-  while (std::getline(file, line)) {
-    content << line << "\n";
-  }
+  std::ifstream file(filename, std::ios::in);
+  file.exceptions(std::ifstream::failbit | std::ifstream::badbit);
 
-  return content.str();
+  try {
+    std::string content{std::istreambuf_iterator<char>(file),
+                        std::istreambuf_iterator<char>()};
+    return content;
+  } catch (const std::ios_base::failure &e) {
+    throw std::runtime_error("Failed to read file: " + filename.string() +
+                             " – " + e.what());
+  }
 }
 } // namespace irsentry

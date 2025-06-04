@@ -4,7 +4,7 @@
 #include <iostream>
 
 int main(int argc, char **argv) {
-  const std::string filename = "../../../tests/rust/target1/target1.ll";
+  const std::string filename = "../../../tests/c/args/args.ll";
 
   irsentry::IRSentryOptions options;
   options.filename = filename;
@@ -17,7 +17,7 @@ int main(int argc, char **argv) {
   irsentry::IRSentry irSentry(options);
   try {
     irSentry.init();
-    irSentry.debugPrintModule();
+    irSentry.run();
   } catch (std::exception &ex) {
     irsentry::Logger::getInstance().error("Exception: ");
     irsentry::Logger::getInstance().error(ex.what());

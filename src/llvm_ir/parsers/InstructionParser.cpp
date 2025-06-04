@@ -90,10 +90,8 @@ InstructionParser::parseUDivInstr(LLVMParser::UDivInstContext *ctx) const {
   const auto parsedType = m_typeParser.parseType(llvmType);
 
   ValueInstruction instr{ValueInstrType::UDivInstrType, parsedType};
-  instr.operators[0] =
-      m_valueParser.parseValue(parsedType, values[0]); // dividend
-  instr.operators[1] =
-      m_valueParser.parseValue(parsedType, values[1]); // divisor
+  instr.operators[0] = m_valueParser.parseValue(parsedType, values[0]);
+  instr.operators[1] = m_valueParser.parseValue(parsedType, values[1]);
 
   return instr;
 }
@@ -172,7 +170,7 @@ InstructionParser::parseShlInstr(LLVMParser::ShlInstContext *ctx) const {
   auto instr = BitwiseInstruction(BitwiseInstrType::ShlInstrType, parsedType);
 
   instr.operators[0] = m_valueParser.parseValue(parsedType, value[0]);
-  instr.operators[0] = m_valueParser.parseValue(parsedType, value[1]);
+  instr.operators[1] = m_valueParser.parseValue(parsedType, value[1]);
 
   return instr;
 }
@@ -449,8 +447,9 @@ InstructionParser::parseCallInstr(LLVMParser::CallInstContext *ctx) const {
   auto funcName = ctx->value()->getText();
 
   if (auto dots = ctx->args()->DOTS()) {
-    throw std::runtime_error("InstructionParser: Calling VA arguments are NOT "
-                             "currently supported, but function will be added");
+    throw std::runtime_error(
+        "InstructionParser: Calling with VA arguments are NOT "
+        "currently supported, but function will be added");
   }
 
   std::vector<Value> args;
@@ -654,11 +653,8 @@ SEEInstruction InstructionParser::parseValueInstruction(
     throw std::runtime_error("Unimplemented instruction: landingpad");
   } else if (auto *catchPadInst = ctx->catchPadInst()) {
     throw std::runtime_error("Unimplemented instruction: catchpad");
-  } else if (auto *cleanupPadInst = ctx->cleanupPadInst()) {
-    throw std::runtime_error("Unimplemented instruction: cleanuppad");
   }
-  Logger::getInstance().error(
-      "Instruction parser occured unknown value instruction");
+
   throw std::runtime_error(
       "Instruction parser occured unknown value instruction");
 }
@@ -681,13 +677,78 @@ InstructionParser::parseInstruction(LLVMParser::InstructionContext *ctx) const {
     throw std::runtime_error("Unimplemented instruction: atomicrmw");
   } else if (auto *valueInstruction = ctx->valueInstruction()) {
     return parseValueInstruction(valueInstruction);
-  } else {
-    throw std::runtime_error("Instruction parser occured unknown instruction");
   }
 
-  Logger::getInstance().error(
-      "Instruction parser occured non-existing instruction");
-  throw std::runtime_error(
-      "Instruction parser occured non-existing instruction");
+  throw std::runtime_error("Instruction parser occured unknown instruction");
+}
+
+SEEInstruction
+InstructionParser::parseRetTerm(LLVMParser::RetTermContext *ctx) const {
+
+  if (ctx->voidType() != nullptr) {
+    return RetTerminator();
+  }
+
+  SEETypeDefPtr retType;
+  if (auto *llvmType = ctx->llvmType()) {
+    retType = m_typeParser.parseType(llvmType);
+  } else if (auto *concreteType = ctx->concreteNonRecType()) {
+    retType = m_typeParser.parseConcreteType(concreteType);
+  }
+
+  auto retValue = m_valueParser.parseValue(retType, ctx->value());
+  auto instr = RetTerminator(retValue);
+
+  return instr;
+}
+
+SEEInstruction
+InstructionParser::parseBrTerm(LLVMParser::BrTermContext *ctx) const {
+
+  auto instr = BrTerminator(BrTerminatorType::Unconditional,
+                            ctx->localIdent()->getText());
+  return instr;
+}
+
+SEEInstruction
+InstructionParser::parseCondBrTerm(LLVMParser::CondBrTermContext *ctx) const {
+
+  auto successors = ctx->localIdent();
+  auto type = m_typeParser.parseIntType(ctx->intType());
+  auto condition = m_valueParser.parseValue(type, ctx->value());
+
+  auto instr = BrTerminator(BrTerminatorType::Conditional, condition,
+                            successors[0]->getText(), successors[1]->getText());
+  return instr;
+}
+
+SEEInstruction
+InstructionParser::parseTerminator(LLVMParser::TerminatorContext *ctx) const {
+
+  if (auto *retTerm = ctx->retTerm()) {
+    return parseRetTerm(retTerm);
+  } else if (auto *brTerm = ctx->brTerm()) {
+    return parseBrTerm(brTerm);
+  } else if (auto *condBrTerm = ctx->condBrTerm()) {
+    return parseCondBrTerm(condBrTerm);
+  } else if (auto *switchTerm = ctx->switchTerm()) {
+    throw std::runtime_error("Unimplemented terminator: switch");
+  } else if (auto *indirectBrTerm = ctx->indirectBrTerm()) {
+    throw std::runtime_error("Unimplemented terminator: indirectBr");
+  } else if (auto *invokeTerm = ctx->invokeTerm()) {
+    throw std::runtime_error("Unimplemented terminator: invoke");
+  } else if (auto *resumeTerm = ctx->resumeTerm()) {
+    throw std::runtime_error("Unimplemented terminator: resume");
+  } else if (auto *catchSwitchTerm = ctx->catchSwitchTerm()) {
+    throw std::runtime_error("Unimplemented terminator: catchSwitch");
+  } else if (auto *catchRetTerm = ctx->catchRetTerm()) {
+    throw std::runtime_error("Unimplemented terminator: catchRet");
+  } else if (auto *cleanupRetTerm = ctx->cleanupRetTerm()) {
+    throw std::runtime_error("Unimplemented terminator: cleanupRet");
+  } else if (auto *unreachableTerm = ctx->unreachableTerm()) {
+    throw std::runtime_error("Unimplemented terminator: unreachableTerm");
+  }
+
+  throw std::runtime_error("Instruction parser occured unknown terminator");
 }
 } // namespace irsentry

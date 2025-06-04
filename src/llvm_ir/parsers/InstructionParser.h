@@ -32,6 +32,19 @@ public:
    */
   SEEInstruction parseInstruction(LLVMParser::InstructionContext *ctx) const;
 
+  /**
+   * @brief Parses an LLVM instruction.
+   *
+   * This function processes an ANTLR4 instruction context and produces an
+   * Instruction structure containing the result variable and the textual
+   * representation.
+   *
+   * @param ctx Pointer to the LLVMParser::InstructionContext representing the
+   * instruction.
+   * @return An Instruction object containing parsed instruction details.
+   */
+  SEEInstruction parseTerminator(LLVMParser::TerminatorContext *ctx) const;
+
 private:
   /**
    * @brief Parses a value instruction.
@@ -87,6 +100,10 @@ private:
   SEEInstruction parseGEPInstr(LLVMParser::GetElementPtrInstContext *ctx) const;
   SEEInstruction
   parseExtractValueInstr(LLVMParser::ExtractValueInstContext *ctx) const;
+
+  SEEInstruction parseRetTerm(LLVMParser::RetTermContext *ctx) const;
+  SEEInstruction parseBrTerm(LLVMParser::BrTermContext *ctx) const;
+  SEEInstruction parseCondBrTerm(LLVMParser::CondBrTermContext *ctx) const;
 
   const TypeParser m_typeParser;
   const ValueParser m_valueParser;

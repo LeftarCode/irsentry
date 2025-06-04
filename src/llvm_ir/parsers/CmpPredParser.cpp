@@ -1,67 +1,43 @@
 #include "CmpPredParser.h"
+#include <unordered_map>
 
 namespace irsentry {
+
+static const std::unordered_map<std::string, ICmpPred> ICmpMap = {
+    {"eq", ICmpPred::Eq},   {"ne", ICmpPred::Ne},   {"sge", ICmpPred::Sge},
+    {"sgt", ICmpPred::Sgt}, {"sle", ICmpPred::Sle}, {"slt", ICmpPred::Slt},
+    {"uge", ICmpPred::Uge}, {"ugt", ICmpPred::Ugt}, {"ule", ICmpPred::Ule},
+    {"ult", ICmpPred::Ult}};
+
+static const std::unordered_map<std::string, FCmpPred> FCmpMap = {
+    {"false", FCmpPred::False}, {"oeq", FCmpPred::Oeq},
+    {"oge", FCmpPred::Oge},     {"ogt", FCmpPred::Ogt},
+    {"ole", FCmpPred::Ole},     {"olt", FCmpPred::Olt},
+    {"one", FCmpPred::One},     {"ord", FCmpPred::Ord},
+    {"true", FCmpPred::True},   {"ueq", FCmpPred::Ueq},
+    {"uge", FCmpPred::Uge},     {"ugt", FCmpPred::Ugt},
+    {"ule", FCmpPred::Ule},     {"ult", FCmpPred::Ult},
+    {"une", FCmpPred::Une},     {"uno", FCmpPred::Uno}};
+
 ICmpPred CmpPredParser::parseICmpPred(LLVMParser::IPredContext *ctx) const {
-  if (auto eq = ctx->EQ()) {
-    return ICmpPred::Eq;
-  } else if (auto ne = ctx->NE()) {
-    return ICmpPred::Ne;
-  } else if (auto sge = ctx->SGE()) {
-    return ICmpPred::Sge;
-  } else if (auto sgt = ctx->SGT()) {
-    return ICmpPred::Sgt;
-  } else if (auto sle = ctx->SLE()) {
-    return ICmpPred::Sle;
-  } else if (auto slt = ctx->SLT()) {
-    return ICmpPred::Slt;
-  } else if (auto uge = ctx->UGE()) {
-    return ICmpPred::Uge;
-  } else if (auto ugt = ctx->UGT()) {
-    return ICmpPred::Ugt;
-  } else if (auto ule = ctx->ULE()) {
-    return ICmpPred::Ule;
-  } else if (auto ult = ctx->ULT()) {
-    return ICmpPred::Ult;
+  const std::string text = ctx->getText();
+
+  auto it = ICmpMap.find(text);
+  if (it != ICmpMap.end()) {
+    return it->second;
   }
 
-  throw std::runtime_error("Unimplemented icmp pred.");
+  throw std::runtime_error("Unimplemented icmp pred: " + text);
 }
 
 FCmpPred CmpPredParser::parseFCmpPred(LLVMParser::FpredContext *ctx) const {
-  if (auto eq = ctx->FALSE()) {
-    return FCmpPred::False;
-  } else if (auto oeq = ctx->OEQ()) {
-    return FCmpPred::Oeq;
-  } else if (auto oge = ctx->OGE()) {
-    return FCmpPred::Oge;
-  } else if (auto ogt = ctx->OGT()) {
-    return FCmpPred::Ogt;
-  } else if (auto ole = ctx->OLE()) {
-    return FCmpPred::Ole;
-  } else if (auto olt = ctx->OLT()) {
-    return FCmpPred::Olt;
-  } else if (auto one = ctx->ONE()) {
-    return FCmpPred::One;
-  } else if (auto ord = ctx->ORD()) {
-    return FCmpPred::Ord;
-  } else if (auto _true = ctx->TRUE()) {
-    return FCmpPred::True;
-  } else if (auto ueq = ctx->UEQ()) {
-    return FCmpPred::Ueq;
-  } else if (auto uge = ctx->UGE()) {
-    return FCmpPred::Uge;
-  } else if (auto ugt = ctx->UGT()) {
-    return FCmpPred::Ugt;
-  } else if (auto ule = ctx->ULE()) {
-    return FCmpPred::Ule;
-  } else if (auto ult = ctx->ULT()) {
-    return FCmpPred::Ult;
-  } else if (auto une = ctx->UNE()) {
-    return FCmpPred::Une;
-  } else if (auto uno = ctx->UNO()) {
-    return FCmpPred::Uno;
+  const std::string text = ctx->getText();
+
+  auto it = FCmpMap.find(text);
+  if (it != FCmpMap.end()) {
+    return it->second;
   }
 
-  throw std::runtime_error("Unimplemented fcmp pred.");
+  throw std::runtime_error("Unimplemented fcmp pred: " + text);
 }
 } // namespace irsentry

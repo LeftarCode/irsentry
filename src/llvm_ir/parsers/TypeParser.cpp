@@ -39,9 +39,8 @@ SEETypeDefPtr TypeParser::parseConcreteType(
     throw std::runtime_error("Unimplemented datatype: mmxType");
   } else if (auto tokenType = ctx->tokenType()) {
     throw std::runtime_error("Unimplemented datatype: tokenType");
-  } else {
-    throw std::runtime_error("Unimplemented datatype: unknown");
   }
+  throw std::runtime_error("Unimplemented datatype: unknown");
 }
 
 SEETypeDefPtr
@@ -77,14 +76,20 @@ SEETypeDefPtr TypeParser::parseIntType(LLVMParser::IntTypeContext *ctx) const {
     return SEETypeDef::makeScalar(ScalarType::Int32);
   } else if (intTypeStr.compare("i64") == 0 && intTypeStr.size() == 3) {
     return SEETypeDef::makeScalar(ScalarType::Int64);
-  } else {
-    throw std::runtime_error("Unimplemented int datatype: " + intTypeStr);
   }
+
+  throw std::runtime_error("Unimplemented int datatype: " + intTypeStr);
 }
 
 SEETypeDefPtr
 TypeParser::parseFloatType(LLVMParser::FloatTypeContext *ctx) const {
-  return SEETypeDef::makeScalar(ScalarType::Float);
+  if (auto *doubleTy = ctx->floatKind()->DOUBLE()) {
+    return SEETypeDef::makeScalar(ScalarType::Double);
+  } else if (auto *floatTy = ctx->floatKind()->FLOAT()) {
+    return SEETypeDef::makeScalar(ScalarType::Float);
+  }
+
+  throw std::runtime_error("Unimplemented floating point datatype");
 }
 
 SEETypeDefPtr

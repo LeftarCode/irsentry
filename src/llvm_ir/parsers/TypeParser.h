@@ -9,11 +9,11 @@ public:
   SEETypeDefPtr parseType(LLVMParser::LlvmTypeContext *ctx) const;
   SEETypeDefPtr
   parseConcreteType(LLVMParser::ConcreteNonRecTypeContext *ctx) const;
+  SEETypeDefPtr parseIntType(LLVMParser::IntTypeContext *ctx) const;
 
 private:
   SEETypeDefPtr parseStruct(LLVMParser::StructTypeContext *ctx) const;
   SEETypeDefPtr parseArray(LLVMParser::ArrayTypeContext *ctx) const;
-  SEETypeDefPtr parseIntType(LLVMParser::IntTypeContext *ctx) const;
   SEETypeDefPtr parseFloatType(LLVMParser::FloatTypeContext *ctx) const;
   SEETypeDefPtr parseFuncType(LLVMParser::LlvmTypeContext *ctx) const;
 };

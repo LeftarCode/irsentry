@@ -1,9 +1,3 @@
-
-/**
- * @file XorInstruction.h
- * @brief Defines the XorInstruction template class for bitwise AND operation.
- */
-
 #pragma once
 #include "../../variables/Value.h"
 #include <array>
@@ -19,11 +13,6 @@ enum class BitwiseInstrType {
   XorInstrType
 };
 
-/**
- * @class AndInstruction
- * @brief Represents a bitwise AND instruction for integer types.
- *
- */
 class BitwiseInstruction {
   BitwiseInstrType bitwiseInstrType;
 
@@ -36,14 +25,8 @@ public:
     operators[0] = Value(dataType);
     operators[1] = Value(dataType);
   }
-  /**
-   * @brief The result of the bitwise AND operation.
-   */
-  Value result;
 
-  /**
-   * @brief The two operands involved in the AND operation.
-   */
+  Value result;
   std::array<Value, 2> operators;
 };
 } // namespace irsentry
