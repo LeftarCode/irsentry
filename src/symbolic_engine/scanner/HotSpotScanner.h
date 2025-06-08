@@ -16,8 +16,8 @@ public:
     m_passes.emplace_back(std::move(ptr));
   }
 
-  std::vector<SymbolicHotSpot>
-  scan(const std::unique_ptr<ModuleInfo> &module) const;
+  std::vector<SymbolicHotSpot> scan(size_t functionIdx,
+                                    const FunctionInfo &function) const;
 
 private:
   std::vector<std::unique_ptr<BaseHotSpotScannerPass>> m_passes;

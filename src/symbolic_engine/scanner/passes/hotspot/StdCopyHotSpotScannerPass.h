@@ -5,6 +5,6 @@ namespace irsentry {
 class StdCopyHotSpotScannerPass : public BaseHotSpotScannerPass {
 public:
   std::vector<SymbolicHotSpot>
-  scanModule(const std::unique_ptr<ModuleInfo> &module) override;
+  scanCFG(size_t functionIdx, const std::unique_ptr<CFG> &cfg) override;
 };
 } // namespace irsentry

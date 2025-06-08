@@ -1,4 +1,5 @@
 #include "FunctionParser.h"
+#include "../../symbolic_engine/cfg/CFGBuilder.h"
 #include "../../utilities/Logger.h"
 
 namespace irsentry {
@@ -60,10 +61,10 @@ FunctionParser::parseBasicBlock(LLVMParser::BasicBlockContext *ctx) const {
   return BasicBlock{blockLabel, std::move(instructions)};
 }
 
-std::vector<BasicBlock>
+std::unique_ptr<CFG>
 FunctionParser::parseFunctionBody(LLVMParser::FunctionBodyContext *ctx) const {
   if (!ctx->basicBlockList()) {
-    return {};
+    return nullptr;
   }
 
   std::vector<BasicBlock> blocks;
@@ -71,12 +72,14 @@ FunctionParser::parseFunctionBody(LLVMParser::FunctionBodyContext *ctx) const {
        blockChain = blockChain->basicBlockList()) {
     blocks.insert(blocks.begin(), parseBasicBlock(blockChain->basicBlock()));
   }
-  return blocks;
+
+  CFGBuilder cfgBuilder;
+  return cfgBuilder.buildControlFlowGraph(blocks);
 }
 
 FunctionInfo
 FunctionParser::parseFunction(LLVMParser::FunctionDefContext *ctx) const {
-  FunctionInfo info;
+  FunctionInfo info = {};
 
   if (auto *header = ctx->functionHeader()) {
     info.returnType = m_typeParser.parseType(header->llvmType());
@@ -85,7 +88,7 @@ FunctionParser::parseFunction(LLVMParser::FunctionDefContext *ctx) const {
   }
 
   if (auto *body = ctx->functionBody()) {
-    info.basicBlocks = parseFunctionBody(body);
+    info.cfg = parseFunctionBody(body);
   }
 
   return info;

@@ -1,6 +1,6 @@
 #pragma once
 #include "../instructions/Instructions.h"
-#include "../module/ModuleInfo.h"
+#include "../module/FunctionInfo.h"
 #include <optional>
 #include <string>
 
@@ -20,6 +20,6 @@ using SymbolicInput = std::variant<void *, FunctionInput, FunctionOutputParam,
 class BaseInputScannerPass {
 public:
   virtual std::vector<SymbolicInput>
-  scanInstruction(const std::unique_ptr<ModuleInfo> &module) = 0;
+  scanFunction(size_t functionIdx, const FunctionInfo &function) = 0;
 };
 } // namespace irsentry

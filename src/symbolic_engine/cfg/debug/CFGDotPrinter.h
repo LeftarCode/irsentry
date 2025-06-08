@@ -26,7 +26,7 @@ public:
 
     collectNodes(cfg->root.get());
 
-    out << "digraph CFG_" << sanitizeName(cfg->functionName) << " {\n";
+    out << "digraph CFG_" << "{\n";
     out << "  node [shape=box];\n\n";
 
     for (auto const &pair : ids) {

@@ -6,34 +6,57 @@ namespace irsentry {
 static const std::unordered_map<std::string, bool> unsafeCopyFunctions = {
     {"@IRSENTRY_MOCK_NOPARAMS", true}};
 
-std::vector<SymbolicHotSpot>
-MockHotSpotScannerPass::scanModule(const std::unique_ptr<ModuleInfo> &module) {
-  std::vector<SymbolicHotSpot> hotSpots;
+void scanMockCFGNode(size_t functionIdx, const std::unique_ptr<CFGNode> &node,
+                     std::vector<bool> currentPath,
+                     std::vector<SymbolicHotSpot> &outHotSpots) {
+  if (node == nullptr) {
+    return;
+  }
 
-  auto processInstruction = [&](const SEEInstruction &instr,
-                                const InstructionLocation &instrLoc) {
-    if (!std::holds_alternative<CallInstruction>(instr)) {
-      return;
-    }
+  const auto &instructions = node->instructions;
+  for (size_t i = 0; i < instructions.size(); i++) {
+    const auto &instr = instructions[i];
 
-    auto callInstr = std::get<CallInstruction>(instr);
-    auto it = unsafeCopyFunctions.find(callInstr.callee);
-    if (it != unsafeCopyFunctions.end() && it->second) {
-      hotSpots.emplace_back(SymbolicHotSpot{instrLoc});
-    }
-  };
-
-  for (size_t i = 0; i < module->definedFunctions.size(); i++) {
-    const auto &func = module->definedFunctions[i];
-    for (size_t j = 0; j < func.basicBlocks.size(); j++) {
-      const auto &basicBlock = func.basicBlocks[j];
-      for (size_t k = 0; k < basicBlock.instructions.size(); k++) {
-        const auto &instr = basicBlock.instructions[k];
-        auto instrLoc = InstructionLocation{i, j, k};
-        processInstruction(instr, instrLoc);
+    if (const auto &callInstr = std::get_if<CallInstruction>(&instr)) {
+      auto it = unsafeCopyFunctions.find(callInstr->callee);
+      if (it != unsafeCopyFunctions.end() && it->second) {
+        SymbolicHotSpot spot;
+        spot.functionIdx = functionIdx;
+        spot.binaryDecisionPath = currentPath;
+        spot.instructionIdx = i;
+        outHotSpots.emplace_back(spot);
       }
     }
   }
+
+  if (node->isSingleOutput) {
+    currentPath.push_back(true);
+    if (node->trueSuccessor != nullptr) {
+      scanMockCFGNode(functionIdx, node->trueSuccessor, currentPath,
+                      outHotSpots);
+    }
+  } else {
+    if (node->trueSuccessor != nullptr) {
+      auto pathTrue = currentPath;
+      pathTrue.push_back(true);
+      scanMockCFGNode(functionIdx, node->trueSuccessor, pathTrue, outHotSpots);
+    }
+    if (node->falseSuccessor != nullptr) {
+      auto pathFalse = currentPath;
+      pathFalse.push_back(false);
+      scanMockCFGNode(functionIdx, node->falseSuccessor, pathFalse,
+                      outHotSpots);
+    }
+  }
+}
+
+std::vector<SymbolicHotSpot>
+MockHotSpotScannerPass::scanCFG(size_t functionIdx,
+                                const std::unique_ptr<CFG> &cfg) {
+  std::vector<SymbolicHotSpot> hotSpots;
+
+  std::vector<bool> emptyPath;
+  scanMockCFGNode(functionIdx, cfg->root, emptyPath, hotSpots);
 
   return hotSpots;
 }

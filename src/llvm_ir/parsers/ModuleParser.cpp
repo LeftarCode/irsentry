@@ -37,11 +37,11 @@ ModuleParser::parseModule(LLVMParser::ModuleContext *moduleContext) const {
     }
     if (auto *functionDef = topLevelEntity->functionDef()) {
       auto fnDef = m_functionParser.parseFunction(functionDef);
-      module->definedFunctions.push_back(fnDef);
+      module->definedFunctions.emplace_back(std::move(fnDef));
     }
     if (auto *functionDecl = topLevelEntity->functionDecl()) {
       auto fnDecl = m_functionParser.parseExternalFunction(functionDecl);
-      module->declaredFunctions.push_back(fnDecl);
+      module->declaredFunctions.emplace_back(std::move(fnDecl));
     }
   }
 

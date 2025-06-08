@@ -5,6 +5,7 @@
 #include "llvm_ir/parsers/ModuleParser.h"
 #include "llvm_ir/transforms/passes/BreakConstExprPass.h"
 #include "symbolic_engine/cfg/debug/CFGDotPrinter.h"
+#include "symbolic_engine/path_finder/PathFinder.h"
 #include "symbolic_engine/scanner/passes/hotspot/MockHotSpotScannerPass.h"
 #include "symbolic_engine/scanner/passes/hotspot/StdCopyHotSpotScannerPass.h"
 #include "symbolic_engine/scanner/passes/input/MainFuncInputPass.h"
@@ -39,11 +40,10 @@ void printStructureProfiling() {
 }
 
 IRSentry::IRSentry(const IRSentryOptions &irSentryOptions)
-    : m_irSentryOptions(irSentryOptions),
+    : m_options(irSentryOptions),
       m_inputScanner(std::make_unique<InputScanner>()),
-      m_transformer(std::make_unique<IRTransformer>()),
       m_hotSpotScanner(std::make_unique<HotSpotScanner>()),
-      m_cfgBuilder(std::make_unique<CFGBuilder>()) {
+      m_transformer(std::make_unique<IRTransformer>()) {
   Logger::getInstance().setLogLevel(irSentryOptions.logLevel);
 
   m_transformer->registerPass<BreakConstExprPass>();
@@ -54,8 +54,7 @@ IRSentry::IRSentry(const IRSentryOptions &irSentryOptions)
 
 void IRSentry::init() {
   SourceCodeReader sourceCodeReader;
-  std::string sourceCode =
-      sourceCodeReader.loadFromFile(m_irSentryOptions.filename);
+  std::string sourceCode = sourceCodeReader.loadFromFile(m_options.filename);
 
   m_transformer->loadCodeFromString(sourceCode);
   m_transformer->transform();
@@ -81,7 +80,11 @@ void IRSentry::init() {
 
   Logger::getInstance().info("Converting completed successfully!");
 
-  if (m_irSentryOptions.profilingStructures) {
+  for (const auto &func : m_module->definedFunctions) {
+    printCFG(func.cfg, m_module->sourceFilename, func.name);
+  }
+
+  if (m_options.profilingStructures) {
     printStructureProfiling();
   }
 
@@ -93,61 +96,58 @@ IRSentryStatus IRSentry::run() {
     throw std::runtime_error("Uninitialized IRSentry engine");
   }
 
-  auto symbolicInput = m_inputScanner->scan(m_module);
+  size_t symbolicInputsCount = 0;
+  std::vector<std::vector<SymbolicInput>> moduleSymInputs;
+  for (size_t i = 0; i < m_module->definedFunctions.size(); i++) {
+    auto symbolicInput = m_inputScanner->scan(i, m_module->definedFunctions[i]);
+    Logger::getInstance().info(
+        std::format("Found {} symbolic input(s) in {} function.",
+                    symbolicInput.size(), m_module->definedFunctions[i].name));
+    symbolicInputsCount += symbolicInput.size();
+    moduleSymInputs.push_back(symbolicInput);
+  }
   Logger::getInstance().info(
-      std::format("Found {} symbolic input(s).", symbolicInput.size()));
-  if (symbolicInput.empty()) {
+      std::format("Found {} symbolic input(s) in total.", symbolicInputsCount));
+
+  if (symbolicInputsCount == 0) {
     Logger::getInstance().warning("No potential symbolic inputs were found. "
                                   "IRSentry will proceed with vulnerability "
                                   "analysis from the main function "
                                   "without generating any input data.");
   }
 
-  auto hotSpots = m_hotSpotScanner->scan(m_module);
+  std::vector<std::vector<SymbolicHotSpot>> moduleHotSpots;
+  size_t hotspotsCount = 0;
+  for (size_t i = 0; i < m_module->definedFunctions.size(); i++) {
+    auto hotSpots = m_hotSpotScanner->scan(i, m_module->definedFunctions[i]);
+    moduleHotSpots.emplace_back(hotSpots);
+    Logger::getInstance().info(
+        std::format("Found {} hot spot(s) in {} function.", hotSpots.size(),
+                    m_module->definedFunctions[i].name));
+    hotspotsCount += hotSpots.size();
+  }
   Logger::getInstance().info(
-      std::format("Found {} hot spot(s).", hotSpots.size()));
-  if (hotSpots.empty()) {
+      std::format("Found {} hot spot(s) in total.", hotspotsCount));
+
+  if (hotspotsCount == 0) {
     Logger::getInstance().error(
         "No hotspots were detected; vulnerability analysis cannot proceed. "
         "IRSentry will exit normally.");
 
-    if (m_irSentryOptions.exitWhenNoHotSpots) {
+    if (m_options.exitWhenNoHotSpots) {
       return IRSentryStatus::NoHotSpots;
     }
   }
 
-  for (const auto &function : m_module->definedFunctions) {
-    m_cfgs.emplace_back(m_cfgBuilder->buildControlFlowGraph(function));
+  PathFinder pathFinder;
+  auto symbolicPath =
+      pathFinder.findSymbolicPath(m_module->definedFunctions[0].cfg,
+                                  moduleSymInputs[0][0], moduleHotSpots[0][0]);
 
-    if (m_irSentryOptions.debugCFG) {
-      printCFG(m_cfgs.back(), m_module->sourceFilename, function.name);
-    }
+  if (symbolicPath.has_value()) {
   }
 
   return IRSentryStatus::Success;
 }
 
-void IRSentry::debugPrintModule() const {
-  if (!m_initialized) {
-    throw std::runtime_error("Uninitialized IRSentry engine");
-  }
-
-  std::cout << "Source file name: " << m_module->sourceFilename << std::endl;
-  std::cout << "Compiled for: " << m_module->targetDefinition << std::endl;
-  for (const auto &func : m_module->definedFunctions) {
-    std::cout << "<======================================>" << std::endl;
-    std::cout << func.returnType << " " << func.name << "(";
-    for (const auto &param : func.parameters) {
-      std::cout << param.type << " " << param.name;
-      std::cout << ", ";
-    }
-    std::cout << ") {" << std::endl;
-    for (const auto &basicBlock : func.basicBlocks) {
-      std::cout << basicBlock.label << std::endl;
-      for (const auto &instr : basicBlock.instructions) {
-      }
-    }
-    std::cout << "}" << std::endl;
-  }
-}
 } // namespace irsentry

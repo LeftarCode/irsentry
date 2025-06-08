@@ -4,7 +4,7 @@
 namespace irsentry {
 class MainFuncInputPass : public BaseInputScannerPass {
 public:
-  std::vector<SymbolicInput>
-  scanInstruction(const std::unique_ptr<ModuleInfo> &module) override;
+  std::vector<SymbolicInput> scanFunction(size_t functionIdx,
+                                          const FunctionInfo &module) override;
 };
 } // namespace irsentry

@@ -4,7 +4,7 @@
  */
 
 #pragma once
-#include "instructions/Instructions.h"
+#include "path_finder/PathFinder.h"
 #include <vector>
 
 /**
@@ -18,22 +18,11 @@ namespace irsentry {
  * @brief Represents a symbolic execution engine.
  */
 class SymbolicEngine {
-  /**
-   * @brief Stores a list of instructions for symbolic execution.
-   */
-  std::vector<SEEInstruction> instructions;
-
 public:
-  /**
-   * @brief Adds an instruction to the symbolic execution engine.
-   * @param instr Pointer to the instruction to be added.
-   */
-  void addInstruction(SEEInstruction instr);
-
   /**
    * @brief Solves the symbolic execution problem using the given instructions.
    */
-  void solve();
+  void solve(const std::unique_ptr<CFG> &cfg, const SymbolicPath &symbolicPath);
 };
 
 } // namespace irsentry

@@ -1,6 +1,6 @@
 #pragma once
-#include "../instructions/Instructions.h"
-#include "../types/SEETypeDef.h"
+#include "../cfg/CFGBuilder.h"
+#include <memory>
 #include <string>
 #include <vector>
 
@@ -14,23 +14,13 @@ struct Parameter {
 };
 
 /**
- * @brief Represents a basic block in an LLVM function.
- */
-struct BasicBlock {
-  std::string label; ///< The label of the basic block.
-  std::vector<SEEInstruction>
-      instructions; ///< List of instructions in the basic block.
-};
-
-/**
  * @brief Encapsulates all the information pertaining to an LLVM function.
  */
 struct FunctionInfo {
-  SEETypeDefPtr returnType;          ///< The return type of the function.
-  std::string name;                  ///< The name of the function.
-  std::vector<Parameter> parameters; ///< The parameters of the function.
-  std::vector<BasicBlock>
-      basicBlocks; ///< The basic blocks forming the function body.
+  SEETypeDefPtr returnType = nullptr;     ///< The return type of the function.
+  std::string name = "";                  ///< The name of the function.
+  std::vector<Parameter> parameters = {}; ///< The parameters of the function.
+  std::unique_ptr<CFG> cfg;
 };
 
 struct ExternalFunctionInfo {

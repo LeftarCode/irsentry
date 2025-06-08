@@ -1,9 +1,13 @@
 #include "SymbolicEngine.h"
+#include <z3++.h>
 #pragma once
 
 namespace irsentry {
-void SymbolicEngine::addInstruction(SEEInstruction instr) {
-  instructions.push_back(instr);
+
+
+
+void SymbolicEngine::solve(const std::unique_ptr<CFG> &cfg,
+                           const SymbolicPath &symbolicPath) {
+    
 }
-void SymbolicEngine::solve() {}
 } // namespace irsentry

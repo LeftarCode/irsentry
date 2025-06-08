@@ -8,14 +8,15 @@
 namespace irsentry {
 
 struct SymbolicPath {
-  std::vector<bool> terminatorsResults;
+  std::vector<bool> binaryDecisionPath;
 };
 
 class PathFinder {
 
 public:
   std::optional<SymbolicPath>
-  findSymbolicPath(const CFG &cfg, const SymbolicInput &symbolicInput,
+  findSymbolicPath(const std::unique_ptr<CFG> &cfg,
+                   const SymbolicInput &symbolicInput,
                    const SymbolicHotSpot &symbolicHotSpots) const;
 };
 } // namespace irsentry

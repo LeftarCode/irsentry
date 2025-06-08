@@ -4,8 +4,9 @@
 
 namespace irsentry {
 
-BasicBlock findBasicBlock(const FunctionInfo &function, std::string label) {
-  for (const auto &basicBlock : function.basicBlocks) {
+BasicBlock findBasicBlock(const std::vector<BasicBlock> &basicBlocks,
+                          std::string label) {
+  for (const auto &basicBlock : basicBlocks) {
     if (label == basicBlock.label) {
       return basicBlock;
     }
@@ -14,15 +15,20 @@ BasicBlock findBasicBlock(const FunctionInfo &function, std::string label) {
   throw std::runtime_error(std::format("CFGBuilder: Unknown label: {}", label));
 }
 
-std::unique_ptr<CFGNode> createNewNode(const FunctionInfo &function,
-                                       const BasicBlock &basicBlock) {
-  auto lastInstr = basicBlock.instructions.back();
+std::unique_ptr<CFGNode>
+createNewNode(const std::vector<BasicBlock> &basicBlocks,
+              const BasicBlock &basicBlock) {
+  const auto &lastInstr = basicBlock.instructions.back();
   if (basicBlock.instructions.empty()) {
-    throw std::runtime_error(std::format(
-        "CFGBuilder: Empty basic block in function: {}", function.name));
+    throw std::runtime_error(
+        std::format("CFGBuilder: Empty basic block in function: {}", "TODO"));
   }
   auto node = std::make_unique<CFGNode>();
-  node->basicBlock = basicBlock;
+
+  node->label = basicBlock.label;
+  for (const auto &instr : basicBlock.instructions) {
+    node->instructions.push_back(instr);
+  }
 
   if (auto brInstr = std::get_if<RetTerminator>(&lastInstr)) {
     node->isFinal = true;
@@ -31,18 +37,18 @@ std::unique_ptr<CFGNode> createNewNode(const FunctionInfo &function,
 
   if (const auto brInstr = std::get_if<BrTerminator>(&lastInstr)) {
     if (brInstr->brType == BrTerminatorType::Unconditional) {
-      auto successorLabel = brInstr->successors[0];
+      const auto &successorLabel = brInstr->successors[0];
       node->isSingleOutput = true;
-      node->trueSuccessor =
-          createNewNode(function, findBasicBlock(function, successorLabel));
+      node->trueSuccessor = createNewNode(
+          basicBlocks, findBasicBlock(basicBlocks, successorLabel));
     } else if (brInstr->brType == BrTerminatorType::Conditional) {
-      auto trueSuccessorLabel = brInstr->successors[0];
-      auto falseSuccessorLabel = brInstr->successors[1];
+      const auto &trueSuccessorLabel = brInstr->successors[0];
+      const auto &falseSuccessorLabel = brInstr->successors[1];
 
-      node->trueSuccessor =
-          createNewNode(function, findBasicBlock(function, trueSuccessorLabel));
+      node->trueSuccessor = createNewNode(
+          basicBlocks, findBasicBlock(basicBlocks, trueSuccessorLabel));
       node->falseSuccessor = createNewNode(
-          function, findBasicBlock(function, falseSuccessorLabel));
+          basicBlocks, findBasicBlock(basicBlocks, falseSuccessorLabel));
     }
   }
 
@@ -50,23 +56,22 @@ std::unique_ptr<CFGNode> createNewNode(const FunctionInfo &function,
 }
 
 std::unique_ptr<CFG>
-CFGBuilder::buildControlFlowGraph(const FunctionInfo &function) {
+CFGBuilder::buildControlFlowGraph(const std::vector<BasicBlock> &basicBlocks) {
   auto funcCFG = std::make_unique<CFG>();
-  funcCFG->functionName = function.name;
 
-  if (function.basicBlocks.empty()) {
+  if (basicBlocks.empty()) {
     throw std::runtime_error(
-        std::format("CFGBuilder: Empty function: {}", function.name));
+        std::format("CFGBuilder: Empty function: {}", "TODO"));
   }
 
-  const auto &firstBasicBlock = function.basicBlocks[0];
+  const auto &firstBasicBlock = basicBlocks[0];
   auto node = std::make_unique<CFGNode>();
   if (firstBasicBlock.instructions.empty()) {
     throw std::runtime_error(std::format(
-        "CFGBuilder: Empty first basic block in function: {}", function.name));
+        "CFGBuilder: Empty first basic block in function: {}", "TODO"));
   }
 
-  funcCFG->root = createNewNode(function, firstBasicBlock);
+  funcCFG->root = createNewNode(basicBlocks, firstBasicBlock);
   return funcCFG;
 }
 

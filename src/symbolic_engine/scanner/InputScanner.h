@@ -17,8 +17,8 @@ public:
     m_passes.emplace_back(std::move(ptr));
   }
 
-  std::vector<SymbolicInput>
-  scan(const std::unique_ptr<ModuleInfo> &module) const;
+  std::vector<SymbolicInput> scan(size_t functionIdx,
+                                  const FunctionInfo &func) const;
 
 private:
   std::vector<std::unique_ptr<BaseInputScannerPass>> m_passes;

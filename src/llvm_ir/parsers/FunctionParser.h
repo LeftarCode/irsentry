@@ -54,7 +54,7 @@ private:
    * @return A vector of BasicBlock objects. Returns an empty vector if no basic
    * blocks are present.
    */
-  std::vector<BasicBlock>
+  std::unique_ptr<CFG>
   parseFunctionBody(LLVMParser::FunctionBodyContext *ctx) const;
 
   const InstructionParser m_instructionParser;

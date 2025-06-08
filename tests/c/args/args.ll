@@ -1,10 +1,9 @@
-; ModuleID = './args.c'
-source_filename = "./args.c"
+; ModuleID = 'args.c'
+source_filename = "args.c"
 target datalayout = "e-m:e-p270:32:32-p271:32:32-p272:64:64-i64:64-f80:128-n8:16:32:64-S128"
 target triple = "x86_64-pc-linux-gnu"
 
-@.str = private unnamed_addr constant [26 x i8] c"Usage: %s <text_to_copy>\0A\00", align 1
-@.str.1 = private unnamed_addr constant [16 x i8] c"Skopiowano: %s\0A\00", align 1
+@.str = private unnamed_addr constant [15 x i8] c"SecretPassword\00", align 1
 
 ; Function Attrs: noinline nounwind optnone uwtable
 define dso_local i32 @main(i32 noundef %0, i8** noundef %1) #0 {
@@ -15,36 +14,30 @@ define dso_local i32 @main(i32 noundef %0, i8** noundef %1) #0 {
   store i32 0, i32* %3, align 4
   store i32 %0, i32* %4, align 4
   store i8** %1, i8*** %5, align 8
-  %7 = load i32, i32* %4, align 4
-  %8 = icmp slt i32 %7, 2
-  br i1 %8, label %9, label %14
+  %7 = load i8**, i8*** %5, align 8
+  %8 = getelementptr inbounds i8*, i8** %7, i64 1
+  %9 = load i8*, i8** %8, align 8
+  %10 = call i32 @strcmp(i8* noundef %9, i8* noundef getelementptr inbounds ([15 x i8], [15 x i8]* @.str, i64 0, i64 0)) #3
+  %11 = icmp ne i32 %10, 0
+  br i1 %11, label %12, label %14
 
-9:                                                ; preds = %2
-  %10 = load i8**, i8*** %5, align 8
-  %11 = getelementptr inbounds i8*, i8** %10, i64 0
-  %12 = load i8*, i8** %11, align 8
-  %13 = call i32 (i8*, ...) @printf(i8* noundef getelementptr inbounds ([26 x i8], [26 x i8]* @.str, i64 0, i64 0), i8* noundef %12)
-  store i32 1, i32* %3, align 4
-  br label %18
+12:                                               ; preds = %2
+  %13 = call i32 (...) @IRSENTRY_MOCK_NOPARAMS()
+  br label %14
 
-14:                                               ; preds = %2
-  %15 = call i32 (...) @IRSENTRY_MOCK_NOPARAMS()
-  %16 = getelementptr inbounds [64 x i8], [64 x i8]* %6, i64 0, i64 0
-  %17 = call i32 (i8*, ...) @printf(i8* noundef getelementptr inbounds ([16 x i8], [16 x i8]* @.str.1, i64 0, i64 0), i8* noundef %16)
-  store i32 0, i32* %3, align 4
-  br label %18
-
-18:                                               ; preds = %14, %9
-  %19 = load i32, i32* %3, align 4
-  ret i32 %19
+14:                                               ; preds = %12, %2
+  ret i32 0
 }
 
-declare i32 @printf(i8* noundef, ...) #1
+; Function Attrs: nounwind readonly willreturn
+declare i32 @strcmp(i8* noundef, i8* noundef) #1
 
-declare i32 @IRSENTRY_MOCK_NOPARAMS(...) #1
+declare i32 @IRSENTRY_MOCK_NOPARAMS(...) #2
 
 attributes #0 = { noinline nounwind optnone uwtable "frame-pointer"="all" "min-legal-vector-width"="0" "no-trapping-math"="true" "stack-protector-buffer-size"="8" "target-cpu"="x86-64" "target-features"="+cx8,+fxsr,+mmx,+sse,+sse2,+x87" "tune-cpu"="generic" }
-attributes #1 = { "frame-pointer"="all" "no-trapping-math"="true" "stack-protector-buffer-size"="8" "target-cpu"="x86-64" "target-features"="+cx8,+fxsr,+mmx,+sse,+sse2,+x87" "tune-cpu"="generic" }
+attributes #1 = { nounwind readonly willreturn "frame-pointer"="all" "no-trapping-math"="true" "stack-protector-buffer-size"="8" "target-cpu"="x86-64" "target-features"="+cx8,+fxsr,+mmx,+sse,+sse2,+x87" "tune-cpu"="generic" }
+attributes #2 = { "frame-pointer"="all" "no-trapping-math"="true" "stack-protector-buffer-size"="8" "target-cpu"="x86-64" "target-features"="+cx8,+fxsr,+mmx,+sse,+sse2,+x87" "tune-cpu"="generic" }
+attributes #3 = { nounwind readonly willreturn }
 
 !llvm.module.flags = !{!0, !1, !2, !3, !4}
 !llvm.ident = !{!5}
