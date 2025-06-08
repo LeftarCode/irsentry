@@ -1591,6 +1591,30 @@ public:
     return visitChildren(ctx);
   }
 
+  virtual std::any visitMemoryAttr(LLVMParser::MemoryAttrContext *ctx) override {
+    return visitChildren(ctx);
+  }
+
+  virtual std::any visitMemoryClauseList(LLVMParser::MemoryClauseListContext *ctx) override {
+    return visitChildren(ctx);
+  }
+
+  virtual std::any visitKindAndAccess(LLVMParser::KindAndAccessContext *ctx) override {
+    return visitChildren(ctx);
+  }
+
+  virtual std::any visitDefaultAccess(LLVMParser::DefaultAccessContext *ctx) override {
+    return visitChildren(ctx);
+  }
+
+  virtual std::any visitMemoryKind(LLVMParser::MemoryKindContext *ctx) override {
+    return visitChildren(ctx);
+  }
+
+  virtual std::any visitMemoryAccess(LLVMParser::MemoryAccessContext *ctx) override {
+    return visitChildren(ctx);
+  }
+
   virtual std::any visitOptInBounds(LLVMParser::OptInBoundsContext *ctx) override {
     return visitChildren(ctx);
   }

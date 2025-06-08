@@ -807,6 +807,18 @@ public:
 
     virtual std::any visitFuncAttr(LLVMParser::FuncAttrContext *context) = 0;
 
+    virtual std::any visitMemoryAttr(LLVMParser::MemoryAttrContext *context) = 0;
+
+    virtual std::any visitMemoryClauseList(LLVMParser::MemoryClauseListContext *context) = 0;
+
+    virtual std::any visitKindAndAccess(LLVMParser::KindAndAccessContext *context) = 0;
+
+    virtual std::any visitDefaultAccess(LLVMParser::DefaultAccessContext *context) = 0;
+
+    virtual std::any visitMemoryKind(LLVMParser::MemoryKindContext *context) = 0;
+
+    virtual std::any visitMemoryAccess(LLVMParser::MemoryAccessContext *context) = 0;
+
     virtual std::any visitOptInBounds(LLVMParser::OptInBoundsContext *context) = 0;
 
     virtual std::any visitIndices(LLVMParser::IndicesContext *context) = 0;

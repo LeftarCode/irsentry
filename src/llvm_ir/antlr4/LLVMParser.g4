@@ -3912,7 +3912,39 @@ funcAttr
     | 'uwtable'
     | 'willreturn'
     | 'writeonly'
+    | memoryAttr
 ;
+
+// memory(attrClauses?) → memory(), memory(read), memory(argmem: read, …)
+memoryAttr
+    : 'memory' '(' memoryClauseList? ')'
+    ;
+
+// One or more comma-separated clauses
+memoryClauseList
+    : memoryClause (',' memoryClause)*
+    ;
+
+// <kind ':' access>  |  <access>   (default kind)
+memoryClause
+    : memoryKind ':' memoryAccess      # KindAndAccess
+    | memoryAccess                     # DefaultAccess
+    ;
+
+// argmem | inaccessiblemem | errnomem
+memoryKind
+    : 'argmem'
+    | 'inaccessiblemem'
+    | 'errnomem'
+    ;
+
+// readwrite | read | write | none
+memoryAccess
+    : 'readwrite'
+    | 'read'
+    | 'write'
+    | 'none'
+    ;
 
 optInBounds
     : 'inbounds' ?
