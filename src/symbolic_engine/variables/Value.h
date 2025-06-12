@@ -1,9 +1,13 @@
 #pragma once
+#include "../types/IntX.h"
 #include "../types/SEETypeDef.h"
 #include <optional>
 #include <string>
+#include <variant>
 
 namespace irsentry {
+
+using TypeVariant = std::variant<bool, float, double, IntX>;
 
 class Value {
 public:

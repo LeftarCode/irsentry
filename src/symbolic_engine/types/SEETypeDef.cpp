@@ -1,9 +1,28 @@
 #include "SEETypeDef.h"
 
 namespace irsentry {
-SEETypeDefPtr SEETypeDef::makeScalar(ScalarType t) {
+std::shared_ptr<SEETypeDef> SEETypeDef::makeVoid() {
   auto p = std::make_shared<SEETypeDef>();
-  p->info = ScalarInfo{t};
+  p->info = ScalarInfo{ScalarKind::Void};
+  return p;
+}
+
+std::shared_ptr<SEETypeDef> SEETypeDef::makeBoolean() {
+  auto p = std::make_shared<SEETypeDef>();
+  p->info = ScalarInfo{ScalarKind::Boolean};
+  return p;
+}
+
+std::shared_ptr<SEETypeDef> SEETypeDef::makeInteger(uint32_t bits,
+                                                    Signedness s) {
+  auto p = std::make_shared<SEETypeDef>();
+  p->info = ScalarInfo{ScalarKind::Integer, bits, s};
+  return p;
+}
+
+std::shared_ptr<SEETypeDef> SEETypeDef::makeFloat(ScalarKind fpKind) {
+  auto p = std::make_shared<SEETypeDef>();
+  p->info = ScalarInfo{fpKind};
   return p;
 }
 
@@ -47,6 +66,30 @@ SEETypeDefPtr SEETypeDef::makeNamed(std::string name) {
 
 bool SEETypeDef::isScalar() const {
   return std::holds_alternative<ScalarInfo>(info);
+}
+
+bool SEETypeDef::isInteger() const {
+  if (!std::holds_alternative<ScalarInfo>(info))
+    return false;
+
+  const auto &S = std::get<ScalarInfo>(info);
+  return S.kind == ScalarKind::Integer;
+}
+
+bool SEETypeDef::isFloat() const {
+  if (!std::holds_alternative<ScalarInfo>(info)) {
+    return false;
+  }
+
+  switch (std::get<ScalarInfo>(info).kind) {
+  case ScalarKind::Float16:
+  case ScalarKind::Float32:
+  case ScalarKind::Float64:
+  case ScalarKind::Float128:
+    return true;
+  default:
+    return false;
+  }
 }
 
 bool SEETypeDef::isArray() const {

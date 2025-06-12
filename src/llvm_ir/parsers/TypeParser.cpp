@@ -4,29 +4,27 @@ namespace irsentry {
 SEETypeDefPtr TypeParser::parseType(const llvm::Type *type) const {
 
   if (type->isVectorTy()) {
-    return SEETypeDef::makeScalar(ScalarType::Void);
+    return SEETypeDef::makeVoid();
   } else if (type->isIntegerTy()) {
-    // FIXME: Type should accept bit width
-    auto intType = llvm::dyn_cast<llvm::IntegerType>(type)->getBitWidth();
-    return SEETypeDef::makeScalar(ScalarType::Int16);
+    unsigned bits = llvm::cast<llvm::IntegerType>(type)->getBitWidth();
+    if (bits == 1) {
+      return SEETypeDef::makeBoolean();
+    }
+    return SEETypeDef::makeInteger(bits, Signedness::Signless);
   } else if (type->isHalfTy()) {
-    return SEETypeDef::makeScalar(ScalarType::Float16);
+    return SEETypeDef::makeFloat(ScalarKind::Float16);
   } else if (type->isFloatTy()) {
-    return SEETypeDef::makeScalar(ScalarType::Float32);
+    return SEETypeDef::makeFloat(ScalarKind::Float32);
   } else if (type->isDoubleTy()) {
-    return SEETypeDef::makeScalar(ScalarType::Float64);
+    return SEETypeDef::makeFloat(ScalarKind::Float64);
   } else if (type->isFP128Ty()) {
-    return SEETypeDef::makeScalar(ScalarType::Float128);
+    return SEETypeDef::makeFloat(ScalarKind::Float128);
   } else if (type->isPointerTy()) {
-    return SEETypeDef::makePointer(SEETypeDef::makeScalar(ScalarType::Void));
+    return SEETypeDef::makePointer(SEETypeDef::makeVoid());
   } else if (auto *at = llvm::dyn_cast<llvm::ArrayType>(type)) {
-    auto elementsType = parseType(at->getElementType());
-    auto elementsCount = at->getNumElements();
-    return SEETypeDef::makeArray(elementsCount, elementsType);
+    return parseArray(at);
   } else if (auto *vt = llvm::dyn_cast<llvm::VectorType>(type)) {
-    auto elementsType = parseType(vt->getElementType());
-    auto elementsCount = vt->getElementCount().getKnownMinValue();
-    return SEETypeDef::makeVector(elementsCount, elementsType);
+    return parseVector(vt);
   } else if (auto *st = llvm::dyn_cast<llvm::StructType>(type)) {
     return parseStruct(st);
   } else if (auto *ft = llvm::dyn_cast<llvm::FunctionType>(type)) {
@@ -36,6 +34,18 @@ SEETypeDefPtr TypeParser::parseType(const llvm::Type *type) const {
   }
 
   throw std::runtime_error("Unimplemented datatype: unknown");
+}
+
+SEETypeDefPtr TypeParser::parseArray(const llvm::ArrayType *at) const {
+  auto elementsType = parseType(at->getElementType());
+  auto elementsCount = at->getNumElements();
+  return SEETypeDef::makeArray(elementsCount, elementsType);
+}
+
+SEETypeDefPtr TypeParser::parseVector(const llvm::VectorType *vt) const {
+  auto elementsType = parseType(vt->getElementType());
+  auto elementsCount = vt->getElementCount().getKnownMinValue();
+  return SEETypeDef::makeVector(elementsCount, elementsType);
 }
 
 SEETypeDefPtr TypeParser::parseStruct(const llvm::StructType *st) const {

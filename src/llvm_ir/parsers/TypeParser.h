@@ -11,6 +11,8 @@ public:
   SEETypeDefPtr parseType(const llvm::Type *type) const;
 
 private:
+  SEETypeDefPtr parseArray(const llvm::ArrayType *at) const;
+  SEETypeDefPtr parseVector(const llvm::VectorType *vt) const;
   SEETypeDefPtr parseStruct(const llvm::StructType *st) const;
   SEETypeDefPtr parseFuncType(const llvm::FunctionType *ft) const;
 };
