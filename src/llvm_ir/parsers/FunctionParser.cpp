@@ -3,13 +3,24 @@
 #include "../../utilities/Logger.h"
 
 namespace irsentry {
-std::vector<Parameter> FunctionParser::parseFunctionParameters(
-    LLVMParser::FunctionHeaderContext *ctx) const {
-  if (ctx == nullptr || ctx->params() == nullptr) {
+
+static std::string getBlockLabel(const llvm::BasicBlock &BB) {
+  if (BB.hasName())
+    return "%" + BB.getName().str();
+
+  std::string tmp;
+  llvm::raw_string_ostream rso(tmp);
+  BB.printAsOperand(rso, false);
+  return rso.str();
+}
+
+std::vector<Parameter>
+FunctionParser::parseFunctionParameters(const llvm::Function &func) const {
+  if (func.arg_size() == 0) {
     return {};
   }
 
-  bool isVaArgs = (ctx->params()->DOTS() != nullptr);
+  bool isVaArgs = func.isVarArg();
   if (isVaArgs) {
     Logger::getInstance().warning(
         std::format("VA arguments are NOT currently supported, "
@@ -17,92 +28,68 @@ std::vector<Parameter> FunctionParser::parseFunctionParameters(
   }
 
   std::vector<Parameter> params;
-  for (auto *paramChain = ctx->params()->paramList(); paramChain != nullptr;
-       paramChain = paramChain->paramList()) {
-    auto *param = paramChain->param();
-    std::string paramName = "";
-    if (auto localIdent = param->localIdent()) {
-      paramName = localIdent->getText();
-    }
-
-    params.emplace_back(
-        Parameter{m_typeParser.parseType(param->llvmType()), paramName});
+  params.reserve(func.arg_size());
+  for (const auto &arg : func.args()) {
+    Parameter param;
+    param.name = arg.getName();
+    param.type = m_typeParser.parseType(arg.getType());
+    params.emplace_back(param);
   }
+
   return params;
 }
 
 BasicBlock
-FunctionParser::parseBasicBlock(LLVMParser::BasicBlockContext *ctx) const {
-  if (ctx == nullptr || ctx->instructions() == nullptr) {
+FunctionParser::parseBasicBlock(const llvm::BasicBlock &basicBlock) const {
+  if (basicBlock.size() == 0) {
     return {};
   }
 
-  std::string blockLabel = "";
+  std::string blockLabel = getBlockLabel(basicBlock);
   std::vector<SEEInstruction> instructions{};
+  instructions.reserve(basicBlock.size());
 
-  if (auto *label = ctx->optLabelIdent()) {
-    blockLabel = "%" + label->getText();
-    if (!blockLabel.empty() && blockLabel.back() == ':') {
-      blockLabel.pop_back();
-    }
-  }
-
-  for (auto *instChain = ctx->instructions()->instructionList();
-       instChain != nullptr; instChain = instChain->instructionList()) {
-    auto inst = m_instructionParser.parseInstruction(instChain->instruction());
-    instructions.insert(instructions.begin(), inst);
-  }
-
-  if (auto *terminator = ctx->terminator()) {
-    auto inst = m_instructionParser.parseTerminator(terminator);
-    instructions.emplace_back(inst);
+  for (const auto &llvmInstr : basicBlock) {
+    auto instr = m_instructionParser.parseInstruction(llvmInstr);
+    instructions.push_back(instr);
   }
 
   return BasicBlock{blockLabel, std::move(instructions)};
 }
 
 std::unique_ptr<CFG>
-FunctionParser::parseFunctionBody(LLVMParser::FunctionBodyContext *ctx) const {
-  if (!ctx->basicBlockList()) {
+FunctionParser::parseFunctionBody(const llvm::Function &func) const {
+  if (func.size() == 0) {
     return nullptr;
   }
-
   std::vector<BasicBlock> blocks;
-  for (auto *blockChain = ctx->basicBlockList(); blockChain != nullptr;
-       blockChain = blockChain->basicBlockList()) {
-    blocks.insert(blocks.begin(), parseBasicBlock(blockChain->basicBlock()));
+  blocks.reserve(func.size());
+  for (auto &basicBlock : func) {
+    blocks.push_back(parseBasicBlock(basicBlock));
   }
 
   CFGBuilder cfgBuilder;
   return cfgBuilder.buildControlFlowGraph(blocks);
 }
 
-FunctionInfo
-FunctionParser::parseFunction(LLVMParser::FunctionDefContext *ctx) const {
+FunctionInfo FunctionParser::parseFunction(const llvm::Function &func) const {
   FunctionInfo info = {};
 
-  if (auto *header = ctx->functionHeader()) {
-    info.returnType = m_typeParser.parseType(header->llvmType());
-    info.name = header->globalIdent()->getText();
-    info.parameters = parseFunctionParameters(header);
-  }
-
-  if (auto *body = ctx->functionBody()) {
-    info.cfg = parseFunctionBody(body);
-  }
+  info.name = func.getName();
+  info.returnType = m_typeParser.parseType(func.getReturnType());
+  info.parameters = parseFunctionParameters(func);
+  info.cfg = parseFunctionBody(func);
 
   return info;
 }
 
-ExternalFunctionInfo FunctionParser::parseExternalFunction(
-    LLVMParser::FunctionDeclContext *ctx) const {
+ExternalFunctionInfo
+FunctionParser::parseExternalFunction(const llvm::Function &func) const {
   ExternalFunctionInfo info;
 
-  if (auto *header = ctx->functionHeader()) {
-    info.returnType = m_typeParser.parseType(header->llvmType());
-    info.name = header->globalIdent()->getText();
-    info.parameters = parseFunctionParameters(header);
-  }
+  info.name = func.getName();
+  info.returnType = m_typeParser.parseType(func.getReturnType());
+  info.parameters = parseFunctionParameters(func);
 
   return info;
 }

@@ -28,7 +28,7 @@ public:
 
   void loadCodeFromString(const std::string &sourceCode);
   void transform();
-  std::string getTransformedSourceCode() const;
+  std::unique_ptr<llvm::Module> moveTransformedModule();
 
 private:
   llvm::LLVMContext m_context;

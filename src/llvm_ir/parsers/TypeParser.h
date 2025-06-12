@@ -1,20 +1,17 @@
 #pragma once
 #include "../../symbolic_engine/types/SEETypeDef.h"
-#include "../antlr4/LLVMParser.h"
+#include <llvm/IR/DerivedTypes.h>
+#include <llvm/IR/Type.h>
+#include <llvm/Support/Casting.h>
 
 namespace irsentry {
 class TypeParser {
 public:
   TypeParser() {};
-  SEETypeDefPtr parseType(LLVMParser::LlvmTypeContext *ctx) const;
-  SEETypeDefPtr
-  parseConcreteType(LLVMParser::ConcreteNonRecTypeContext *ctx) const;
-  SEETypeDefPtr parseIntType(LLVMParser::IntTypeContext *ctx) const;
+  SEETypeDefPtr parseType(const llvm::Type *type) const;
 
 private:
-  SEETypeDefPtr parseStruct(LLVMParser::StructTypeContext *ctx) const;
-  SEETypeDefPtr parseArray(LLVMParser::ArrayTypeContext *ctx) const;
-  SEETypeDefPtr parseFloatType(LLVMParser::FloatTypeContext *ctx) const;
-  SEETypeDefPtr parseFuncType(LLVMParser::LlvmTypeContext *ctx) const;
+  SEETypeDefPtr parseStruct(const llvm::StructType *st) const;
+  SEETypeDefPtr parseFuncType(const llvm::FunctionType *ft) const;
 };
 } // namespace irsentry

@@ -1,10 +1,11 @@
 #pragma once
 
 #include "../../symbolic_engine/module/FunctionInfo.h"
-#include "../antlr4/LLVMLexer.h"
-#include "../antlr4/LLVMParser.h"
 #include "InstructionParser.h"
 #include "TypeParser.h"
+#include <llvm/IR/DerivedTypes.h>
+#include <llvm/IR/Module.h>
+#include <llvm/Support/Casting.h>
 #include <string>
 #include <vector>
 
@@ -25,9 +26,8 @@ public:
    * @return A FunctionInfo object containing the parsed information including
    * return type, name, parameters, and basic blocks.
    */
-  FunctionInfo parseFunction(LLVMParser::FunctionDefContext *ctx) const;
-  ExternalFunctionInfo
-  parseExternalFunction(LLVMParser::FunctionDeclContext *ctx) const;
+  FunctionInfo parseFunction(const llvm::Function &func) const;
+  ExternalFunctionInfo parseExternalFunction(const llvm::Function &func) const;
 
 private:
   /**
@@ -37,7 +37,7 @@ private:
    * parameters are present.
    */
   std::vector<Parameter>
-  parseFunctionParameters(LLVMParser::FunctionHeaderContext *ctx) const;
+  parseFunctionParameters(const llvm::Function &func) const;
 
   /**
    * @brief Parses a basic block from the basic block context.
@@ -45,7 +45,7 @@ private:
    * @return A BasicBlock object containing the block's label (if present) and
    * its instructions.
    */
-  BasicBlock parseBasicBlock(LLVMParser::BasicBlockContext *ctx) const;
+  BasicBlock parseBasicBlock(const llvm::BasicBlock &basicBlock) const;
 
   /**
    * @brief Parses the function body by extracting basic blocks from the
@@ -54,8 +54,7 @@ private:
    * @return A vector of BasicBlock objects. Returns an empty vector if no basic
    * blocks are present.
    */
-  std::unique_ptr<CFG>
-  parseFunctionBody(LLVMParser::FunctionBodyContext *ctx) const;
+  std::unique_ptr<CFG> parseFunctionBody(const llvm::Function &func) const;
 
   const InstructionParser m_instructionParser;
   const TypeParser m_typeParser;

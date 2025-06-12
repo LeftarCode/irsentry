@@ -54,34 +54,35 @@ IRSentry::IRSentry(const IRSentryOptions &irSentryOptions)
 
 void IRSentry::init() {
   SourceCodeReader sourceCodeReader;
+  Logger::getInstance().info("Loading LLVM IR source code file...");
   std::string sourceCode = sourceCodeReader.loadFromFile(m_options.filename);
-
-  m_transformer->loadCodeFromString(sourceCode);
-  m_transformer->transform();
-  sourceCode = m_transformer->getTransformedSourceCode();
+  Logger::getInstance().info(
+      "Loading LLVM IR source code file completed successfully!");
 
   Logger::getInstance().info("Parsing LLVM IR code...");
+  m_transformer->loadCodeFromString(sourceCode);
+  Logger::getInstance().info("Parsing LLVM IR code completed successfully!");
+  Logger::getInstance().info("Transforming LLVM IR code...");
+  m_transformer->transform();
+  Logger::getInstance().info(
+      "Transforming LLVM IR code completed successfully!");
 
-  antlr4::ANTLRInputStream inputStream(sourceCode);
-  LLVMLexer lexer(&inputStream);
-  antlr4::CommonTokenStream tokens(&lexer);
-  LLVMParser parser(&tokens);
-
-  if (parser.getNumberOfSyntaxErrors() > 0) {
-    throw std::runtime_error("ANTLR4 found syntax errors.");
-  }
-  Logger::getInstance().info("Parsing completed successfully!");
+  auto llvmModule = m_transformer->moveTransformedModule();
   Logger::getInstance().info(
       "Converting ANTLR4 structures to internal engine instructions...");
 
-  LLVMParser::ModuleContext *tree = parser.module();
   const ModuleParser moduleParser;
-  m_module = moduleParser.parseModule(tree);
+  m_module = moduleParser.parseModule(llvmModule);
 
   Logger::getInstance().info("Converting completed successfully!");
 
-  for (const auto &func : m_module->definedFunctions) {
-    printCFG(func.cfg, m_module->sourceFilename, func.name);
+  if (m_options.debugCFG) {
+    Logger::getInstance().info("Printing functions CFG...");
+    for (const auto &func : m_module->definedFunctions) {
+      printCFG(func.cfg, m_module->sourceFilename, func.name);
+    }
+    Logger::getInstance().info(
+        "Printing functions CFG completed successfully!");
   }
 
   if (m_options.profilingStructures) {

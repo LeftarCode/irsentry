@@ -9,15 +9,17 @@ enum ScalarType {
   Void,
   Boolean,
   Named,
-  Int16,  /**< 16-bit signed integer */
-  Int32,  /**< 32-bit signed integer */
-  Int64,  /**< 64-bit signed integer */
-  UInt16, /**< 16-bit unsigned integer */
-  UInt32, /**< 32-bit unsigned integer */
-  UInt64, /**< 64-bit unsigned integer */
-  Float,  /**< Single-precision floating point */
-  Double, /**< Double-precision floating point */
-  Ptr     /**< Represents a pointer */
+  Int16,    /**< 16-bit signed integer */
+  Int32,    /**< 32-bit signed integer */
+  Int64,    /**< 64-bit signed integer */
+  UInt16,   /**< 16-bit unsigned integer */
+  UInt32,   /**< 32-bit unsigned integer */
+  UInt64,   /**< 64-bit unsigned integer */
+  Float16,  /**< Single-precision floating point */
+  Float32,  /**< Double-precision floating point */
+  Float64,  /**< Double-precision floating point */
+  Float128, /**< Double-precision floating point */
+  Ptr       /**< Represents a pointer */
 };
 
 using TypeVariant = std::variant<bool, float, double, int16_t, int32_t, int64_t,

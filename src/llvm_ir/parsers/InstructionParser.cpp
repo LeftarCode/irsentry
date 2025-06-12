@@ -5,750 +5,425 @@
 
 namespace irsentry {
 
-SEEInstruction
-InstructionParser::parseAddInstr(LLVMParser::AddInstContext *ctx) const {
-  const auto llvmType = ctx->llvmType();
-  const auto value = ctx->value();
-  const auto parsedType = m_typeParser.parseType(llvmType);
+static std::string labelOf(const llvm::BasicBlock *BB) {
+  if (BB->hasName())
+    return BB->getName().str();
 
-  auto instr = ValueInstruction(ValueInstrType::AddInstrType, parsedType);
-  instr.operators[0] = m_valueParser.parseValue(parsedType, value[0]);
-  instr.operators[1] = m_valueParser.parseValue(parsedType, value[1]);
-
-  return instr;
+  std::string tmp;
+  llvm::raw_string_ostream rso(tmp);
+  BB->printAsOperand(rso, false);
+  return rso.str();
 }
 
 SEEInstruction
-InstructionParser::parseFAddInstr(LLVMParser::FAddInstContext *ctx) const {
-  const auto llvmType = ctx->llvmType();
-  const auto values = ctx->value();
-  const auto parsedType = m_typeParser.parseType(llvmType);
-
-  ValueInstruction instr{ValueInstrType::FAddInstrType, parsedType};
-  instr.operators[0] = m_valueParser.parseValue(parsedType, values[0]);
-  instr.operators[1] = m_valueParser.parseValue(parsedType, values[1]);
-
-  return instr;
-}
-
-SEEInstruction
-InstructionParser::parseSubInstr(LLVMParser::SubInstContext *ctx) const {
-  const auto llvmType = ctx->llvmType();
-  const auto values = ctx->value();
-  const auto parsedType = m_typeParser.parseType(llvmType);
-
-  ValueInstruction instr{ValueInstrType::SubInstrType, parsedType};
-  instr.operators[0] = m_valueParser.parseValue(parsedType, values[0]);
-  instr.operators[1] = m_valueParser.parseValue(parsedType, values[1]);
-
-  return instr;
-}
-
-SEEInstruction
-InstructionParser::parseFSubInstr(LLVMParser::FSubInstContext *ctx) const {
-  const auto llvmType = ctx->llvmType();
-  const auto values = ctx->value();
-  const auto parsedType = m_typeParser.parseType(llvmType);
-
-  ValueInstruction instr{ValueInstrType::FSubInstrType, parsedType};
-  instr.operators[0] = m_valueParser.parseValue(parsedType, values[0]);
-  instr.operators[1] = m_valueParser.parseValue(parsedType, values[1]);
-
-  return instr;
-}
-
-SEEInstruction
-InstructionParser::parseMulInstr(LLVMParser::MulInstContext *ctx) const {
-  const auto llvmType = ctx->llvmType();
-  const auto values = ctx->value();
-  const auto parsedType = m_typeParser.parseType(llvmType);
-
-  ValueInstruction instr{ValueInstrType::MulInstrType, parsedType};
-  instr.operators[0] = m_valueParser.parseValue(parsedType, values[0]);
-  instr.operators[1] = m_valueParser.parseValue(parsedType, values[1]);
-
-  return instr;
-}
-
-SEEInstruction
-InstructionParser::parseFMulInstr(LLVMParser::FMulInstContext *ctx) const {
-  const auto llvmType = ctx->llvmType();
-  const auto values = ctx->value();
-  const auto parsedType = m_typeParser.parseType(llvmType);
-
-  ValueInstruction instr{ValueInstrType::FMulInstrType, parsedType};
-  instr.operators[0] = m_valueParser.parseValue(parsedType, values[0]);
-  instr.operators[1] = m_valueParser.parseValue(parsedType, values[1]);
-
-  return instr;
-}
-
-SEEInstruction
-InstructionParser::parseUDivInstr(LLVMParser::UDivInstContext *ctx) const {
-  const auto llvmType = ctx->llvmType();
-  const auto values = ctx->value();
-  const auto parsedType = m_typeParser.parseType(llvmType);
-
-  ValueInstruction instr{ValueInstrType::UDivInstrType, parsedType};
-  instr.operators[0] = m_valueParser.parseValue(parsedType, values[0]);
-  instr.operators[1] = m_valueParser.parseValue(parsedType, values[1]);
-
-  return instr;
-}
-
-SEEInstruction
-InstructionParser::parseSDivInstr(LLVMParser::SDivInstContext *ctx) const {
-  const auto llvmType = ctx->llvmType();
-  const auto values = ctx->value();
-  const auto parsedType = m_typeParser.parseType(llvmType);
-
-  ValueInstruction instr{ValueInstrType::SDivInstrType, parsedType};
-  instr.operators[0] = m_valueParser.parseValue(parsedType, values[0]);
-  instr.operators[1] = m_valueParser.parseValue(parsedType, values[1]);
-
-  return instr;
-}
-
-SEEInstruction
-InstructionParser::parseFDivInstr(LLVMParser::FDivInstContext *ctx) const {
-  const auto llvmType = ctx->llvmType();
-  const auto values = ctx->value();
-  const auto parsedType = m_typeParser.parseType(llvmType);
-
-  ValueInstruction instr{ValueInstrType::FDivInstrType, parsedType};
-  instr.operators[0] = m_valueParser.parseValue(parsedType, values[0]);
-  instr.operators[1] = m_valueParser.parseValue(parsedType, values[1]);
-
-  return instr;
-}
-
-SEEInstruction
-InstructionParser::parseURemInstr(LLVMParser::URemInstContext *ctx) const {
-  const auto llvmType = ctx->llvmType();
-  const auto values = ctx->value();
-  const auto parsedType = m_typeParser.parseType(llvmType);
-
-  auto instr = ValueInstruction(ValueInstrType::URemInstrType, parsedType);
-  instr.operators[0] = m_valueParser.parseValue(parsedType, values[0]);
-  instr.operators[1] = m_valueParser.parseValue(parsedType, values[1]);
-
-  return instr;
-}
-
-SEEInstruction
-InstructionParser::parseSRemInstr(LLVMParser::SRemInstContext *ctx) const {
-  const auto llvmType = ctx->llvmType();
-  const auto values = ctx->value();
-  const auto parsedType = m_typeParser.parseType(llvmType);
-
-  auto instr = ValueInstruction(ValueInstrType::SRemInstrType, parsedType);
-  instr.operators[0] = m_valueParser.parseValue(parsedType, values[0]);
-  instr.operators[1] = m_valueParser.parseValue(parsedType, values[1]);
-
-  return instr;
-}
-
-SEEInstruction
-InstructionParser::parseFRemInstr(LLVMParser::FRemInstContext *ctx) const {
-  const auto llvmType = ctx->llvmType();
-  const auto values = ctx->value();
-  const auto parsedType = m_typeParser.parseType(llvmType);
-
-  auto instr = ValueInstruction(ValueInstrType::FRemInstrType, parsedType);
-  instr.operators[0] = m_valueParser.parseValue(parsedType, values[0]);
-  instr.operators[1] = m_valueParser.parseValue(parsedType, values[1]);
-
-  return instr;
-}
-
-SEEInstruction
-InstructionParser::parseShlInstr(LLVMParser::ShlInstContext *ctx) const {
-  auto llvmType = ctx->llvmType();
-  auto value = ctx->value();
-
-  auto parsedType = m_typeParser.parseType(llvmType);
-  auto instr = BitwiseInstruction(BitwiseInstrType::ShlInstrType, parsedType);
-
-  instr.operators[0] = m_valueParser.parseValue(parsedType, value[0]);
-  instr.operators[1] = m_valueParser.parseValue(parsedType, value[1]);
-
-  return instr;
-}
-
-SEEInstruction
-InstructionParser::parseLShrInstr(LLVMParser::LshrInstContext *ctx) const {
-  const auto llvmType = ctx->llvmType();
-  const auto values = ctx->value();
-  const auto parsedType = m_typeParser.parseType(llvmType);
-
-  BitwiseInstruction instr{BitwiseInstrType::LShrInstrType, parsedType};
-  instr.operators[0] = m_valueParser.parseValue(parsedType, values[0]);
-  instr.operators[1] = m_valueParser.parseValue(parsedType, values[1]);
-
-  return instr;
-}
-
-SEEInstruction
-InstructionParser::parseAShrInstr(LLVMParser::AshrInstContext *ctx) const {
-  const auto llvmType = ctx->llvmType();
-  const auto values = ctx->value();
-  const auto parsedType = m_typeParser.parseType(llvmType);
-
-  BitwiseInstruction instr{BitwiseInstrType::AShrInstrType, parsedType};
-  instr.operators[0] = m_valueParser.parseValue(parsedType, values[0]);
-  instr.operators[1] = m_valueParser.parseValue(parsedType, values[1]);
-
-  return instr;
-}
-
-SEEInstruction
-InstructionParser::parseAndInstr(LLVMParser::AndInstContext *ctx) const {
-  const auto llvmType = ctx->llvmType();
-  const auto values = ctx->value();
-  const auto parsedType = m_typeParser.parseType(llvmType);
-
-  BitwiseInstruction instr{BitwiseInstrType::AndInstrType, parsedType};
-  instr.operators[0] = m_valueParser.parseValue(parsedType, values[0]);
-  instr.operators[1] = m_valueParser.parseValue(parsedType, values[1]);
-
-  return instr;
-}
-
-SEEInstruction
-InstructionParser::parseOrInstr(LLVMParser::OrInstContext *ctx) const {
-  const auto llvmType = ctx->llvmType();
-  const auto values = ctx->value();
-  const auto parsedType = m_typeParser.parseType(llvmType);
-
-  BitwiseInstruction instr{BitwiseInstrType::OrInstrType, parsedType};
-  instr.operators[0] = m_valueParser.parseValue(parsedType, values[0]);
-  instr.operators[1] = m_valueParser.parseValue(parsedType, values[1]);
-
-  return instr;
-}
-
-SEEInstruction
-InstructionParser::parseXorInstr(LLVMParser::XorInstContext *ctx) const {
-  const auto llvmType = ctx->llvmType();
-  const auto values = ctx->value();
-  const auto parsedType = m_typeParser.parseType(llvmType);
-
-  BitwiseInstruction instr{BitwiseInstrType::XorInstrType, parsedType};
-  instr.operators[0] = m_valueParser.parseValue(parsedType, values[0]);
-  instr.operators[1] = m_valueParser.parseValue(parsedType, values[1]);
-
-  return instr;
-}
-
-SEEInstruction
-InstructionParser::parseCastInstr(LLVMParser::TruncInstContext *ctx) const {
-  auto llvmType = ctx->llvmType();
-  auto value = ctx->value();
-  auto fromType = m_typeParser.parseType(llvmType[0]);
-  auto toType = m_typeParser.parseType(llvmType[1]);
-
-  auto instr = CastInstruction(fromType, toType);
-  instr.from = m_valueParser.parseValue(fromType, value);
-
-  return instr;
-}
-
-SEEInstruction
-InstructionParser::parseCastInstr(LLVMParser::ZExtInstContext *ctx) const {
-  const auto llvmType = ctx->llvmType();
-  const auto value = ctx->value();
-
-  const auto fromType = m_typeParser.parseType(llvmType[0]);
-  const auto toType = m_typeParser.parseType(llvmType[1]);
-
-  auto instr = CastInstruction(fromType, toType);
-  instr.from = m_valueParser.parseValue(fromType, value);
-
-  return instr;
-}
-
-SEEInstruction
-InstructionParser::parseCastInstr(LLVMParser::SExtInstContext *ctx) const {
-  const auto llvmType = ctx->llvmType();
-  const auto value = ctx->value();
-
-  const auto fromType = m_typeParser.parseType(llvmType[0]);
-  const auto toType = m_typeParser.parseType(llvmType[1]);
-
-  auto instr = CastInstruction(fromType, toType);
-  instr.from = m_valueParser.parseValue(fromType, value);
-
-  return instr;
-}
-
-SEEInstruction
-InstructionParser::parseCastInstr(LLVMParser::FpTruncInstContext *ctx) const {
-  const auto llvmType = ctx->llvmType();
-  const auto value = ctx->value();
-
-  const auto fromType = m_typeParser.parseType(llvmType[0]);
-  const auto toType = m_typeParser.parseType(llvmType[1]);
-
-  auto instr = CastInstruction(fromType, toType);
-  instr.from = m_valueParser.parseValue(fromType, value);
-
-  return instr;
-}
-
-SEEInstruction
-InstructionParser::parseCastInstr(LLVMParser::FpExtInstContext *ctx) const {
-  const auto llvmType = ctx->llvmType();
-  const auto value = ctx->value();
-
-  const auto fromType = m_typeParser.parseType(llvmType[0]);
-  const auto toType = m_typeParser.parseType(llvmType[1]);
-
-  auto instr = CastInstruction(fromType, toType);
-  instr.from = m_valueParser.parseValue(fromType, value);
-
-  return instr;
-}
-
-SEEInstruction
-InstructionParser::parseCastInstr(LLVMParser::FpToUIInstContext *ctx) const {
-  const auto llvmType = ctx->llvmType();
-  const auto value = ctx->value();
-
-  const auto fromType = m_typeParser.parseType(llvmType[0]);
-  const auto toType = m_typeParser.parseType(llvmType[1]);
-
-  auto instr = CastInstruction(fromType, toType);
-  instr.from = m_valueParser.parseValue(fromType, value);
-
-  return instr;
-}
-
-SEEInstruction
-InstructionParser::parseCastInstr(LLVMParser::FpToSIInstContext *ctx) const {
-  const auto llvmType = ctx->llvmType();
-  const auto value = ctx->value();
-
-  const auto fromType = m_typeParser.parseType(llvmType[0]);
-  const auto toType = m_typeParser.parseType(llvmType[1]);
-
-  auto instr = CastInstruction(fromType, toType);
-  instr.from = m_valueParser.parseValue(fromType, value);
-
-  return instr;
-}
-
-SEEInstruction
-InstructionParser::parseCastInstr(LLVMParser::UiToFPInstContext *ctx) const {
-  const auto llvmType = ctx->llvmType();
-  const auto value = ctx->value();
-
-  const auto fromType = m_typeParser.parseType(llvmType[0]);
-  const auto toType = m_typeParser.parseType(llvmType[1]);
-
-  auto instr = CastInstruction(fromType, toType);
-  instr.from = m_valueParser.parseValue(fromType, value);
-
-  return instr;
-}
-
-SEEInstruction
-InstructionParser::parseCastInstr(LLVMParser::SiToFPInstContext *ctx) const {
-  const auto llvmType = ctx->llvmType();
-  const auto value = ctx->value();
-
-  const auto fromType = m_typeParser.parseType(llvmType[0]);
-  const auto toType = m_typeParser.parseType(llvmType[1]);
-
-  auto instr = CastInstruction(fromType, toType);
-  instr.from = m_valueParser.parseValue(fromType, value);
-
-  return instr;
-}
-
-SEEInstruction
-InstructionParser::parseCastInstr(LLVMParser::PtrToIntInstContext *ctx) const {
-  const auto llvmType = ctx->llvmType();
-  const auto value = ctx->value();
-
-  const auto fromType = m_typeParser.parseType(llvmType[0]);
-  const auto toType = m_typeParser.parseType(llvmType[1]);
-
-  auto instr = CastInstruction(fromType, toType);
-  instr.from = m_valueParser.parseValue(fromType, value);
-
-  return instr;
-}
-
-SEEInstruction
-InstructionParser::parseCastInstr(LLVMParser::IntToPtrInstContext *ctx) const {
-  const auto llvmType = ctx->llvmType();
-  const auto value = ctx->value();
-
-  const auto fromType = m_typeParser.parseType(llvmType[0]);
-  const auto toType = m_typeParser.parseType(llvmType[1]);
-
-  auto instr = CastInstruction(fromType, toType);
-  instr.from = m_valueParser.parseValue(fromType, value);
-
-  return instr;
-}
-
-SEEInstruction
-InstructionParser::parseCastInstr(LLVMParser::BitCastInstContext *ctx) const {
-  const auto llvmType = ctx->llvmType();
-  const auto value = ctx->value();
-
-  const auto fromType = m_typeParser.parseType(llvmType[0]);
-  const auto toType = m_typeParser.parseType(llvmType[1]);
-
-  auto instr = CastInstruction(fromType, toType);
-  instr.from = m_valueParser.parseValue(fromType, value);
-
-  return instr;
-}
-
-SEEInstruction
-InstructionParser::parseICmpInstr(LLVMParser::ICmpInstContext *ctx) const {
-  auto llvmType = ctx->llvmType();
-  auto value = ctx->value();
-
-  auto parsedType = m_typeParser.parseType(llvmType);
-  auto pred = m_cmpPredParser.parseICmpPred(ctx->iPred());
-
-  auto instr = ICmpInstruction(pred, parsedType);
-
-  instr.operators[0] = m_valueParser.parseValue(parsedType, value[0]);
-  instr.operators[1] = m_valueParser.parseValue(parsedType, value[1]);
-
-  return instr;
-}
-
-SEEInstruction
-InstructionParser::parseFCmpInstr(LLVMParser::FCmpInstContext *ctx) const {
-  auto llvmType = ctx->llvmType();
-  auto value = ctx->value();
-
-  auto parsedType = m_typeParser.parseType(llvmType);
-  auto pred = m_cmpPredParser.parseFCmpPred(ctx->fpred());
-
-  auto instr = FCmpInstruction(pred, parsedType);
-
-  instr.operators[0] = m_valueParser.parseValue(parsedType, value[0]);
-  instr.operators[1] = m_valueParser.parseValue(parsedType, value[1]);
-
-  return instr;
-}
-
-SEEInstruction
-InstructionParser::parseCallInstr(LLVMParser::CallInstContext *ctx) const {
-  auto llvmType = ctx->llvmType();
-  auto value = ctx->value();
-  auto returnType = m_typeParser.parseType(llvmType);
-  auto funcName = ctx->value()->getText();
-
-  if (auto dots = ctx->args()->DOTS()) {
-    throw std::runtime_error(
-        "InstructionParser: Calling with VA arguments are NOT "
-        "currently supported, but function will be added");
+InstructionParser::parseBinaryInstr(const llvm::BinaryOperator &op) const {
+  auto parsedType = m_typeParser.parseType(op.getType());
+
+  auto makeValue = [&](ValueInstrType kind) -> SEEInstruction {
+    ValueInstruction instr{kind, parsedType};
+    instr.operators[0] = m_valueParser.parseValue(parsedType, op.getOperand(0));
+    instr.operators[1] = m_valueParser.parseValue(parsedType, op.getOperand(1));
+    return instr;
+  };
+
+  auto makeBit = [&](BitwiseInstrType kind) -> SEEInstruction {
+    BitwiseInstruction instr{kind, parsedType};
+    instr.operators[0] = m_valueParser.parseValue(parsedType, op.getOperand(0));
+    instr.operators[1] = m_valueParser.parseValue(parsedType, op.getOperand(1));
+    return instr;
+  };
+
+  switch (op.getOpcode()) {
+  case llvm::Instruction::Add:
+    return makeValue(ValueInstrType::AddInstrType);
+  case llvm::Instruction::FAdd:
+    return makeValue(ValueInstrType::FAddInstrType);
+  case llvm::Instruction::Sub:
+    return makeValue(ValueInstrType::SubInstrType);
+  case llvm::Instruction::FSub:
+    return makeValue(ValueInstrType::FSubInstrType);
+  case llvm::Instruction::Mul:
+    return makeValue(ValueInstrType::MulInstrType);
+  case llvm::Instruction::FMul:
+    return makeValue(ValueInstrType::FMulInstrType);
+  case llvm::Instruction::UDiv:
+    return makeValue(ValueInstrType::UDivInstrType);
+  case llvm::Instruction::SDiv:
+    return makeValue(ValueInstrType::SDivInstrType);
+  case llvm::Instruction::FDiv:
+    return makeValue(ValueInstrType::FDivInstrType);
+  case llvm::Instruction::URem:
+    return makeValue(ValueInstrType::URemInstrType);
+  case llvm::Instruction::SRem:
+    return makeValue(ValueInstrType::SRemInstrType);
+  case llvm::Instruction::FRem:
+    return makeValue(ValueInstrType::FRemInstrType);
+  case llvm::Instruction::Shl:
+    return makeBit(BitwiseInstrType::ShlInstrType);
+  case llvm::Instruction::LShr:
+    return makeBit(BitwiseInstrType::LShrInstrType);
+  case llvm::Instruction::AShr:
+    return makeBit(BitwiseInstrType::AShrInstrType);
+  case llvm::Instruction::And:
+    return makeBit(BitwiseInstrType::AndInstrType);
+  case llvm::Instruction::Or:
+    return makeBit(BitwiseInstrType::OrInstrType);
+  case llvm::Instruction::Xor:
+    return makeBit(BitwiseInstrType::XorInstrType);
+
+  default:
+    throw std::runtime_error("parseBinaryInstr: unsupported opcode " +
+                             std::string(op.getOpcodeName()));
   }
+}
 
-  std::vector<Value> args;
-  for (auto *argsChain = ctx->args()->argList(); argsChain != nullptr;
-       argsChain = argsChain->argList()) {
-    auto *arg = argsChain->arg();
+SEEInstruction
+InstructionParser::parseCastInstr(const llvm::CastInst &ci) const {
 
-    SEETypeDefPtr argType;
-    if (auto *argLLVMType = arg->llvmType()) {
-      argType = m_typeParser.parseType(argLLVMType);
-    } else if (auto *concreteType = arg->concreteNonRecType()) {
-      argType = m_typeParser.parseConcreteType(concreteType);
+  auto toKind = [](unsigned opc) -> CastInstrType {
+    switch (opc) {
+    case llvm::Instruction::Trunc:
+      return CastInstrType::Trunc;
+    case llvm::Instruction::ZExt:
+      return CastInstrType::ZExt;
+    case llvm::Instruction::SExt:
+      return CastInstrType::SExt;
+    case llvm::Instruction::FPTrunc:
+      return CastInstrType::FPTrunc;
+    case llvm::Instruction::FPExt:
+      return CastInstrType::FPExt;
+    case llvm::Instruction::FPToUI:
+      return CastInstrType::FPToUI;
+    case llvm::Instruction::FPToSI:
+      return CastInstrType::FPToSI;
+    case llvm::Instruction::UIToFP:
+      return CastInstrType::UIToFP;
+    case llvm::Instruction::SIToFP:
+      return CastInstrType::SIToFP;
+    case llvm::Instruction::PtrToInt:
+      return CastInstrType::PtrToInt;
+    case llvm::Instruction::IntToPtr:
+      return CastInstrType::IntToPtr;
+    case llvm::Instruction::BitCast:
+      return CastInstrType::BitCast;
+    case llvm::Instruction::AddrSpaceCast:
+      return CastInstrType::AddrSpaceCast;
+    default:
+      throw std::runtime_error("parseCastInstr: unsupported opcode");
     }
+  };
 
-    auto argument = m_valueParser.parseValue(argType, arg->value());
-    args.emplace_back(argument);
-  }
+  auto fromType = m_typeParser.parseType(ci.getSrcTy());
+  auto toType = m_typeParser.parseType(ci.getDestTy());
 
-  auto instr = CallInstruction(returnType, funcName, args);
-  return instr;
-}
-
-SEEInstruction
-InstructionParser::parseLoadInstr(LLVMParser::LoadInstContext *ctx) const {
-  auto llvmType = ctx->llvmType();
-  auto value = ctx->value();
-
-  auto resultType = m_typeParser.parseType(llvmType[0]);
-  auto fromType = m_typeParser.parseType(llvmType[1]);
-  auto fromValue = m_valueParser.parseValue(fromType, value);
-
-  auto instr = LoadInstruction(resultType, fromValue);
+  CastInstruction instr{fromType, toType};
+  instr.from = m_valueParser.parseValue(fromType, ci.getOperand(0));
 
   return instr;
 }
 
 SEEInstruction
-InstructionParser::parseStoreInstr(LLVMParser::StoreInstContext *ctx) const {
-  auto llvmType = ctx->llvmType();
-  auto value = ctx->value();
+InstructionParser::parseICmpInstr(const llvm::ICmpInst &ci) const {
+  auto opTy = m_typeParser.parseType(ci.getOperand(0)->getType());
+  auto pred = m_cmpPredParser.parseICmpPred(ci.getPredicate());
 
-  auto whatType = m_typeParser.parseType(llvmType[0]);
-  auto whereType = m_typeParser.parseType(llvmType[1]);
-
-  auto whatValue = m_valueParser.parseValue(whatType, value[0]);
-  auto whereValue = m_valueParser.parseValue(whereType, value[1]);
-
-  auto instr = StoreInstruction(whatValue, whereValue);
+  ICmpInstruction instr{pred, opTy};
+  instr.operators[0] = m_valueParser.parseValue(opTy, ci.getOperand(0));
+  instr.operators[1] = m_valueParser.parseValue(opTy, ci.getOperand(1));
 
   return instr;
 }
 
 SEEInstruction
-InstructionParser::parseAllocaInstr(LLVMParser::AllocaInstContext *ctx) const {
-  auto llvmType = ctx->llvmType();
-  auto value = ctx->value();
+InstructionParser::parseFCmpInstr(const llvm::FCmpInst &ci) const {
+  auto opTy = m_typeParser.parseType(ci.getOperand(0)->getType());
+  auto pred = m_cmpPredParser.parseFCmpPred(ci.getPredicate());
 
-  auto allocationType = m_typeParser.parseType(llvmType[0]);
-  auto numType = SEETypeDef::makeScalar(ScalarType::Int32);
-  auto numValue = Value(numType);
-  numValue.isVariable = false;
-  numValue.optValue = 1;
-  if (llvmType.size() == 2) {
-    numType = m_typeParser.parseType(llvmType[1]);
-    numValue = m_valueParser.parseValue(numType, ctx->value());
-  }
-
-  auto instr = AllocaInstruction(allocationType, numValue);
+  FCmpInstruction instr{pred, opTy};
+  instr.operators[0] = m_valueParser.parseValue(opTy, ci.getOperand(0));
+  instr.operators[1] = m_valueParser.parseValue(opTy, ci.getOperand(1));
 
   return instr;
 }
 
-SEEInstruction InstructionParser::parseGEPInstr(
-    LLVMParser::GetElementPtrInstContext *ctx) const {
-  auto llvmType = ctx->llvmType();
-  auto value = ctx->value();
+SEEInstruction
+InstructionParser::parseAllocaInstr(const llvm::AllocaInst &ai) const {
+  auto elemType = m_typeParser.parseType(ai.getAllocatedType());
 
-  auto resultType = m_typeParser.parseType(llvmType[0]);
-  auto fromType = m_typeParser.parseType(llvmType[1]);
-  auto fromValue = m_valueParser.parseValue(fromType, value);
+  auto numTy = m_typeParser.parseType(ai.getArraySize()->getType());
+  Value numElements = m_valueParser.parseValue(numTy, ai.getArraySize());
 
-  auto instr = GetElementPtrInstruction(resultType, fromValue);
+  AllocaInstruction instr(elemType, numElements);
+  return instr;
+}
 
+SEEInstruction
+InstructionParser::parseLoadInstr(const llvm::LoadInst &li) const {
+
+  auto loadedTy = m_typeParser.parseType(li.getType());
+  auto ptrTy = m_typeParser.parseType(li.getPointerOperandType());
+
+  Value from = m_valueParser.parseValue(ptrTy, li.getPointerOperand());
+  LoadInstruction instr(loadedTy, from);
+  return instr;
+}
+
+SEEInstruction
+InstructionParser::parseGEPInstr(const llvm::GetElementPtrInst &gep) const {
+  auto resultTy = m_typeParser.parseType(gep.getType());
+  auto baseTy = m_typeParser.parseType(gep.getPointerOperandType());
+
+  Value basePtr = m_valueParser.parseValue(baseTy, gep.getPointerOperand());
+  GetElementPtrInstruction instr(resultTy, basePtr);
+  return instr;
+}
+
+SEEInstruction
+InstructionParser::parseStoreInstr(const llvm::StoreInst &si) const {
+  auto valTy = m_typeParser.parseType(si.getValueOperand()->getType());
+  Value what = m_valueParser.parseValue(valTy, si.getValueOperand());
+
+  auto ptrTy = m_typeParser.parseType(si.getPointerOperand()->getType());
+  Value where = m_valueParser.parseValue(ptrTy, si.getPointerOperand());
+
+  StoreInstruction instr(what, where);
   return instr;
 }
 
 SEEInstruction InstructionParser::parseExtractValueInstr(
-    LLVMParser::ExtractValueInstContext *ctx) const {
-  auto llvmType = ctx->llvmType();
-  auto value = ctx->value();
+    const llvm::ExtractValueInst &evi) const {
+  auto resultTy = m_typeParser.parseType(evi.getType());
+  auto aggTy = m_typeParser.parseType(evi.getAggregateOperand()->getType());
 
-  auto resultType = m_typeParser.parseType(llvmType);
-  auto fromValue = m_valueParser.parseValue(resultType, value);
+  Value from = m_valueParser.parseValue(aggTy, evi.getAggregateOperand());
 
-  std::vector<size_t> idxs;
-  for (auto *idxList = ctx->indexList(); idxList != nullptr;
-       idxList = idxList->indexList()) {
-    auto *idxToken = idxList->index();
-    size_t idx = std::stoi(idxToken->INT_LIT()->getText());
-    idxs.emplace_back(idx);
-  }
+  std::vector<size_t> idx;
+  idx.reserve(evi.getNumIndices());
+  for (unsigned i : evi.indices())
+    idx.emplace_back(static_cast<size_t>(i));
 
-  auto instr = ExtractValueInstruction(resultType, fromValue, idxs);
-  return instr;
-}
-
-SEEInstruction InstructionParser::parseValueInstruction(
-    LLVMParser::ValueInstructionContext *ctx) const {
-
-  if (auto *addInst = ctx->addInst()) {
-    return parseAddInstr(addInst);
-  } else if (auto *fAddInst = ctx->fAddInst()) {
-    return parseFAddInstr(fAddInst);
-  } else if (auto *subInst = ctx->subInst()) {
-    return parseSubInstr(subInst);
-  } else if (auto *fSubInst = ctx->fSubInst()) {
-    return parseFSubInstr(fSubInst);
-  } else if (auto *mulInst = ctx->mulInst()) {
-    return parseMulInstr(mulInst);
-  } else if (auto *fMulInst = ctx->fMulInst()) {
-    return parseFMulInstr(fMulInst);
-  } else if (auto *uDivInst = ctx->uDivInst()) {
-    return parseUDivInstr(uDivInst);
-  } else if (auto *sDivInst = ctx->sDivInst()) {
-    return parseSDivInstr(sDivInst);
-  } else if (auto *fDivInst = ctx->fDivInst()) {
-    return parseFDivInstr(fDivInst);
-  } else if (auto *uRemInst = ctx->uRemInst()) {
-    return parseURemInstr(uRemInst);
-  } else if (auto *sRemInst = ctx->sRemInst()) {
-    return parseSRemInstr(sRemInst);
-  } else if (auto *fRemInst = ctx->fRemInst()) {
-    return parseFRemInstr(fRemInst);
-  } else if (auto *shlInst = ctx->shlInst()) {
-    return parseShlInstr(shlInst);
-  } else if (auto *lshrInst = ctx->lshrInst()) {
-    return parseLShrInstr(lshrInst);
-  } else if (auto *ashrInst = ctx->ashrInst()) {
-    return parseAShrInstr(ashrInst);
-  } else if (auto *andInst = ctx->andInst()) {
-    return parseAndInstr(andInst);
-  } else if (auto *orInst = ctx->orInst()) {
-    return parseOrInstr(orInst);
-  } else if (auto *xorInst = ctx->xorInst()) {
-    return parseXorInstr(xorInst);
-  } else if (auto *extractElementInst = ctx->extractElementInst()) {
-    throw std::runtime_error("Unimplemented instruction: extractelement");
-  } else if (auto *insertElementInst = ctx->insertElementInst()) {
-    throw std::runtime_error("Unimplemented instruction: insertelement");
-  } else if (auto *shuffleVectorInst = ctx->shuffleVectorInst()) {
-    throw std::runtime_error("Unimplemented instruction: shuffle vector");
-  } else if (auto *extractValueInst = ctx->extractValueInst()) {
-    throw std::runtime_error("Unimplemented instruction: insert value");
-  } else if (auto *insertValueInst = ctx->insertValueInst()) {
-    throw std::runtime_error("Unimplemented instruction: insert value");
-  } else if (auto *allocaInst = ctx->allocaInst()) {
-    return parseAllocaInstr(allocaInst);
-  } else if (auto *loadInst = ctx->loadInst()) {
-    return parseLoadInstr(loadInst);
-  } else if (auto *getElementPtrInst = ctx->getElementPtrInst()) {
-    return parseGEPInstr(getElementPtrInst);
-  } else if (auto *truncInst = ctx->truncInst()) {
-    return parseCastInstr(truncInst);
-  } else if (auto *zExtInst = ctx->zExtInst()) {
-    return parseCastInstr(zExtInst);
-  } else if (auto *sExtInst = ctx->sExtInst()) {
-    return parseCastInstr(sExtInst);
-  } else if (auto *fpTruncInst = ctx->fpTruncInst()) {
-    return parseCastInstr(fpTruncInst);
-  } else if (auto *fpExtInst = ctx->fpExtInst()) {
-    return parseCastInstr(fpExtInst);
-  } else if (auto *fpToUIInst = ctx->fpToUIInst()) {
-    return parseCastInstr(fpToUIInst);
-  } else if (auto *fpToSIInst = ctx->fpToSIInst()) {
-    return parseCastInstr(fpToSIInst);
-  } else if (auto *uiToFPInst = ctx->uiToFPInst()) {
-    return parseCastInstr(uiToFPInst);
-  } else if (auto *siToFPInst = ctx->siToFPInst()) {
-    return parseCastInstr(siToFPInst);
-  } else if (auto *ptrToIntInst = ctx->ptrToIntInst()) {
-    return parseCastInstr(ptrToIntInst);
-  } else if (auto *intToPtrInst = ctx->intToPtrInst()) {
-    return parseCastInstr(intToPtrInst);
-  } else if (auto *bitCastInst = ctx->bitCastInst()) {
-    return parseCastInstr(bitCastInst);
-  } else if (auto *addrSpaceCastInst = ctx->addrSpaceCastInst()) {
-    throw std::runtime_error("Unimplemented instruction: addrspacecast");
-  } else if (auto *iCmpInst = ctx->iCmpInst()) {
-    return parseICmpInstr(iCmpInst);
-  } else if (auto *fCmpInst = ctx->fCmpInst()) {
-    return parseFCmpInstr(fCmpInst);
-  } else if (auto *phiInst = ctx->phiInst()) {
-    throw std::runtime_error("Unimplemented instruction: phi");
-  } else if (auto *selectInst = ctx->selectInst()) {
-    throw std::runtime_error("Unimplemented instruction: select");
-  } else if (auto *callInst = ctx->callInst()) {
-    return parseCallInstr(callInst);
-  } else if (auto *vaArgInst = ctx->vaArgInst()) {
-    throw std::runtime_error("Unimplemented instruction: vaargs");
-  } else if (auto *landingPadInst = ctx->landingPadInst()) {
-    throw std::runtime_error("Unimplemented instruction: landingpad");
-  } else if (auto *catchPadInst = ctx->catchPadInst()) {
-    throw std::runtime_error("Unimplemented instruction: catchpad");
-  }
-
-  throw std::runtime_error(
-      "Instruction parser occured unknown value instruction");
-}
-
-SEEInstruction
-InstructionParser::parseInstruction(LLVMParser::InstructionContext *ctx) const {
-
-  std::string resultVar = "";
-  if (auto *localIdent = ctx->localIdent()) {
-    resultVar = localIdent->getText();
-  }
-
-  if (auto *storeInst = ctx->storeInst()) {
-    return parseStoreInstr(storeInst);
-  } else if (auto *fenceInst = ctx->fenceInst()) {
-    throw std::runtime_error("Unimplemented instruction: fence");
-  } else if (auto *cmpXchgInst = ctx->cmpXchgInst()) {
-    throw std::runtime_error("Unimplemented instruction: cmpxchg");
-  } else if (auto *atomicRMWInst = ctx->atomicRMWInst()) {
-    throw std::runtime_error("Unimplemented instruction: atomicrmw");
-  } else if (auto *valueInstruction = ctx->valueInstruction()) {
-    return parseValueInstruction(valueInstruction);
-  }
-
-  throw std::runtime_error("Instruction parser occured unknown instruction");
-}
-
-SEEInstruction
-InstructionParser::parseRetTerm(LLVMParser::RetTermContext *ctx) const {
-
-  if (ctx->voidType() != nullptr) {
-    return RetTerminator();
-  }
-
-  SEETypeDefPtr retType;
-  if (auto *llvmType = ctx->llvmType()) {
-    retType = m_typeParser.parseType(llvmType);
-  } else if (auto *concreteType = ctx->concreteNonRecType()) {
-    retType = m_typeParser.parseConcreteType(concreteType);
-  }
-
-  auto retValue = m_valueParser.parseValue(retType, ctx->value());
-  auto instr = RetTerminator(retValue);
-
+  ExtractValueInstruction instr(resultTy, from, std::move(idx));
   return instr;
 }
 
 SEEInstruction
-InstructionParser::parseBrTerm(LLVMParser::BrTermContext *ctx) const {
+InstructionParser::parseCallInstr(const llvm::CallBase &call) const {
+  auto retTy = m_typeParser.parseType(call.getType());
 
-  auto instr = BrTerminator(BrTerminatorType::Unconditional,
-                            ctx->localIdent()->getText());
-  return instr;
-}
-
-SEEInstruction
-InstructionParser::parseCondBrTerm(LLVMParser::CondBrTermContext *ctx) const {
-
-  auto successors = ctx->localIdent();
-  auto type = m_typeParser.parseIntType(ctx->intType());
-  auto condition = m_valueParser.parseValue(type, ctx->value());
-
-  auto instr = BrTerminator(BrTerminatorType::Conditional, condition,
-                            successors[0]->getText(), successors[1]->getText());
-  return instr;
-}
-
-SEEInstruction
-InstructionParser::parseTerminator(LLVMParser::TerminatorContext *ctx) const {
-
-  if (auto *retTerm = ctx->retTerm()) {
-    return parseRetTerm(retTerm);
-  } else if (auto *brTerm = ctx->brTerm()) {
-    return parseBrTerm(brTerm);
-  } else if (auto *condBrTerm = ctx->condBrTerm()) {
-    return parseCondBrTerm(condBrTerm);
-  } else if (auto *switchTerm = ctx->switchTerm()) {
-    throw std::runtime_error("Unimplemented terminator: switch");
-  } else if (auto *indirectBrTerm = ctx->indirectBrTerm()) {
-    throw std::runtime_error("Unimplemented terminator: indirectBr");
-  } else if (auto *invokeTerm = ctx->invokeTerm()) {
-    throw std::runtime_error("Unimplemented terminator: invoke");
-  } else if (auto *resumeTerm = ctx->resumeTerm()) {
-    throw std::runtime_error("Unimplemented terminator: resume");
-  } else if (auto *catchSwitchTerm = ctx->catchSwitchTerm()) {
-    throw std::runtime_error("Unimplemented terminator: catchSwitch");
-  } else if (auto *catchRetTerm = ctx->catchRetTerm()) {
-    throw std::runtime_error("Unimplemented terminator: catchRet");
-  } else if (auto *cleanupRetTerm = ctx->cleanupRetTerm()) {
-    throw std::runtime_error("Unimplemented terminator: cleanupRet");
-  } else if (auto *unreachableTerm = ctx->unreachableTerm()) {
-    throw std::runtime_error("Unimplemented terminator: unreachableTerm");
+  std::string callee;
+  if (const auto *fn =
+          llvm::dyn_cast<llvm::Function>(call.getCalledOperand())) {
+    callee = fn->getName().str();
+  } else if (call.getCalledOperand()->hasName()) {
+    callee = call.getCalledOperand()->getName().str();
   }
 
-  throw std::runtime_error("Instruction parser occured unknown terminator");
+  std::vector<Value> args;
+  args.reserve(call.arg_size());
+  for (unsigned i = 0; i < call.arg_size(); ++i) {
+    auto argTy = m_typeParser.parseType(call.getArgOperand(i)->getType());
+    args.emplace_back(m_valueParser.parseValue(argTy, call.getArgOperand(i)));
+  }
+
+  CallInstruction instr(retTy, std::move(callee), std::move(args));
+  return instr;
 }
+
+SEEInstruction
+InstructionParser::parseBrInstr(const llvm::BranchInst &br) const {
+  if (br.isUnconditional()) {
+    std::string succ = labelOf(br.getSuccessor(0));
+    BrTerminator instr(BrTerminatorType::Unconditional, std::move(succ));
+    return instr;
+  }
+
+  auto condTy = m_typeParser.parseType(br.getCondition()->getType());
+  Value cond = m_valueParser.parseValue(condTy, br.getCondition());
+
+  std::string succTrue = labelOf(br.getSuccessor(0));
+  std::string succFalse = labelOf(br.getSuccessor(1));
+
+  BrTerminator instr(BrTerminatorType::Conditional, std::move(cond),
+                     std::move(succTrue), std::move(succFalse));
+  return instr;
+}
+
+SEEInstruction
+InstructionParser::parseRetInstr(const llvm::ReturnInst &ret) const {
+  if (ret.getNumOperands() == 0) {
+    RetTerminator instr;
+    instr.isVoid = true;
+    return instr;
+  }
+
+  auto valTy = m_typeParser.parseType(ret.getReturnValue()->getType());
+  Value val = m_valueParser.parseValue(valTy, ret.getReturnValue());
+
+  RetTerminator instr(std::move(val));
+  return instr;
+}
+
+SEEInstruction InstructionParser::parseExtractElementInstr(
+    const llvm::ExtractElementInst &ee) const {
+
+  auto resultTy = m_typeParser.parseType(ee.getType());
+  auto vecTy = m_typeParser.parseType(ee.getVectorOperand()->getType());
+  auto idxTy = m_typeParser.parseType(ee.getIndexOperand()->getType());
+
+  Value vec = m_valueParser.parseValue(vecTy, ee.getVectorOperand());
+  Value idx = m_valueParser.parseValue(idxTy, ee.getIndexOperand());
+
+  ExtractElementInstruction instr(resultTy, std::move(vec), std::move(idx));
+  return instr;
+}
+
+SEEInstruction InstructionParser::parseInsertElementInstr(
+    const llvm::InsertElementInst &ie) const {
+
+  auto resultTy = m_typeParser.parseType(ie.getType());
+  auto vecTy = m_typeParser.parseType(ie.getOperand(0)->getType());
+  auto eltTy = m_typeParser.parseType(ie.getOperand(1)->getType());
+  auto idxTy = m_typeParser.parseType(ie.getOperand(2)->getType());
+
+  Value vec = m_valueParser.parseValue(vecTy, ie.getOperand(0));
+  Value elt = m_valueParser.parseValue(eltTy, ie.getOperand(1));
+  Value idx = m_valueParser.parseValue(idxTy, ie.getOperand(2));
+
+  InsertElementInstruction instr(resultTy, std::move(vec), std::move(elt),
+                                 std::move(idx));
+  return instr;
+}
+
+SEEInstruction InstructionParser::parseShuffleVectorInstr(
+    const llvm::ShuffleVectorInst &sv) const {
+
+  auto resultTy = m_typeParser.parseType(sv.getType());
+  auto v1Ty = m_typeParser.parseType(sv.getOperand(0)->getType());
+  auto v2Ty = m_typeParser.parseType(sv.getOperand(1)->getType());
+
+  Value v1 = m_valueParser.parseValue(v1Ty, sv.getOperand(0));
+  Value v2 = m_valueParser.parseValue(v2Ty, sv.getOperand(1));
+
+  llvm::ArrayRef<int> llvmMask = sv.getShuffleMask();
+  std::vector<int> mask(llvmMask.begin(), llvmMask.end());
+
+  ShuffleVectorInstruction instr(resultTy, std::move(v1), std::move(v2),
+                                 std::move(mask));
+  return instr;
+}
+
+static std::string blockLabel(const llvm::BasicBlock &BB) {
+  if (BB.hasName())
+    return BB.getName().str();
+  std::string tmp;
+  llvm::raw_string_ostream rso(tmp);
+  BB.printAsOperand(rso, false);
+  return rso.str();
+}
+
+SEEInstruction InstructionParser::parseInsertValueInstr(
+    const llvm::InsertValueInst &iv) const {
+
+  auto resultTy = m_typeParser.parseType(iv.getType());
+  auto aggTy = m_typeParser.parseType(iv.getAggregateOperand()->getType());
+  auto eltTy = m_typeParser.parseType(iv.getInsertedValueOperand()->getType());
+
+  Value agg = m_valueParser.parseValue(aggTy, iv.getAggregateOperand());
+  Value elt = m_valueParser.parseValue(eltTy, iv.getInsertedValueOperand());
+
+  std::vector<size_t> idx;
+  idx.reserve(iv.getNumIndices());
+  for (unsigned i : iv.indices())
+    idx.emplace_back(i);
+
+  return InsertValueInstruction(resultTy, std::move(agg), std::move(elt),
+                                std::move(idx));
+}
+
+SEEInstruction InstructionParser::parseAddrSpaceCastInstr(
+    const llvm::AddrSpaceCastInst &ac) const {
+
+  auto toTy = m_typeParser.parseType(ac.getDestTy());
+  auto fromTy = m_typeParser.parseType(ac.getSrcTy());
+
+  Value from = m_valueParser.parseValue(fromTy, ac.getOperand(0));
+
+  return AddrSpaceCastInstruction(toTy, std::move(from));
+}
+
+SEEInstruction
+InstructionParser::parsePhiInstr(const llvm::PHINode &phi) const {
+
+  auto resTy = m_typeParser.parseType(phi.getType());
+  PhiInstruction instr(resTy);
+
+  unsigned n = phi.getNumIncomingValues();
+  instr.incomings.reserve(n);
+
+  for (unsigned i = 0; i < n; ++i) {
+    const llvm::Value *llvmVal = phi.getIncomingValue(i);
+    const llvm::BasicBlock *bb = phi.getIncomingBlock(i);
+
+    auto valTy = m_typeParser.parseType(llvmVal->getType());
+    Value val = m_valueParser.parseValue(valTy, llvmVal);
+
+    instr.incomings.emplace_back(std::move(val), blockLabel(*bb));
+  }
+  return instr;
+}
+
+SEEInstruction
+InstructionParser::parseInstruction(const llvm::Instruction &instr) const {
+  if (auto *bo = llvm::dyn_cast<llvm::BinaryOperator>(&instr)) {
+    return parseBinaryInstr(*bo);
+  } else if (auto *ci = llvm::dyn_cast<llvm::CastInst>(&instr)) {
+    return parseCastInstr(*ci);
+  } else if (auto *ci = llvm::dyn_cast<llvm::ICmpInst>(&instr)) {
+    return parseICmpInstr(*ci);
+  } else if (auto *ci = llvm::dyn_cast<llvm::FCmpInst>(&instr)) {
+    return parseFCmpInstr(*ci);
+  } else if (auto *si = llvm::dyn_cast<llvm::StoreInst>(&instr)) {
+    return parseStoreInstr(*si);
+  } else if (auto *evi = llvm::dyn_cast<llvm::ExtractValueInst>(&instr)) {
+    return parseExtractValueInstr(*evi);
+  } else if (auto *bi = llvm::dyn_cast<llvm::BranchInst>(&instr)) {
+    return parseBrInstr(*bi);
+  } else if (auto *ri = llvm::dyn_cast<llvm::ReturnInst>(&instr)) {
+    return parseRetInstr(*ri);
+  } else if (auto *ee = llvm::dyn_cast<llvm::ExtractElementInst>(&instr)) {
+    return parseExtractElementInstr(*ee);
+  } else if (auto *ie = llvm::dyn_cast<llvm::InsertElementInst>(&instr)) {
+    return parseInsertElementInstr(*ie);
+  } else if (auto *sv = llvm::dyn_cast<llvm::ShuffleVectorInst>(&instr)) {
+    return parseShuffleVectorInstr(*sv);
+  } else if (auto *ai = llvm::dyn_cast<llvm::AllocaInst>(&instr)) {
+    return parseAllocaInstr(*ai);
+  } else if (auto *li = llvm::dyn_cast<llvm::LoadInst>(&instr)) {
+    return parseLoadInstr(*li);
+  } else if (auto *gepi = llvm::dyn_cast<llvm::GetElementPtrInst>(&instr)) {
+    return parseGEPInstr(*gepi);
+  } else if (auto *ci = llvm::dyn_cast<llvm::CallBase>(&instr)) {
+    return parseCallInstr(*ci);
+  } else if (auto *iv = llvm::dyn_cast<llvm::InsertValueInst>(&instr)) {
+    return parseInsertValueInstr(*iv);
+  } else if (auto *ac = llvm::dyn_cast<llvm::AddrSpaceCastInst>(&instr)) {
+    return parseAddrSpaceCastInstr(*ac);
+  } else if (auto *pn = llvm::dyn_cast<llvm::PHINode>(&instr)) {
+    return parsePhiInstr(*pn);
+  }
+
+  switch (instr.getOpcode()) {
+  case llvm::Instruction::Select:
+  case llvm::Instruction::VAArg:
+  case llvm::Instruction::LandingPad:
+  case llvm::Instruction::CatchPad:
+    throw std::runtime_error("Unimplemented instruction: " +
+                             std::string(instr.getOpcodeName()));
+  default:
+    throw std::runtime_error("Instruction parser encountered unknown LLVM "
+                             "opcode: " +
+                             std::string(instr.getOpcodeName()));
+  }
+}
+
 } // namespace irsentry
