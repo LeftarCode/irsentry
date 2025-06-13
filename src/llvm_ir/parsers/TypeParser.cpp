@@ -1,118 +1,88 @@
 #include "TypeParser.h"
 
 namespace irsentry {
-SEETypeDefPtr TypeParser::parseType(LLVMParser::LlvmTypeContext *ctx) const {
-  if (auto voidType = ctx->voidType()) {
-    return SEETypeDef::makeScalar(ScalarType::Void);
-  } else if (auto concreteType = ctx->concreteNonRecType()) {
-    return parseConcreteType(concreteType);
-  } else if (auto star = ctx->STAR()) {
-    auto ptrType = parseType(ctx->llvmType());
-    return SEETypeDef::makePointer(ptrType);
-  } else if (auto lparen = ctx->LPAREN()) {
-    return parseFuncType(ctx);
-  } else if (auto metadataType = ctx->metadataType()) {
-    throw std::runtime_error("Unimplemented datatype: metadataType");
-  } else {
-    throw std::runtime_error("Unimplemented datatype: unknown");
-  }
-}
-SEETypeDefPtr TypeParser::parseConcreteType(
-    LLVMParser::ConcreteNonRecTypeContext *ctx) const {
-  if (auto intType = ctx->intType()) {
-    return parseIntType(intType);
-  } else if (auto floatType = ctx->floatType()) {
-    return parseFloatType(floatType);
-  } else if (auto ptrType = ctx->ptrType()) {
-    return SEETypeDef::makeScalar(ScalarType::Ptr);
-  } else if (auto vectorType = ctx->vectorType()) {
-    throw std::runtime_error("Unimplemented datatype: vector");
-  } else if (auto labelType = ctx->labelType()) {
-    throw std::runtime_error("Unimplemented datatype: label");
-  } else if (auto arrayType = ctx->arrayType()) {
-    return parseArray(arrayType);
-  } else if (auto structType = ctx->structType()) {
-    return parseStruct(structType);
-  } else if (auto namedType = ctx->namedType()) {
-    return SEETypeDef::makeNamed(namedType->localIdent()->getText());
-  } else if (auto mmxType = ctx->mmxType()) {
-    throw std::runtime_error("Unimplemented datatype: mmxType");
-  } else if (auto tokenType = ctx->tokenType()) {
-    throw std::runtime_error("Unimplemented datatype: tokenType");
-  }
-  throw std::runtime_error("Unimplemented datatype: unknown");
+
+static std::string getTypeName(const llvm::Type *type) {
+  std::string tmp;
+  llvm::raw_string_ostream rso(tmp);
+  type->print(rso);
+
+  return rso.str();
 }
 
-SEETypeDefPtr
-TypeParser::parseStruct(LLVMParser::StructTypeContext *ctx) const {
+SEETypeDefPtr TypeParser::parseType(const llvm::Type *type) const {
+
+  if (type->isVoidTy()) {
+    return SEETypeDef::makeVoid();
+  } else if (type->isIntegerTy()) {
+    unsigned bits = llvm::cast<llvm::IntegerType>(type)->getBitWidth();
+    if (bits == 1) {
+      return SEETypeDef::makeBoolean();
+    }
+    return SEETypeDef::makeInteger(bits, Signedness::Signless);
+  } else if (type->isHalfTy()) {
+    return SEETypeDef::makeFloat(ScalarKind::Float16);
+  } else if (type->isFloatTy()) {
+    return SEETypeDef::makeFloat(ScalarKind::Float32);
+  } else if (type->isDoubleTy()) {
+    return SEETypeDef::makeFloat(ScalarKind::Float64);
+  } else if (type->isX86_FP80Ty()) {
+    return SEETypeDef::makeFloat(ScalarKind::Float80);
+  } else if (type->isFP128Ty()) {
+    return SEETypeDef::makeFloat(ScalarKind::Float128);
+  } else if (type->isPointerTy()) {
+    return SEETypeDef::makePointer(SEETypeDef::makeVoid());
+  } else if (auto *at = llvm::dyn_cast<llvm::ArrayType>(type)) {
+    return parseArray(at);
+  } else if (auto *vt = llvm::dyn_cast<llvm::VectorType>(type)) {
+    return parseVector(vt);
+  } else if (auto *st = llvm::dyn_cast<llvm::StructType>(type)) {
+    return parseStruct(st);
+  } else if (auto *ft = llvm::dyn_cast<llvm::FunctionType>(type)) {
+    return parseFuncType(ft);
+  } else if (type->isMetadataTy() || type->isTokenTy()) {
+    throw std::runtime_error("Unimplemented datatype: metadata / token");
+  }
+
+  throw std::runtime_error("Unimplemented datatype: " + getTypeName(type));
+}
+
+SEETypeDefPtr TypeParser::parseArray(const llvm::ArrayType *at) const {
+  auto elementsType = parseType(at->getElementType());
+  auto elementsCount = at->getNumElements();
+  return SEETypeDef::makeArray(elementsCount, elementsType);
+}
+
+SEETypeDefPtr TypeParser::parseVector(const llvm::VectorType *vt) const {
+  auto elementsType = parseType(vt->getElementType());
+  auto elementsCount = vt->getElementCount().getKnownMinValue();
+  return SEETypeDef::makeVector(elementsCount, elementsType);
+}
+
+SEETypeDefPtr TypeParser::parseStruct(const llvm::StructType *st) const {
   StructInfo structInfo;
-  for (auto *typeList = ctx->typeList(); typeList != nullptr;
-       typeList = typeList->typeList()) {
-    auto *fieldLlvmType = typeList->llvmType();
-    auto seeType = parseType(fieldLlvmType);
+  structInfo.reserve(st->getNumElements());
 
-    structInfo.emplace_back(StructField{seeType});
+  for (const auto *elem : st->elements()) {
+    StructField field;
+    field.type = parseType(elem);
+    structInfo.push_back(field);
   }
 
+  // FIXME: Add struct name if it has one
   return SEETypeDef::makeStruct(structInfo);
 }
 
-SEETypeDefPtr TypeParser::parseArray(LLVMParser::ArrayTypeContext *ctx) const {
-  size_t elementsNum = std::stoi(ctx->INT_LIT()->getText());
-  SEETypeDefPtr arrayType = this->parseType(ctx->llvmType());
-
-  return SEETypeDef::makeArray(elementsNum, arrayType);
-}
-
-SEETypeDefPtr TypeParser::parseIntType(LLVMParser::IntTypeContext *ctx) const {
-  std::string intTypeStr = ctx->INT_TYPE()->getText();
-  if (intTypeStr.compare("i1") == 0 && intTypeStr.size() == 2) {
-    return SEETypeDef::makeScalar(ScalarType::Boolean);
-  } else if (intTypeStr.compare("i8") == 0 && intTypeStr.size() == 2) {
-    return SEETypeDef::makeScalar(ScalarType::Int16);
-  } else if (intTypeStr.compare("i16") == 0 && intTypeStr.size() == 3) {
-    return SEETypeDef::makeScalar(ScalarType::Int16);
-  } else if (intTypeStr.compare("i32") == 0 && intTypeStr.size() == 3) {
-    return SEETypeDef::makeScalar(ScalarType::Int32);
-  } else if (intTypeStr.compare("i64") == 0 && intTypeStr.size() == 3) {
-    return SEETypeDef::makeScalar(ScalarType::Int64);
-  }
-
-  throw std::runtime_error("Unimplemented int datatype: " + intTypeStr);
-}
-
-SEETypeDefPtr
-TypeParser::parseFloatType(LLVMParser::FloatTypeContext *ctx) const {
-  if (auto *doubleTy = ctx->floatKind()->DOUBLE()) {
-    return SEETypeDef::makeScalar(ScalarType::Double);
-  } else if (auto *floatTy = ctx->floatKind()->FLOAT()) {
-    return SEETypeDef::makeScalar(ScalarType::Float);
-  }
-
-  throw std::runtime_error("Unimplemented floating point datatype");
-}
-
-SEETypeDefPtr
-TypeParser::parseFuncType(LLVMParser::LlvmTypeContext *ctx) const {
-  auto *llvmType = ctx->llvmType();
-  SEETypeDefPtr retType = this->parseType(llvmType);
-  auto *paramsCtx = ctx->params();
-
-  bool isVaArg = false;
-  if (auto *dots = paramsCtx->DOTS()) {
-    isVaArg = true;
-  }
-
+SEETypeDefPtr TypeParser::parseFuncType(const llvm::FunctionType *ft) const {
   std::vector<SEETypeDefPtr> params;
-  for (auto *paramsChain = paramsCtx->paramList(); paramsChain != nullptr;
-       paramsChain = paramsChain->paramList()) {
-    auto *param = paramsChain->param();
-
-    SEETypeDefPtr paramType = this->parseType(param->llvmType());
-    params.emplace_back(paramType);
+  params.reserve(ft->getNumParams());
+  for (const auto *param : ft->params()) {
+    params.push_back(parseType(param));
   }
 
-  return SEETypeDef::makeFunction(retType, params, isVaArg);
+  auto ret = parseType(ft->getReturnType());
+  return SEETypeDef::makeFunction(std::move(ret), std::move(params),
+                                  ft->isVarArg());
 }
 
 } // namespace irsentry

@@ -33,16 +33,13 @@ void IRTransformer::transform() {
   }
 }
 
-std::string IRTransformer::getTransformedSourceCode() const {
+std::unique_ptr<llvm::Module> IRTransformer::moveTransformedModule() {
   if (!m_module) {
     throw std::runtime_error(
         "IRTransformer: LLVM Module has not been initialized yet!");
   }
 
-  std::string out;
-  llvm::raw_string_ostream os(out);
-  m_module->print(os, nullptr);
-  return os.str();
+  return std::move(m_module);
 }
 
 } // namespace irsentry

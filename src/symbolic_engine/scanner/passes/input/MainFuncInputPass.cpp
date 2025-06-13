@@ -6,7 +6,7 @@ MainFuncInputPass::scanFunction(size_t functionIdx,
                                 const FunctionInfo &function) {
   std::vector<SymbolicInput> symInputs;
 
-  if (function.name.compare("@main") != 0) {
+  if (function.name.compare("main") != 0) {
     return {};
   }
 

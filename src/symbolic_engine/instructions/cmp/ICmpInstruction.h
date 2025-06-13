@@ -11,7 +11,7 @@ public:
   ICmpInstruction(ICmpPred cmpPred, SEETypeDefPtr dataType) {
     this->cmpPred = cmpPred;
 
-    result = Value(SEETypeDef::makeScalar(ScalarType::Boolean));
+    result = Value(SEETypeDef::makeBoolean());
     operators[0] = Value(dataType);
     operators[1] = Value(dataType);
   }

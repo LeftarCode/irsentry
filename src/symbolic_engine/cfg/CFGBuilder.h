@@ -2,6 +2,7 @@
 #include "../instructions/Instructions.h"
 #include <memory>
 #include <string>
+#include <unordered_map>
 
 namespace irsentry {
 
@@ -11,16 +12,18 @@ struct BasicBlock {
 };
 
 struct CFGNode {
-  bool isSingleOutput;
-  bool isFinal;
+  bool isSingleOutput{false};
+  bool isFinal{false};
   std::string label;
   std::vector<SEEInstruction> instructions;
-  std::unique_ptr<CFGNode> trueSuccessor;
-  std::unique_ptr<CFGNode> falseSuccessor;
+  std::shared_ptr<CFGNode> trueSuccessor;
+  std::shared_ptr<CFGNode> falseSuccessor;
+  std::vector<std::shared_ptr<CFGNode>> switchSuccessors;
 };
 
 struct CFG {
-  std::unique_ptr<CFGNode> root;
+  std::shared_ptr<CFGNode> root;
+  std::unordered_map<std::string, std::shared_ptr<CFGNode>> nodes;
 };
 
 class CFGBuilder {

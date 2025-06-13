@@ -1,7 +1,8 @@
 #pragma once
 #include "../../symbolic_engine/module/ModuleInfo.h"
-#include "../antlr4/LLVMParser.h"
 #include "FunctionParser.h"
+#include "TypeParser.h"
+#include "llvm/IR/Module.h"
 #include <limits>
 #include <memory>
 #include <vector>
@@ -12,9 +13,10 @@ class ModuleParser {
 public:
   ModuleParser() {};
   std::unique_ptr<ModuleInfo>
-  parseModule(LLVMParser::ModuleContext *moduleContext) const;
+  parseModule(const std::unique_ptr<llvm::Module> &llvmModule) const;
 
 private:
   const FunctionParser m_functionParser;
+  const TypeParser m_typeParser;
 };
 } // namespace irsentry

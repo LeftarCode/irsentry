@@ -5,29 +5,28 @@
 #include <vector>
 
 namespace irsentry {
-enum ScalarType {
+enum ScalarKind {
   Void,
   Boolean,
   Named,
-  Int16,  /**< 16-bit signed integer */
-  Int32,  /**< 32-bit signed integer */
-  Int64,  /**< 64-bit signed integer */
-  UInt16, /**< 16-bit unsigned integer */
-  UInt32, /**< 32-bit unsigned integer */
-  UInt64, /**< 64-bit unsigned integer */
-  Float,  /**< Single-precision floating point */
-  Double, /**< Double-precision floating point */
-  Ptr     /**< Represents a pointer */
+  Integer,
+  Float16,
+  Float32,
+  Float64,
+  Float80,
+  Float128,
+  Ptr
 };
 
-using TypeVariant = std::variant<bool, float, double, int16_t, int32_t, int64_t,
-                                 uint16_t, uint32_t, uint64_t>;
+enum class Signedness { Signless, Signed, Unsigned };
 
 struct SEETypeDef;
 using SEETypeDefPtr = std::shared_ptr<SEETypeDef>;
 
 struct ScalarInfo {
-  ScalarType type;
+  ScalarKind kind;
+  uint32_t bitWidth = 0;
+  Signedness signedness = Signedness::Signless;
 };
 
 struct ArrayInfo {
@@ -67,7 +66,12 @@ public:
   SEETypeDef() {};
   TypeInfo info;
 
-  static SEETypeDefPtr makeScalar(ScalarType scalarType);
+  static SEETypeDefPtr makeVoid();
+  static SEETypeDefPtr makeBoolean();
+  static SEETypeDefPtr makeInteger(uint32_t bits,
+                                   Signedness s = Signedness::Signless);
+  static SEETypeDefPtr makeFloat(ScalarKind fpKind);
+
   static SEETypeDefPtr makeArray(uint64_t n, SEETypeDefPtr elem);
   static SEETypeDefPtr makeVector(uint64_t n, SEETypeDefPtr elem);
   static SEETypeDefPtr makeStruct(StructInfo fields);
@@ -78,6 +82,8 @@ public:
   static SEETypeDefPtr makeNamed(std::string name);
 
   bool isScalar() const;
+  bool isInteger() const;
+  bool isFloat() const;
   bool isArray() const;
   bool isVector() const;
   bool isStruct() const;
