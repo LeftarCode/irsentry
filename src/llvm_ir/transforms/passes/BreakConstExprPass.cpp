@@ -2,28 +2,33 @@
 
 namespace irsentry {
 void BreakConstExprPass::runOnModule(llvm::Module &M) {
-  for (auto &F : M) {
-    if (F.isDeclaration())
-      continue;
-    for (auto &BB : F) {
-      std::vector<InstrIdxConstExprTuple> replacements;
+  bool changed;
+  do {
+    changed = false;
+    for (auto &F : M)
+      if (!F.isDeclaration())
+        for (auto &BB : F) {
 
-      for (auto &I : BB) {
-        for (unsigned opIndex = 0; opIndex < I.getNumOperands(); ++opIndex) {
-          if (auto *CE =
-                  llvm::dyn_cast<llvm::ConstantExpr>(I.getOperand(opIndex))) {
-            replacements.emplace_back(&I, opIndex, CE);
+          std::vector<InstrIdxConstExprTuple> repl;
+          for (auto &I : BB)
+            for (unsigned op = 0; op < I.getNumOperands(); ++op)
+              if (auto *CE =
+                      llvm::dyn_cast<llvm::ConstantExpr>(I.getOperand(op)))
+                repl.emplace_back(&I, op, CE);
+
+          if (!repl.empty())
+            changed = true;
+
+          static std::size_t tmpId = 0;
+          for (auto &[I, op, CE] : repl) {
+            auto *newInst = CE->getAsInstruction();
+            newInst->setName("cexpr." + std::to_string(tmpId++));
+            newInst->insertBefore(I);
+            I->setOperand(op, newInst);
           }
         }
-      }
-
-      for (auto &[I, opIndex, CE] : replacements) {
-        llvm::Instruction *newInst = CE->getAsInstruction();
-        newInst->insertBefore(I);
-        I->setOperand(opIndex, newInst);
-      }
-    }
-  }
+  } while (changed);
 }
+
 const char *BreakConstExprPass::name() const { return "BreakConstExprPass"; }
 } // namespace irsentry

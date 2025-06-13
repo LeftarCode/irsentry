@@ -30,6 +30,10 @@ std::unique_ptr<ModuleInfo> ModuleParser::parseModule(
     }
   }
 
+  for (llvm::StructType *st : llvmModule->getIdentifiedStructTypes()) {
+    module->definedTypes.emplace_back(m_typeParser.parseStruct(st));
+  }
+
   bool mainFound = false;
   size_t mainIdx = 0;
   for (const auto &fnDef : module->definedFunctions) {

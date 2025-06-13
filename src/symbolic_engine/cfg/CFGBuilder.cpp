@@ -1,78 +1,72 @@
 #include "CFGBuilder.h"
+
 #include <format>
 #include <stdexcept>
 
 namespace irsentry {
 
-BasicBlock findBasicBlock(const std::vector<BasicBlock> &basicBlocks,
-                          std::string label) {
-  for (const auto &basicBlock : basicBlocks) {
-    if (label == basicBlock.label) {
-      return basicBlock;
-    }
-  }
+using NodePtr = std::shared_ptr<CFGNode>;
 
-  throw std::runtime_error(std::format("CFGBuilder: Unknown label: {}", label));
-}
+static const BasicBlock &findBasicBlock(const std::vector<BasicBlock> &bbs,
+                                        const std::string &label) {
+  for (const auto &bb : bbs)
+    if (bb.label == label)
+      return bb;
 
-std::unique_ptr<CFGNode>
-createNewNode(const std::vector<BasicBlock> &basicBlocks,
-              const BasicBlock &basicBlock) {
-  const auto &lastInstr = basicBlock.instructions.back();
-  if (basicBlock.instructions.empty()) {
-    throw std::runtime_error(
-        std::format("CFGBuilder: Empty basic block in function: {}", "TODO"));
-  }
-  auto node = std::make_unique<CFGNode>();
-
-  node->label = basicBlock.label;
-  for (const auto &instr : basicBlock.instructions) {
-    node->instructions.push_back(instr);
-  }
-
-  if (auto brInstr = std::get_if<RetTerminator>(&lastInstr)) {
-    node->isFinal = true;
-    return node;
-  }
-
-  if (const auto brInstr = std::get_if<BrTerminator>(&lastInstr)) {
-    if (brInstr->brType == BrTerminatorType::Unconditional) {
-      const auto &successorLabel = brInstr->successors[0];
-      node->isSingleOutput = true;
-      node->trueSuccessor = createNewNode(
-          basicBlocks, findBasicBlock(basicBlocks, successorLabel));
-    } else if (brInstr->brType == BrTerminatorType::Conditional) {
-      const auto &trueSuccessorLabel = brInstr->successors[0];
-      const auto &falseSuccessorLabel = brInstr->successors[1];
-
-      node->trueSuccessor = createNewNode(
-          basicBlocks, findBasicBlock(basicBlocks, trueSuccessorLabel));
-      node->falseSuccessor = createNewNode(
-          basicBlocks, findBasicBlock(basicBlocks, falseSuccessorLabel));
-    }
-  }
-
-  return node;
+  throw std::runtime_error(
+      std::format("CFGBuilder: Unknown label '{}'", label));
 }
 
 std::unique_ptr<CFG>
 CFGBuilder::buildControlFlowGraph(const std::vector<BasicBlock> &basicBlocks) {
-  auto funcCFG = std::make_unique<CFG>();
+  if (basicBlocks.empty())
+    throw std::runtime_error("CFGBuilder: Empty function");
 
-  if (basicBlocks.empty()) {
-    throw std::runtime_error(
-        std::format("CFGBuilder: Empty function: {}", "TODO"));
+  auto cfg = std::make_unique<CFG>();
+
+  for (const auto &bb : basicBlocks) {
+    auto node = std::make_shared<CFGNode>();
+    node->label = bb.label;
+    node->instructions = bb.instructions;
+    cfg->nodes[bb.label] = std::move(node);
   }
+  cfg->root = cfg->nodes.at(basicBlocks.front().label);
 
-  const auto &firstBasicBlock = basicBlocks[0];
-  auto node = std::make_unique<CFGNode>();
-  if (firstBasicBlock.instructions.empty()) {
+  for (const auto &bb : basicBlocks) {
+    NodePtr node = cfg->nodes.at(bb.label);
+    const auto &last = bb.instructions.back();
+
+    if (std::holds_alternative<RetTerminator>(last) ||
+        std::holds_alternative<UnreachableTerminator>(last)) {
+      node->isFinal = true;
+      continue;
+    }
+
+    if (auto br = std::get_if<BrTerminator>(&last)) {
+      if (br->brType == BrTerminatorType::Unconditional) {
+        node->isSingleOutput = true;
+        node->trueSuccessor = cfg->nodes.at(br->successors[0]);
+      } else {
+        node->trueSuccessor = cfg->nodes.at(br->successors[0]);
+        node->falseSuccessor = cfg->nodes.at(br->successors[1]);
+      }
+      continue;
+    }
+
+    if (auto sw = std::get_if<SwitchTerminator>(&last)) {
+      node->switchSuccessors.reserve(sw->cases.size() + 1);
+      for (const auto &c : sw->cases)
+        node->switchSuccessors.push_back(cfg->nodes.at(c.successor));
+
+      node->switchSuccessors.push_back(cfg->nodes.at(sw->defaultSuccessor));
+      continue;
+    }
+
     throw std::runtime_error(std::format(
-        "CFGBuilder: Empty first basic block in function: {}", "TODO"));
+        "CFGBuilder: Unsupported terminator in block '{}'", bb.label));
   }
 
-  funcCFG->root = createNewNode(basicBlocks, firstBasicBlock);
-  return funcCFG;
+  return cfg;
 }
 
 } // namespace irsentry

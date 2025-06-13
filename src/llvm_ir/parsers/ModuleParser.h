@@ -1,6 +1,7 @@
 #pragma once
 #include "../../symbolic_engine/module/ModuleInfo.h"
 #include "FunctionParser.h"
+#include "TypeParser.h"
 #include "llvm/IR/Module.h"
 #include <limits>
 #include <memory>
@@ -16,5 +17,6 @@ public:
 
 private:
   const FunctionParser m_functionParser;
+  const TypeParser m_typeParser;
 };
 } // namespace irsentry

@@ -1,13 +1,19 @@
 #pragma once
 #include "../types/IntX.h"
 #include "../types/SEETypeDef.h"
+#include <array>
 #include <optional>
 #include <string>
 #include <variant>
 
 namespace irsentry {
 
-using TypeVariant = std::variant<bool, float, double, IntX>;
+struct Float80Bits {
+  std::array<std::uint8_t, 10> bytes{};
+};
+
+using TypeVariant = std::variant<std::monostate, bool, float, double,
+                                 long double, Float80Bits, IntX>;
 
 class Value {
 public:

@@ -1,7 +1,5 @@
 #include "IRSentry.h"
 #include "llvm_ir/SourceCodeReader.h"
-#include "llvm_ir/antlr4/LLVMLexer.h"
-#include "llvm_ir/antlr4/LLVMParser.h"
 #include "llvm_ir/parsers/ModuleParser.h"
 #include "llvm_ir/transforms/passes/BreakConstExprPass.h"
 #include "symbolic_engine/cfg/debug/CFGDotPrinter.h"
@@ -37,6 +35,8 @@ void printStructureProfiling() {
       std::format(" - sizeof(SymbolicInput): {}", sizeof(SymbolicInput)));
   Logger::getInstance().debug(
       std::format(" - sizeof(SymbolicHotSpot): {}", sizeof(SymbolicHotSpot)));
+  Logger::getInstance().debug(
+      std::format(" - sizeof(Value): {}", sizeof(Value)));
 }
 
 IRSentry::IRSentry(const IRSentryOptions &irSentryOptions)
@@ -53,6 +53,10 @@ IRSentry::IRSentry(const IRSentryOptions &irSentryOptions)
 }
 
 void IRSentry::init() {
+  if (m_options.profilingStructures) {
+    printStructureProfiling();
+  }
+
   SourceCodeReader sourceCodeReader;
   Logger::getInstance().info("Loading LLVM IR source code file...");
   std::string sourceCode = sourceCodeReader.loadFromFile(m_options.filename);
@@ -83,10 +87,6 @@ void IRSentry::init() {
     }
     Logger::getInstance().info(
         "Printing functions CFG completed successfully!");
-  }
-
-  if (m_options.profilingStructures) {
-    printStructureProfiling();
   }
 
   m_initialized = true;
@@ -144,9 +144,6 @@ IRSentryStatus IRSentry::run() {
   auto symbolicPath =
       pathFinder.findSymbolicPath(m_module->definedFunctions[0].cfg,
                                   moduleSymInputs[0][0], moduleHotSpots[0][0]);
-
-  if (symbolicPath.has_value()) {
-  }
 
   return IRSentryStatus::Success;
 }

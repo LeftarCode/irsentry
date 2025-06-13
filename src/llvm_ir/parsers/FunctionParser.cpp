@@ -1,6 +1,7 @@
 #include "FunctionParser.h"
 #include "../../symbolic_engine/cfg/CFGBuilder.h"
 #include "../../utilities/Logger.h"
+#include <format>
 
 namespace irsentry {
 
@@ -75,7 +76,10 @@ FunctionParser::parseFunctionBody(const llvm::Function &func) const {
 FunctionInfo FunctionParser::parseFunction(const llvm::Function &func) const {
   FunctionInfo info = {};
 
-  info.name = func.getName();
+  Logger::getInstance().debug(std::format(
+      "FunctionParser: Parsing {} function...", func.getName().str()));
+
+  info.name = func.getName().str();
   info.returnType = m_typeParser.parseType(func.getReturnType());
   info.parameters = parseFunctionParameters(func);
   info.cfg = parseFunctionBody(func);

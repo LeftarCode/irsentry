@@ -9,11 +9,11 @@ class TypeParser {
 public:
   TypeParser() {};
   SEETypeDefPtr parseType(const llvm::Type *type) const;
+  SEETypeDefPtr parseStruct(const llvm::StructType *st) const;
 
 private:
   SEETypeDefPtr parseArray(const llvm::ArrayType *at) const;
   SEETypeDefPtr parseVector(const llvm::VectorType *vt) const;
-  SEETypeDefPtr parseStruct(const llvm::StructType *st) const;
   SEETypeDefPtr parseFuncType(const llvm::FunctionType *ft) const;
 };
 } // namespace irsentry

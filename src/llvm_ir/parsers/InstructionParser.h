@@ -1,7 +1,6 @@
 #pragma once
 #include "../../symbolic_engine/instructions/Instructions.h"
 #include "../../symbolic_engine/variables/Value.h"
-#include "../antlr4/LLVMParser.h"
 #include "CmpPredParser.h"
 #include "TypeParser.h"
 #include "ValueParser.h"
@@ -73,6 +72,9 @@ private:
   SEEInstruction
   parseAddrSpaceCastInstr(const llvm::AddrSpaceCastInst &ac) const;
   SEEInstruction parsePhiInstr(const llvm::PHINode &phi) const;
+  SEEInstruction parseUnreachableInstr(const llvm::UnreachableInst &phi) const;
+  SEEInstruction parseSwitchInstr(const llvm::SwitchInst &si) const;
+  SEEInstruction parseSelectInstr(const llvm::SelectInst &si) const;
 
   const TypeParser m_typeParser;
   const ValueParser m_valueParser;

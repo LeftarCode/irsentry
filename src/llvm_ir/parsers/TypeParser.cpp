@@ -1,9 +1,18 @@
 #include "TypeParser.h"
 
 namespace irsentry {
+
+static std::string getTypeName(const llvm::Type *type) {
+  std::string tmp;
+  llvm::raw_string_ostream rso(tmp);
+  type->print(rso);
+
+  return rso.str();
+}
+
 SEETypeDefPtr TypeParser::parseType(const llvm::Type *type) const {
 
-  if (type->isVectorTy()) {
+  if (type->isVoidTy()) {
     return SEETypeDef::makeVoid();
   } else if (type->isIntegerTy()) {
     unsigned bits = llvm::cast<llvm::IntegerType>(type)->getBitWidth();
@@ -17,6 +26,8 @@ SEETypeDefPtr TypeParser::parseType(const llvm::Type *type) const {
     return SEETypeDef::makeFloat(ScalarKind::Float32);
   } else if (type->isDoubleTy()) {
     return SEETypeDef::makeFloat(ScalarKind::Float64);
+  } else if (type->isX86_FP80Ty()) {
+    return SEETypeDef::makeFloat(ScalarKind::Float80);
   } else if (type->isFP128Ty()) {
     return SEETypeDef::makeFloat(ScalarKind::Float128);
   } else if (type->isPointerTy()) {
@@ -33,7 +44,7 @@ SEETypeDefPtr TypeParser::parseType(const llvm::Type *type) const {
     throw std::runtime_error("Unimplemented datatype: metadata / token");
   }
 
-  throw std::runtime_error("Unimplemented datatype: unknown");
+  throw std::runtime_error("Unimplemented datatype: " + getTypeName(type));
 }
 
 SEETypeDefPtr TypeParser::parseArray(const llvm::ArrayType *at) const {

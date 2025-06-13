@@ -10,11 +10,12 @@ enum ScalarKind {
   Boolean,
   Named,
   Integer,
-  Float16,  /**< Single-precision floating point */
-  Float32,  /**< Double-precision floating point */
-  Float64,  /**< Double-precision floating point */
-  Float128, /**< Double-precision floating point */
-  Ptr       /**< Represents a pointer */
+  Float16,
+  Float32,
+  Float64,
+  Float80,
+  Float128,
+  Ptr
 };
 
 enum class Signedness { Signless, Signed, Unsigned };

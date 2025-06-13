@@ -85,6 +85,7 @@ bool SEETypeDef::isFloat() const {
   case ScalarKind::Float16:
   case ScalarKind::Float32:
   case ScalarKind::Float64:
+  case ScalarKind::Float80:
   case ScalarKind::Float128:
     return true;
   default:

@@ -13,10 +13,13 @@
 #include "memory/InsertValueInstruction.h"
 #include "memory/LoadInstruction.h"
 #include "memory/PhiInstruction.h"
+#include "memory/SelectInstruction.h"
 #include "memory/ShuffleVectorInstruction.h"
 #include "memory/StoreInstruction.h"
 #include "terminator/BrTerminator.h"
 #include "terminator/RetTerminator.h"
+#include "terminator/SwitchTerminator.h"
+#include "terminator/UnreachableTerminator.h"
 #include "value/ValueInstruction.h"
 #include <memory>
 #include <new>
@@ -33,7 +36,8 @@ using SEEInstruction =
                  BrTerminator, RetTerminator, ExtractElementInstruction,
                  InsertElementInstruction, ShuffleVectorInstruction,
                  InsertValueInstruction, PhiInstruction,
-                 AddrSpaceCastInstruction>;
+                 AddrSpaceCastInstruction, UnreachableTerminator,
+                 SwitchTerminator, SelectInstruction>;
 } // namespace irsentry
 
 namespace irsentry {}

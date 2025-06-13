@@ -4,9 +4,9 @@
 
 namespace irsentry {
 static const std::unordered_map<std::string, bool> unsafeCopyFunctions = {
-    {"@IRSENTRY_MOCK_NOPARAMS", true}};
+    {"IRSENTRY_MOCK_NOPARAMS", true}};
 
-void scanMockCFGNode(size_t functionIdx, const std::unique_ptr<CFGNode> &node,
+void scanMockCFGNode(size_t functionIdx, const std::shared_ptr<CFGNode> &node,
                      std::vector<bool> currentPath,
                      std::vector<SymbolicHotSpot> &outHotSpots) {
   if (node == nullptr) {

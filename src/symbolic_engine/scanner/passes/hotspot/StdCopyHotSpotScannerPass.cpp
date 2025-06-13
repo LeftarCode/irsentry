@@ -4,15 +4,15 @@
 namespace irsentry {
 
 static const std::unordered_map<std::string, bool> unsafeCopyFunctions = {
-    {"@strcpy", true},    {"@strncpy", true},  {"@stpcpy", true},
-    {"@wcscpy", true},    {"@wcsncpy", true},  {"@strcat", true},
-    {"@strncat", true},   {"@wcscat", true},   {"@wcsncat", true},
-    {"@sprintf", true},   {"@vsprintf", true}, {"@snprintf", true},
-    {"@vsnprintf", true}, {"@memcpy", true},   {"@memmove", true},
-    {"@bcopy", true},     {"@gets", true},
+    {"strcpy", true},    {"strncpy", true},  {"stpcpy", true},
+    {"wcscpy", true},    {"wcsncpy", true},  {"strcat", true},
+    {"strncat", true},   {"wcscat", true},   {"wcsncat", true},
+    {"sprintf", true},   {"vsprintf", true}, {"snprintf", true},
+    {"vsnprintf", true}, {"memcpy", true},   {"memmove", true},
+    {"bcopy", true},     {"gets", true},
 };
 
-void scanCFGNode(size_t functionIdx, const std::unique_ptr<CFGNode> &node,
+void scanCFGNode(size_t functionIdx, const std::shared_ptr<CFGNode> &node,
                  std::vector<bool> currentPath,
                  std::vector<SymbolicHotSpot> &outHotSpots) {
   if (node == nullptr) {

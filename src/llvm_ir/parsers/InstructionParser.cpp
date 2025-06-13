@@ -372,6 +372,51 @@ InstructionParser::parsePhiInstr(const llvm::PHINode &phi) const {
   return instr;
 }
 
+SEEInstruction InstructionParser::parseUnreachableInstr(
+    const llvm::UnreachableInst &phi) const {
+  return UnreachableTerminator{};
+}
+
+SEEInstruction
+InstructionParser::parseSwitchInstr(const llvm::SwitchInst &si) const {
+  auto condTy = m_typeParser.parseType(si.getCondition()->getType());
+  Value condV = m_valueParser.parseValue(condTy, si.getCondition());
+
+  SwitchTerminator instr;
+  instr.condition = std::move(condV);
+  instr.defaultSuccessor = labelOf(si.getDefaultDest());
+
+  instr.cases.reserve(si.getNumCases());
+  for (auto &Case : si.cases()) {
+    auto caseTy = m_typeParser.parseType(Case.getCaseValue()->getType());
+    Value cVal = m_valueParser.parseValue(caseTy, Case.getCaseValue());
+
+    instr.cases.push_back(
+        SwitchCase{std::move(cVal), labelOf(Case.getCaseSuccessor())});
+  }
+  return instr;
+}
+
+SEEInstruction
+InstructionParser::parseSelectInstr(const llvm::SelectInst &si) const {
+  // condition
+  auto condTy = m_typeParser.parseType(si.getCondition()->getType());
+  Value cond = m_valueParser.parseValue(condTy, si.getCondition());
+
+  // true / false operands
+  auto tvTy = m_typeParser.parseType(si.getTrueValue()->getType());
+  Value tv = m_valueParser.parseValue(tvTy, si.getTrueValue());
+
+  auto fvTy = m_typeParser.parseType(si.getFalseValue()->getType());
+  Value fv = m_valueParser.parseValue(fvTy, si.getFalseValue());
+
+  SelectInstruction instr;
+  instr.condition = std::move(cond);
+  instr.trueValue = std::move(tv);
+  instr.falseValue = std::move(fv);
+  return instr;
+}
+
 SEEInstruction
 InstructionParser::parseInstruction(const llvm::Instruction &instr) const {
   if (auto *bo = llvm::dyn_cast<llvm::BinaryOperator>(&instr)) {
@@ -410,10 +455,15 @@ InstructionParser::parseInstruction(const llvm::Instruction &instr) const {
     return parseAddrSpaceCastInstr(*ac);
   } else if (auto *pn = llvm::dyn_cast<llvm::PHINode>(&instr)) {
     return parsePhiInstr(*pn);
+  } else if (auto *ui = llvm::dyn_cast<llvm::UnreachableInst>(&instr)) {
+    return parseUnreachableInstr(*ui);
+  } else if (auto *si = llvm::dyn_cast<llvm::SwitchInst>(&instr)) {
+    return parseSwitchInstr(*si);
+  } else if (auto *sli = llvm::dyn_cast<llvm::SelectInst>(&instr)) {
+    return parseSelectInstr(*sli);
   }
 
   switch (instr.getOpcode()) {
-  case llvm::Instruction::Select:
   case llvm::Instruction::VAArg:
   case llvm::Instruction::LandingPad:
   case llvm::Instruction::CatchPad:
