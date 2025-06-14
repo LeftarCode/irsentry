@@ -4,7 +4,7 @@
 #include <iostream>
 
 int main(int argc, char **argv) {
-  const std::string filename = "../../../tests/c/uclibc-clean.ll";
+  const std::string filename = "../../../tests/c/args/args.ll";
 
   irsentry::IRSentryOptions options;
   options.filename = filename;
