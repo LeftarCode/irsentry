@@ -8,7 +8,7 @@ namespace irsentry {
 class ExtractValueInstruction {
 public:
   ExtractValueInstruction() = default;
-  ExtractValueInstruction(SEETypeDefPtr resultType, Value from,
+  ExtractValueInstruction(SIRTypePtr resultType, Value from,
                           std::vector<size_t> indices) {
     result = Value(resultType);
     this->from = from;

@@ -7,7 +7,7 @@ namespace irsentry {
 class LoadInstruction {
 public:
   LoadInstruction() = default;
-  LoadInstruction(SEETypeDefPtr resultType, Value from) {
+  LoadInstruction(SIRTypePtr resultType, Value from) {
     result = Value(resultType);
     this->from = from;
   }

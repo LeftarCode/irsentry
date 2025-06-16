@@ -18,7 +18,7 @@ class BitwiseInstruction {
 
 public:
   BitwiseInstruction() = default;
-  BitwiseInstruction(BitwiseInstrType bitwiseIntrType, SEETypeDefPtr dataType) {
+  BitwiseInstruction(BitwiseInstrType bitwiseIntrType, SIRTypePtr dataType) {
     this->bitwiseInstrType = bitwiseIntrType;
 
     result = Value(dataType);

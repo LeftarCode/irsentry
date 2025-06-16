@@ -25,31 +25,20 @@ enum class ValueInstrType {
   URemInstrType
 };
 
-/**
- * @class AndInstruction
- * @brief Represents a bitwise AND instruction for integer types.
- *
- */
 class ValueInstruction {
   ValueInstrType valueInstrType;
 
 public:
   ValueInstruction() = default;
-  ValueInstruction(ValueInstrType valueInstrType, SEETypeDefPtr dataType) {
+  ValueInstruction(ValueInstrType valueInstrType, SIRTypePtr dataType) {
     this->valueInstrType = valueInstrType;
 
     result = Value(dataType);
     operators[0] = Value(dataType);
     operators[1] = Value(dataType);
   }
-  /**
-   * @brief The result of the bitwise AND operation.
-   */
-  Value result;
 
-  /**
-   * @brief The two operands involved in the AND operation.
-   */
+  Value result;
   std::array<Value, 2> operators;
 };
 } // namespace irsentry

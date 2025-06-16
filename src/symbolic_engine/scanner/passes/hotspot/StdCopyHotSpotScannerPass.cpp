@@ -1,9 +1,10 @@
 #include "StdCopyHotSpotScannerPass.h"
 #include <unordered_map>
+#include <unordered_set>
 
 namespace irsentry {
 
-static const std::unordered_map<std::string, bool> unsafeCopyFunctions = {
+static const std::unordered_map<std::string, bool> kUnsafeCalls = {
     {"strcpy", true},    {"strncpy", true},  {"stpcpy", true},
     {"wcscpy", true},    {"wcsncpy", true},  {"strcat", true},
     {"strncat", true},   {"wcscat", true},   {"wcsncat", true},
@@ -12,55 +13,40 @@ static const std::unordered_map<std::string, bool> unsafeCopyFunctions = {
     {"bcopy", true},     {"gets", true},
 };
 
-void scanCFGNode(size_t functionIdx, const std::shared_ptr<CFGNode> &node,
-                 std::vector<bool> currentPath,
-                 std::vector<SymbolicHotSpot> &outHotSpots) {
-  if (node == nullptr) {
+using NodePtr = std::shared_ptr<CFGNode>;
+using NodeSet = std::unordered_set<const CFGNode *, NodeHash, NodeEq>;
+
+static void dfsScan(std::size_t fnIdx, const NodePtr &node, NodeSet &visited,
+                    std::vector<SymbolicHotSpot> &out) {
+  if (!node) {
+    return;
+  }
+  if (!visited.insert(node.get()).second) {
     return;
   }
 
-  const auto &instructions = node->instructions;
-  for (size_t i = 0; i < instructions.size(); i++) {
-    const auto &instr = instructions[i];
-
-    if (const auto &callInstr = std::get_if<CallInstruction>(&instr)) {
-      auto it = unsafeCopyFunctions.find(callInstr->callee);
-      if (it != unsafeCopyFunctions.end() && it->second) {
-        SymbolicHotSpot spot;
-        spot.binaryDecisionPath = currentPath;
-        spot.instructionIdx = i;
-        outHotSpots.emplace_back(spot);
+  for (std::size_t i = 0; i < node->instructions.size(); ++i) {
+    if (auto call = std::get_if<CallInstruction>(&node->instructions[i])) {
+      if (kUnsafeCalls.contains(call->callee)) {
+        out.push_back(SymbolicHotSpot{fnIdx, node->label, i});
       }
     }
   }
 
-  if (node->isSingleOutput) {
-    currentPath.push_back(true);
-    if (node->trueSuccessor != nullptr) {
-      scanCFGNode(functionIdx, node->trueSuccessor, currentPath, outHotSpots);
-    }
-  } else {
-    if (node->trueSuccessor != nullptr) {
-      auto pathTrue = currentPath;
-      pathTrue.push_back(true);
-      scanCFGNode(functionIdx, node->trueSuccessor, pathTrue, outHotSpots);
-    }
-    if (node->falseSuccessor != nullptr) {
-      auto pathFalse = currentPath;
-      pathFalse.push_back(false);
-      scanCFGNode(functionIdx, node->falseSuccessor, pathFalse, outHotSpots);
+  for (const CFGEdge &e : node->succ) {
+    if (auto tgt = e.target.lock()) {
+      dfsScan(fnIdx, tgt, visited, out);
     }
   }
 }
 
 std::vector<SymbolicHotSpot>
-StdCopyHotSpotScannerPass::scanCFG(size_t functionIdx,
+StdCopyHotSpotScannerPass::scanCFG(std::size_t fnIdx,
                                    const std::unique_ptr<CFG> &cfg) {
-  std::vector<SymbolicHotSpot> hotSpots;
-
-  std::vector<bool> emptyPath;
-  scanCFGNode(functionIdx, cfg->root, emptyPath, hotSpots);
-
-  return hotSpots;
+  std::vector<SymbolicHotSpot> hot;
+  NodeSet seen;
+  dfsScan(fnIdx, cfg->root, seen, hot);
+  return hot;
 }
+
 } // namespace irsentry

@@ -6,16 +6,15 @@ namespace irsentry {
 
 class AllocaInstruction {
 public:
-  AllocaInstruction(SEETypeDefPtr dataTypeAllocation,
-                    Value dataTypeNumElements) {
+  AllocaInstruction(SIRTypePtr dataTypeAllocation, Value dataTypeNumElements) {
 
-    result = Value(SEETypeDef::makePointer(dataTypeAllocation));
+    result = Value(SIRType::make<Ptr>(dataTypeAllocation));
     allocatedType = dataTypeAllocation;
     numElements = dataTypeNumElements;
   }
 
   Value result;
-  SEETypeDefPtr allocatedType;
+  SIRTypePtr allocatedType;
   Value numElements;
 };
 } // namespace irsentry

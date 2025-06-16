@@ -17,7 +17,7 @@ IntX IntX::fromI64(std::int64_t v, std::uint32_t bits) {
   return r;
 }
 
-inline std::string IntX::toHex() const {
+std::string IntX::toHex() const {
   std::string s = "0x";
   for (auto it = limbs.rbegin(); it != limbs.rend(); ++it) {
     char buf[17];

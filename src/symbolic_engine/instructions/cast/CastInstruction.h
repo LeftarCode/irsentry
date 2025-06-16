@@ -23,7 +23,7 @@ enum class CastInstrType : std::uint8_t {
 class CastInstruction {
 public:
   CastInstruction() = default;
-  CastInstruction(SEETypeDefPtr dataTypeFrom, SEETypeDefPtr dataTypeTo) {
+  CastInstruction(SIRTypePtr dataTypeFrom, SIRTypePtr dataTypeTo) {
 
     result = Value(dataTypeTo);
     from = Value(dataTypeFrom);

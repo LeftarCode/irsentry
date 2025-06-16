@@ -7,8 +7,8 @@ namespace irsentry {
 class InsertValueInstruction {
 public:
   InsertValueInstruction() = default;
-  InsertValueInstruction(SEETypeDefPtr resultType, Value aggregate,
-                         Value element, std::vector<size_t> indices) {
+  InsertValueInstruction(SIRTypePtr resultType, Value aggregate, Value element,
+                         std::vector<size_t> indices) {
     result = Value(resultType);
     this->aggregate = std::move(aggregate);
     this->element = std::move(element);

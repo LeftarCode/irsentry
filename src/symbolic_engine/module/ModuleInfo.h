@@ -7,7 +7,7 @@ struct ModuleInfo {
   std::string targetDefinition;
   std::vector<FunctionInfo> definedFunctions;
   std::vector<ExternalFunctionInfo> declaredFunctions;
-  std::vector<SEETypeDefPtr> definedTypes;
+  std::vector<SIRTypePtr> definedTypes;
   size_t mainFunctionIndex = std::numeric_limits<size_t>::max();
 };
 

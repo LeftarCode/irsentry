@@ -6,7 +6,7 @@ namespace irsentry {
 class AddrSpaceCastInstruction {
 public:
   AddrSpaceCastInstruction() = default;
-  AddrSpaceCastInstruction(SEETypeDefPtr toType, Value from) {
+  AddrSpaceCastInstruction(SIRTypePtr toType, Value from) {
     result = Value(toType);
     this->from = std::move(from);
   }

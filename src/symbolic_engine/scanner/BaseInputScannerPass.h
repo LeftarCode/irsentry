@@ -14,8 +14,8 @@ struct FunctionOutputParam {};
 
 struct FunctionOutputResult {};
 
-using SymbolicInput = std::variant<void *, FunctionInput, FunctionOutputParam,
-                                   FunctionOutputResult>;
+using SymbolicInput = std::variant<std::monostate, FunctionInput,
+                                   FunctionOutputParam, FunctionOutputResult>;
 
 class BaseInputScannerPass {
 public:

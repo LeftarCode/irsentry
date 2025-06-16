@@ -6,17 +6,16 @@
 
 namespace irsentry {
 
-/// Pojedynczy <wartoœæ-case, etykieta-bloku>
 struct SwitchCase {
-  Value value;           // sta³a porównywana z condition
-  std::string successor; // dok¹d prowadzi ta ga³¹Ÿ
+  Value value;
+  std::string successor;
 };
 
 class SwitchTerminator {
 public:
-  Value condition;               // %x z instrukcji switch
-  std::vector<SwitchCase> cases; // wszystkie pary (C, BB)
-  std::string defaultSuccessor;  // blok domyœlny
+  Value condition;
+  std::vector<SwitchCase> cases;
+  std::string defaultSuccessor;
 };
 
 } // namespace irsentry

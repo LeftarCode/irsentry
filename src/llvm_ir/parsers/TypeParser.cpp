@@ -1,88 +1,106 @@
 #include "TypeParser.h"
+#include <llvm/Support/raw_ostream.h>
 
 namespace irsentry {
 
-static std::string getTypeName(const llvm::Type *type) {
-  std::string tmp;
-  llvm::raw_string_ostream rso(tmp);
-  type->print(rso);
-
+static std::string dumpLlvmTy(const llvm::Type *ty) {
+  std::string s;
+  llvm::raw_string_ostream rso(s);
+  ty->print(rso);
   return rso.str();
 }
 
-SEETypeDefPtr TypeParser::parseType(const llvm::Type *type) const {
+std::shared_ptr<SIRType> TypeParser::parseType(const llvm::Type *ty) const {
 
-  if (type->isVoidTy()) {
-    return SEETypeDef::makeVoid();
-  } else if (type->isIntegerTy()) {
-    unsigned bits = llvm::cast<llvm::IntegerType>(type)->getBitWidth();
-    if (bits == 1) {
-      return SEETypeDef::makeBoolean();
+  if (ty->isVoidTy())
+    return SIRType::make<BaseScalar>(BaseScalar::Void);
+
+  if (ty->isIntegerTy()) {
+    unsigned bits = llvm::cast<llvm::IntegerType>(ty)->getBitWidth();
+    if (bits == 1)
+      return SIRType::make<BaseScalar>(BaseScalar::Bool);
+
+    switch (bits) {
+    case 8:
+      return SIRType::make<BaseScalar>(BaseScalar::Int8);
+    case 16:
+      return SIRType::make<BaseScalar>(BaseScalar::Int16);
+    case 32:
+      return SIRType::make<BaseScalar>(BaseScalar::Int32);
+    case 64:
+      return SIRType::make<BaseScalar>(BaseScalar::Int64);
+    default:
+      return SIRType::make<IntCustom>(bits, Signedness::Signless);
     }
-    return SEETypeDef::makeInteger(bits, Signedness::Signless);
-  } else if (type->isHalfTy()) {
-    return SEETypeDef::makeFloat(ScalarKind::Float16);
-  } else if (type->isFloatTy()) {
-    return SEETypeDef::makeFloat(ScalarKind::Float32);
-  } else if (type->isDoubleTy()) {
-    return SEETypeDef::makeFloat(ScalarKind::Float64);
-  } else if (type->isX86_FP80Ty()) {
-    return SEETypeDef::makeFloat(ScalarKind::Float80);
-  } else if (type->isFP128Ty()) {
-    return SEETypeDef::makeFloat(ScalarKind::Float128);
-  } else if (type->isPointerTy()) {
-    return SEETypeDef::makePointer(SEETypeDef::makeVoid());
-  } else if (auto *at = llvm::dyn_cast<llvm::ArrayType>(type)) {
+  }
+
+  if (ty->isHalfTy())
+    return SIRType::make<BaseScalar>(BaseScalar::Float16);
+  if (ty->isFloatTy())
+    return SIRType::make<BaseScalar>(BaseScalar::Float32);
+  if (ty->isDoubleTy())
+    return SIRType::make<BaseScalar>(BaseScalar::Float64);
+  if (ty->isX86_FP80Ty())
+    return SIRType::make<BaseScalar>(BaseScalar::Float80);
+  if (ty->isFP128Ty())
+    return SIRType::make<BaseScalar>(BaseScalar::Float128);
+
+  if (auto *pt = llvm::dyn_cast<llvm::PointerType>(ty)) {
+    auto pointee = SIRType::make<BaseScalar>(BaseScalar::Void);
+    return SIRType::make<Ptr>(std::move(pointee));
+  }
+
+  if (auto *at = llvm::dyn_cast<llvm::ArrayType>(ty))
     return parseArray(at);
-  } else if (auto *vt = llvm::dyn_cast<llvm::VectorType>(type)) {
+
+  if (auto *vt = llvm::dyn_cast<llvm::VectorType>(ty))
     return parseVector(vt);
-  } else if (auto *st = llvm::dyn_cast<llvm::StructType>(type)) {
+
+  if (auto *st = llvm::dyn_cast<llvm::StructType>(ty))
     return parseStruct(st);
-  } else if (auto *ft = llvm::dyn_cast<llvm::FunctionType>(type)) {
-    return parseFuncType(ft);
-  } else if (type->isMetadataTy() || type->isTokenTy()) {
-    throw std::runtime_error("Unimplemented datatype: metadata / token");
-  }
 
-  throw std::runtime_error("Unimplemented datatype: " + getTypeName(type));
+  if (auto *ft = llvm::dyn_cast<llvm::FunctionType>(ty))
+    return parseFunc(ft);
+
+  if (ty->isMetadataTy() || ty->isTokenTy())
+    throw std::runtime_error("TypeParser: metadata / token not supported");
+
+  throw std::runtime_error("TypeParser: unhandled LLVM type: " +
+                           dumpLlvmTy(ty));
 }
 
-SEETypeDefPtr TypeParser::parseArray(const llvm::ArrayType *at) const {
-  auto elementsType = parseType(at->getElementType());
-  auto elementsCount = at->getNumElements();
-  return SEETypeDef::makeArray(elementsCount, elementsType);
+std::shared_ptr<SIRType>
+TypeParser::parseArray(const llvm::ArrayType *at) const {
+  auto elem = parseType(at->getElementType());
+  return SIRType::make<Array>(at->getNumElements(), std::move(elem));
 }
 
-SEETypeDefPtr TypeParser::parseVector(const llvm::VectorType *vt) const {
-  auto elementsType = parseType(vt->getElementType());
-  auto elementsCount = vt->getElementCount().getKnownMinValue();
-  return SEETypeDef::makeVector(elementsCount, elementsType);
+std::shared_ptr<SIRType>
+TypeParser::parseVector(const llvm::VectorType *vt) const {
+  auto elem = parseType(vt->getElementType());
+  uint64_t n = vt->getElementCount().getKnownMinValue();
+  return SIRType::make<Vec>(n, std::move(elem));
 }
 
-SEETypeDefPtr TypeParser::parseStruct(const llvm::StructType *st) const {
-  StructInfo structInfo;
-  structInfo.reserve(st->getNumElements());
+std::shared_ptr<SIRType>
+TypeParser::parseStruct(const llvm::StructType *st) const {
+  std::vector<std::shared_ptr<SIRType>> fields;
+  fields.reserve(st->getNumElements());
+  for (const auto *elt : st->elements())
+    fields.push_back(parseType(elt));
 
-  for (const auto *elem : st->elements()) {
-    StructField field;
-    field.type = parseType(elem);
-    structInfo.push_back(field);
-  }
-
-  // FIXME: Add struct name if it has one
-  return SEETypeDef::makeStruct(structInfo);
+  return SIRType::make<Struct>(std::move(fields));
 }
 
-SEETypeDefPtr TypeParser::parseFuncType(const llvm::FunctionType *ft) const {
-  std::vector<SEETypeDefPtr> params;
+std::shared_ptr<SIRType>
+TypeParser::parseFunc(const llvm::FunctionType *ft) const {
+  std::vector<std::shared_ptr<SIRType>> params;
   params.reserve(ft->getNumParams());
-  for (const auto *param : ft->params()) {
-    params.push_back(parseType(param));
-  }
+  for (const llvm::Type *p : ft->params())
+    params.push_back(parseType(p));
 
   auto ret = parseType(ft->getReturnType());
-  return SEETypeDef::makeFunction(std::move(ret), std::move(params),
-                                  ft->isVarArg());
+  return SIRType::make<Func>(std::move(ret), std::move(params), ft->isVarArg());
 }
 
 } // namespace irsentry

@@ -6,7 +6,7 @@ namespace irsentry {
 class ExtractElementInstruction {
 public:
   ExtractElementInstruction() = default;
-  ExtractElementInstruction(SEETypeDefPtr resultType, Value vectorVal,
+  ExtractElementInstruction(SIRTypePtr resultType, Value vectorVal,
                             Value indexVal) {
     result = Value(resultType);
     vector = std::move(vectorVal);

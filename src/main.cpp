@@ -8,7 +8,6 @@ int main(int argc, char **argv) {
 
   irsentry::IRSentryOptions options;
   options.filename = filename;
-  options.profilingStructures = true;
 #ifdef IRSENTRY_DEBUG
   options.logLevel = irsentry::Logger::LogLevel::Debug;
 #else

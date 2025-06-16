@@ -8,10 +8,10 @@ namespace irsentry {
 class ICmpInstruction {
 public:
   ICmpInstruction() = default;
-  ICmpInstruction(ICmpPred cmpPred, SEETypeDefPtr dataType) {
+  ICmpInstruction(ICmpPred cmpPred, SIRTypePtr dataType) {
     this->cmpPred = cmpPred;
 
-    result = Value(SEETypeDef::makeBoolean());
+    result = Value(SIRType::make<BaseScalar>(BaseScalar::Bool));
     operators[0] = Value(dataType);
     operators[1] = Value(dataType);
   }

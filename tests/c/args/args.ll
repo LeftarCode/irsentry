@@ -19,7 +19,7 @@ define dso_local i32 @main(i32 noundef %0, i8** noundef %1) #0 {
   %9 = load i8*, i8** %8, align 8
   %10 = call i32 @strcmp(i8* noundef %9, i8* noundef getelementptr inbounds ([15 x i8], [15 x i8]* @.str, i64 0, i64 0)) #3
   %11 = icmp ne i32 %10, 0
-  br i1 %11, label %12, label %14
+  br i1 %11, label %14, label %12
 
 12:                                               ; preds = %2
   %13 = call i32 (...) @IRSENTRY_MOCK_NOPARAMS()

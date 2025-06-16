@@ -1,9 +1,31 @@
 #include "ValueParser.h"
+
+#include <cstring>
 #include <llvm/IR/Constants.h>
 #include <llvm/IR/GlobalValue.h>
-#include <llvm/IR/InstrTypes.h>
 
 namespace irsentry {
+
+static bool isIntegerTy(const SIRTypePtr &t) {
+  return t->is<BaseScalar>() ? [](BaseScalar bs) {
+    return bs == BaseScalar::Bool || bs == BaseScalar::Int8 ||
+           bs == BaseScalar::Int16 || bs == BaseScalar::Int32 ||
+           bs == BaseScalar::Int64 || bs == BaseScalar::Uint8 ||
+           bs == BaseScalar::Uint16 || bs == BaseScalar::Uint32 ||
+           bs == BaseScalar::Uint64;
+  }(t->as<BaseScalar>())
+                             : t->is<IntCustom>();
+}
+
+static bool isSignedTy(const SIRTypePtr &t) {
+  if (t->is<IntCustom>())
+    return t->as<IntCustom>().sign == Signedness::Signed;
+  if (!t->is<BaseScalar>())
+    return false;
+  auto bs = t->as<BaseScalar>();
+  return bs == BaseScalar::Int8 || bs == BaseScalar::Int16 ||
+         bs == BaseScalar::Int32 || bs == BaseScalar::Int64;
+}
 
 static IntX apIntToIntX(const llvm::APInt &api, bool isSigned) {
   IntX out;
@@ -12,123 +34,86 @@ static IntX apIntToIntX(const llvm::APInt &api, bool isSigned) {
 
   unsigned nWords = api.getNumWords();
   out.limbs.resize(nWords);
-
   const uint64_t *src = api.getRawData();
   std::copy(src, src + nWords, out.limbs.begin());
-
   return out;
 }
 
-static TypeVariant parseConstInteger(SEETypeDefPtr dataType,
-                                     const llvm::ConstantInt *CI) {
+static ScalarConstant parseConstInteger(const SIRTypePtr &type,
+                                        const llvm::ConstantInt *CI) {
   unsigned bits = CI->getBitWidth();
-
-  if (bits == 1) {
+  if (bits == 1)
     return static_cast<bool>(CI->isOne());
-  }
 
-  bool isSigned = false;
-  if (dataType->isInteger()) {
-    auto &si = std::get<ScalarInfo>(dataType->info);
-    isSigned = (si.signedness == Signedness::Signed);
-  }
-
+  bool isSigned = isSignedTy(type);
   return apIntToIntX(CI->getValue(), isSigned);
 }
 
-static TypeVariant parseConstFloat(SEETypeDefPtr dataType,
-                                   const llvm::ConstantFP *CFP) {
+static ScalarConstant parseConstFloat(const llvm::ConstantFP *CFP) {
   const llvm::Type *fty = CFP->getType();
 
-  if (fty->isHalfTy()) {
+  if (fty->isHalfTy() || fty->isFloatTy()) {
     return CFP->getValueAPF().convertToFloat();
   }
-  if (fty->isFloatTy()) {
-    return CFP->getValueAPF().convertToFloat();
-  }
+
   if (fty->isDoubleTy()) {
     return CFP->getValueAPF().convertToDouble();
   }
 
   if (fty->isX86_FP80Ty()) {
     llvm::APInt api = CFP->getValueAPF().bitcastToAPInt();
-
     Float80Bits raw;
-    const std::uint8_t *src =
-        reinterpret_cast<const std::uint8_t *>(api.getRawData());
+    const auto *src = reinterpret_cast<const uint8_t *>(api.getRawData());
     std::memcpy(raw.bytes.data(), src, 10);
-
     return raw;
   }
 
-  throw std::runtime_error("Unimplemented value: floatConst(fp128)");
+  throw std::runtime_error("ValueParser: fp128/ppc128 not implemented");
 }
 
-Value ValueParser::parseValue(SEETypeDefPtr dataType,
-                              const llvm::Value *val) const {
-  if (auto *C = llvm::dyn_cast<llvm::Constant>(val)) {
-    return parseConstant(dataType, C);
+Value ValueParser::parseValue(SIRTypePtr ty, const llvm::Value *V) const {
+  if (const auto *C = llvm::dyn_cast<llvm::Constant>(V)) {
+    return parseConstant(std::move(ty), C);
   }
 
-  Value v;
-  v.isVariable = true;
-  v.dataType = std::move(dataType);
-  if (val->hasName()) {
-    v.optName = val->getName().str();
-  }
-  return v;
+  Variable var;
+  var.name = V->hasName() ? V->getName().str() : "<unnamed>";
+  return Value{std::move(ty), std::move(var)};
 }
 
-Value ValueParser::parseConstant(SEETypeDefPtr dataType,
-                                 const llvm::Constant *C) const {
+Value ValueParser::parseConstant(SIRTypePtr ty, const llvm::Constant *C) const {
   using namespace llvm;
-  Value out;
-  out.isVariable = false;
-  out.dataType = dataType;
 
-  if (auto *CI = llvm::dyn_cast<llvm::ConstantInt>(C)) {
-    auto val = parseConstInteger(dataType, CI);
-    out.optValue = val;
-    return out;
-  } else if (auto *CFP = llvm::dyn_cast<llvm::ConstantFP>(C)) {
-    auto val = parseConstFloat(dataType, CFP);
-    out.optValue = val;
-    return out;
-  } else if (isa<ConstantPointerNull>(C)) {
-    if (!dataType->isPointer()) {
-      throw std::runtime_error("nullConst used with non-pointer type");
-    }
-
-    out.optValue = std::monostate{};
-    return out;
-  } else if (isa<ConstantAggregateZero>(C)) {
-    throw std::runtime_error("Unimplemented value: zeroInitializerConst");
-  } else if (isa<UndefValue>(C)) {
-    throw std::runtime_error("Unimplemented value: undefConst");
-  } else if (isa<PoisonValue>(C)) {
-    throw std::runtime_error("Unimplemented value: poison");
-  } else if (isa<ConstantStruct>(C)) {
-    throw std::runtime_error("Unimplemented value: structConst");
-  } else if (isa<ConstantArray>(C)) {
-    throw std::runtime_error("Unimplemented value: arrayConst");
-  } else if (auto *CDS = dyn_cast<ConstantDataSequential>(C)) {
-    if (CDS->isString()) {
-      throw std::runtime_error("Unimplemented value: charArrayConst");
-    }
-    if (isa<ConstantDataVector>(CDS)) {
-      throw std::runtime_error("Unimplemented value: vectorConst");
-    }
-  } else if (isa<BlockAddress>(C)) {
-    throw std::runtime_error("Unimplemented value: blockAddressConst");
-  } else if (isa<ConstantExpr>(C)) {
-    throw std::runtime_error("Unimplemented value: constantExpr");
-  } else if (auto *GV = dyn_cast<GlobalValue>(C)) {
-    out.isVariable = true;
-    out.optName = GV->getName().str();
-    return out;
+  if (auto *CI = dyn_cast<ConstantInt>(C)) {
+    Constant c{parseConstInteger(ty, CI)};
+    return Value{std::move(ty), std::move(c)};
   }
 
-  throw std::runtime_error("Unimplemented value: unknown");
+  if (auto *CFP = dyn_cast<ConstantFP>(C)) {
+    Constant c{parseConstFloat(CFP)};
+    return Value{std::move(ty), std::move(c)};
+  }
+
+  if (isa<ConstantPointerNull>(C)) {
+    Constant c{ScalarConstant{std::monostate{}}};
+    return Value{std::move(ty), std::move(c)};
+  }
+
+  if (isa<UndefValue>(C)) {
+    return Value{std::move(ty), Undef{}};
+  }
+
+  if (isa<PoisonValue>(C)) {
+    return Value{std::move(ty), Poison{}};
+  }
+
+  if (auto *GV = dyn_cast<GlobalValue>(C)) {
+    Variable v{GV->getName().str()};
+    return Value{std::move(ty), std::move(v)};
+  }
+
+  throw std::runtime_error(
+      "ValueParser: aggregate/expr constants not implemented");
 }
 
 } // namespace irsentry

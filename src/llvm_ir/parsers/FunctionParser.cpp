@@ -70,7 +70,7 @@ FunctionParser::parseFunctionBody(const llvm::Function &func) const {
   }
 
   CFGBuilder cfgBuilder;
-  return cfgBuilder.buildControlFlowGraph(blocks);
+  return cfgBuilder.build(blocks);
 }
 
 FunctionInfo FunctionParser::parseFunction(const llvm::Function &func) const {

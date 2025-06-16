@@ -6,7 +6,7 @@ namespace irsentry {
 class InsertElementInstruction {
 public:
   InsertElementInstruction() = default;
-  InsertElementInstruction(SEETypeDefPtr resultType, Value vectorVal,
+  InsertElementInstruction(SIRTypePtr resultType, Value vectorVal,
                            Value elementVal, Value indexVal) {
     result = Value(resultType);
     vector = std::move(vectorVal);

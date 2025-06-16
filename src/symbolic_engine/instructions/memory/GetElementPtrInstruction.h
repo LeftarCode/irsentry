@@ -7,7 +7,7 @@ namespace irsentry {
 class GetElementPtrInstruction {
 public:
   GetElementPtrInstruction() = default;
-  GetElementPtrInstruction(SEETypeDefPtr resultType, Value from) {
+  GetElementPtrInstruction(SIRTypePtr resultType, Value from) {
     result = Value(resultType);
     this->from = from;
   }

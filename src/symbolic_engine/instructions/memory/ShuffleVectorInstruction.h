@@ -7,7 +7,7 @@ namespace irsentry {
 class ShuffleVectorInstruction {
 public:
   ShuffleVectorInstruction() = default;
-  ShuffleVectorInstruction(SEETypeDefPtr resultType, Value vec1, Value vec2,
+  ShuffleVectorInstruction(SIRTypePtr resultType, Value vec1, Value vec2,
                            std::vector<int> mask) {
     result = Value(resultType);
     vector1 = std::move(vec1);

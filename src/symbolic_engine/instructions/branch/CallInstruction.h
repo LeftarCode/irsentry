@@ -6,7 +6,7 @@ namespace irsentry {
 class CallInstruction {
 public:
   CallInstruction() = default;
-  CallInstruction(SEETypeDefPtr returnType, std::string callee,
+  CallInstruction(SIRTypePtr returnType, std::string callee,
                   std::vector<Value> arguments) {
     result = Value(returnType);
     this->callee = callee;

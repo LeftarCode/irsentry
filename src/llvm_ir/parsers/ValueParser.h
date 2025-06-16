@@ -10,9 +10,9 @@ namespace irsentry {
 class ValueParser {
 public:
   ValueParser() {};
-  Value parseValue(SEETypeDefPtr dataType, const llvm::Value *value) const;
+  Value parseValue(SIRTypePtr dataType, const llvm::Value *value) const;
 
 private:
-  Value parseConstant(SEETypeDefPtr dataType, const llvm::Constant *C) const;
+  Value parseConstant(SIRTypePtr dataType, const llvm::Constant *C) const;
 };
 } // namespace irsentry
