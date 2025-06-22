@@ -3,6 +3,7 @@
 #include "llvm_ir/transforms/IRTransformer.h"
 #include "symbolic_engine/scanner/HotSpotScanner.h"
 #include "symbolic_engine/scanner/InputScanner.h"
+#include "tui/TUIRenderer.h"
 #include "utilities/Logger.h"
 #include <string>
 
@@ -25,6 +26,9 @@ public:
   IRSentryStatus run();
 
 private:
+  std::thread tuiThread;
+  TUIRenderer tuiRenderer;
+
   const IRSentryOptions m_options;
   std::unique_ptr<InputScanner> m_inputScanner;
   std::unique_ptr<HotSpotScanner> m_hotSpotScanner;

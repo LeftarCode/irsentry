@@ -1,4 +1,5 @@
 #pragma once
+#include <functional>
 #include <memory>
 #include <mutex>
 #include <string>
@@ -84,6 +85,9 @@ public:
    */
   void fatal(const std::string &message);
 
+  using LogListener = std::function<void(const std::string &message)>;
+  void addListener(LogListener listener);
+
 private:
   /**
    * @brief Constructs a new Logger object.
@@ -113,6 +117,7 @@ private:
 
   std::mutex m_mtx;    /**< Mutex to ensure thread-safe logging operations. */
   LogLevel m_minLevel; /**< The minimum log level for logging messages. */
+  std::vector<LogListener> m_listeners;
 };
 
 } // namespace irsentry

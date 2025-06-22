@@ -25,9 +25,15 @@ void Logger::log(LogLevel level, const std::string &message) {
   if (level < m_minLevel) {
     return;
   }
+
   std::lock_guard<std::mutex> lock(m_mtx);
-  std::cout << currentDateTime() << " [" << logLevelToString(level) << "] "
-            << message << std::endl;
+  std::string msg = std::format("{} [{}] {}", currentDateTime(),
+                                logLevelToString(level), message);
+  std::cout << msg << std::endl;
+
+  for (auto &callback : m_listeners) {
+    callback(msg);
+  }
 }
 
 void Logger::debug(const std::string &message) {
@@ -46,6 +52,11 @@ void Logger::error(const std::string &message) {
 
 void Logger::fatal(const std::string &message) {
   log(LogLevel::Fatal, message);
+}
+
+void Logger::addListener(LogListener listener) {
+  std::lock_guard lock(m_mtx);
+  m_listeners.push_back(std::move(listener));
 }
 
 std::string Logger::currentDateTime() {

@@ -292,7 +292,7 @@ void SymbolicEngine::printResult() {
   const auto &ssa = varEnv.ssa;
   auto it = ssa.find("%1");
   if (it == ssa.end()) {
-    std::cout << "(%1 / argv nieobecny w SSA)\n";
+    Logger::getInstance().debug("(%1 / argv not present in SSA)");
     return;
   }
 
@@ -303,8 +303,6 @@ void SymbolicEngine::printResult() {
   const z3::expr &mem = varEnv.memory;
   const unsigned PTRB = varEnv.ptrBits;
 
-  std::cout << "argv @ 0x" << std::hex << argvBase << std::dec << '\n';
-
   for (unsigned idx = 1; idx < symbolicArgvs + 1; ++idx) {
 
     uint64_t ptr = loadPtr(m, mem, argvBase + idx * (PTRB / 8), PTRB);
@@ -314,9 +312,7 @@ void SymbolicEngine::printResult() {
 
     std::string txt = readCString(m, mem, ptr, PTRB);
 
-    std::cout << "  argv[" << idx << "] "
-              << "@ 0x" << std::hex << ptr << std::dec << "  \"" << txt
-              << "\"\n";
+    Logger::getInstance().info(std::format("argv[{}]: {}", idx, txt));
   }
 }
 
@@ -326,9 +322,9 @@ void SymbolicEngine::debugPrintResult() {
 
     std::ostringstream oss;
     oss << "SAT – model:\n" << m << '\n';
-    Logger::getInstance().info(oss.str());
+    Logger::getInstance().debug(oss.str());
 
-    std::cout << "\n--- Symbolic state dump ---\n";
+    Logger::getInstance().debug("\n--- Symbolic state dump ---\n");
     varEnv.dumpModel(m);
 
     Logger::getInstance().info("SAT!");
