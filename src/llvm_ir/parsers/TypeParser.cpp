@@ -34,36 +34,46 @@ std::shared_ptr<SIRType> TypeParser::parseType(const llvm::Type *ty) const {
     }
   }
 
-  if (ty->isHalfTy())
+  if (ty->isHalfTy()) {
     return SIRType::make<BaseScalar>(BaseScalar::Float16);
-  if (ty->isFloatTy())
+  }
+  if (ty->isFloatTy()) {
     return SIRType::make<BaseScalar>(BaseScalar::Float32);
-  if (ty->isDoubleTy())
+  }
+  if (ty->isDoubleTy()) {
     return SIRType::make<BaseScalar>(BaseScalar::Float64);
-  if (ty->isX86_FP80Ty())
+  }
+  if (ty->isX86_FP80Ty()) {
     return SIRType::make<BaseScalar>(BaseScalar::Float80);
-  if (ty->isFP128Ty())
+  }
+  if (ty->isFP128Ty()) {
     return SIRType::make<BaseScalar>(BaseScalar::Float128);
+  }
 
   if (auto *pt = llvm::dyn_cast<llvm::PointerType>(ty)) {
     auto pointee = SIRType::make<BaseScalar>(BaseScalar::Void);
     return SIRType::make<Ptr>(std::move(pointee));
   }
 
-  if (auto *at = llvm::dyn_cast<llvm::ArrayType>(ty))
+  if (auto *at = llvm::dyn_cast<llvm::ArrayType>(ty)) {
     return parseArray(at);
+  }
 
-  if (auto *vt = llvm::dyn_cast<llvm::VectorType>(ty))
+  if (auto *vt = llvm::dyn_cast<llvm::VectorType>(ty)) {
     return parseVector(vt);
+  }
 
-  if (auto *st = llvm::dyn_cast<llvm::StructType>(ty))
+  if (auto *st = llvm::dyn_cast<llvm::StructType>(ty)) {
     return parseStruct(st);
+  }
 
-  if (auto *ft = llvm::dyn_cast<llvm::FunctionType>(ty))
+  if (auto *ft = llvm::dyn_cast<llvm::FunctionType>(ty)) {
     return parseFunc(ft);
+  }
 
-  if (ty->isMetadataTy() || ty->isTokenTy())
+  if (ty->isMetadataTy() || ty->isTokenTy()) {
     throw std::runtime_error("TypeParser: metadata / token not supported");
+  }
 
   throw std::runtime_error("TypeParser: unhandled LLVM type: " +
                            dumpLlvmTy(ty));
@@ -86,8 +96,9 @@ std::shared_ptr<SIRType>
 TypeParser::parseStruct(const llvm::StructType *st) const {
   std::vector<std::shared_ptr<SIRType>> fields;
   fields.reserve(st->getNumElements());
-  for (const auto *elt : st->elements())
+  for (const auto *elt : st->elements()) {
     fields.push_back(parseType(elt));
+  }
 
   return SIRType::make<Struct>(std::move(fields));
 }
@@ -96,8 +107,9 @@ std::shared_ptr<SIRType>
 TypeParser::parseFunc(const llvm::FunctionType *ft) const {
   std::vector<std::shared_ptr<SIRType>> params;
   params.reserve(ft->getNumParams());
-  for (const llvm::Type *p : ft->params())
+  for (const llvm::Type *p : ft->params()) {
     params.push_back(parseType(p));
+  }
 
   auto ret = parseType(ft->getReturnType());
   return SIRType::make<Func>(std::move(ret), std::move(params), ft->isVarArg());

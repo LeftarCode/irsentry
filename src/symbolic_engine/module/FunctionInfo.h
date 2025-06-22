@@ -20,7 +20,7 @@ struct FunctionInfo {
   SIRTypePtr returnType = nullptr;        ///< The return type of the function.
   std::string name = "";                  ///< The name of the function.
   std::vector<Parameter> parameters = {}; ///< The parameters of the function.
-  std::unique_ptr<CFG> cfg;
+  std::shared_ptr<CFG> cfg;
 };
 
 struct ExternalFunctionInfo {

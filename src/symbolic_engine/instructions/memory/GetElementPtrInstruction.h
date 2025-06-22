@@ -7,12 +7,14 @@ namespace irsentry {
 class GetElementPtrInstruction {
 public:
   GetElementPtrInstruction() = default;
-  GetElementPtrInstruction(SIRTypePtr resultType, Value from) {
-    result = Value(resultType);
-    this->from = from;
-  }
+
+  GetElementPtrInstruction(SIRTypePtr resultType, Value basePtr,
+                           std::vector<Value> idx)
+      : result(Value(resultType)), base(std::move(basePtr)),
+        indices(std::move(idx)) {}
 
   Value result;
-  Value from;
+  Value base;
+  std::vector<Value> indices;
 };
 } // namespace irsentry

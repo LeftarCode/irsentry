@@ -12,39 +12,12 @@
 
 namespace irsentry {
 
-/**
- * @brief Parses LLVM instructions using ANTLR4 generated contexts.
- *
- * The InstructionParser class provides methods to parse various types of LLVM
- * instructions. It delegates parsing to specialized private functions for each
- * instruction type.
- */
 class InstructionParser {
 public:
   InstructionParser() {};
-  /**
-   * @brief Parses an LLVM instruction.
-   *
-   * This function processes an ANTLR4 instruction context and produces an
-   * Instruction structure containing the result variable and the textual
-   * representation.
-   *
-   * @param ctx Pointer to the LLVMParser::InstructionContext representing the
-   * instruction.
-   * @return An Instruction object containing parsed instruction details.
-   */
   SEEInstruction parseInstruction(const llvm::Instruction &instr) const;
 
 private:
-  /**
-   * @brief Parses a value instruction.
-   *
-   * Processes a value instruction context from ANTLR4 and extracts relevant
-   * details.
-   *
-   * @param ctx Pointer to the LLVMParser::ValueInstructionContext containing
-   * the value instruction.
-   */
   SEEInstruction parseBinaryInstr(const llvm::BinaryOperator &op) const;
   SEEInstruction parseCastInstr(const llvm::CastInst &ci) const;
   SEEInstruction parseICmpInstr(const llvm::ICmpInst &ci) const;

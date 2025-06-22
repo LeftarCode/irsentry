@@ -1,19 +1,10 @@
 #include "FunctionParser.h"
 #include "../../symbolic_engine/cfg/CFGBuilder.h"
 #include "../../utilities/Logger.h"
+#include "../../utilities/helpers/LLVMHelper.h"
 #include <format>
 
 namespace irsentry {
-
-static std::string getBlockLabel(const llvm::BasicBlock &BB) {
-  if (BB.hasName())
-    return "%" + BB.getName().str();
-
-  std::string tmp;
-  llvm::raw_string_ostream rso(tmp);
-  BB.printAsOperand(rso, false);
-  return rso.str();
-}
 
 std::vector<Parameter>
 FunctionParser::parseFunctionParameters(const llvm::Function &func) const {
@@ -32,7 +23,7 @@ FunctionParser::parseFunctionParameters(const llvm::Function &func) const {
   params.reserve(func.arg_size());
   for (const auto &arg : func.args()) {
     Parameter param;
-    param.name = arg.getName();
+    param.name = LLVMHelper::getSSAName(arg);
     param.type = m_typeParser.parseType(arg.getType());
     params.emplace_back(param);
   }
@@ -46,7 +37,7 @@ FunctionParser::parseBasicBlock(const llvm::BasicBlock &basicBlock) const {
     return {};
   }
 
-  std::string blockLabel = getBlockLabel(basicBlock);
+  std::string blockLabel = LLVMHelper::getBasicBlockLabel(&basicBlock);
   std::vector<SEEInstruction> instructions{};
   instructions.reserve(basicBlock.size());
 

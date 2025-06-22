@@ -34,6 +34,19 @@ std::unique_ptr<ModuleInfo> ModuleParser::parseModule(
     module->definedTypes.emplace_back(m_typeParser.parseStruct(st));
   }
 
+  for (llvm::GlobalVariable &gv : llvmModule->globals()) {
+    auto globalType = m_typeParser.parseType(gv.getValueType());
+    auto globalName = gv.getName().str();
+    if (gv.isDeclaration()) {
+      auto globalValue = m_valueParser.parseValue(globalType, &gv);
+      module->declaredGlobals[globalName] = globalValue;
+    } else {
+      const auto *init = gv.getInitializer();
+      auto globalValue = m_valueParser.parseValue(globalType, init);
+      module->definedGlobals[globalName] = globalValue;
+    }
+  }
+
   bool mainFound = false;
   size_t mainIdx = 0;
   for (const auto &fnDef : module->definedFunctions) {

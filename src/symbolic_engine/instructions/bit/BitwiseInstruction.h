@@ -14,9 +14,9 @@ enum class BitwiseInstrType {
 };
 
 class BitwiseInstruction {
-  BitwiseInstrType bitwiseInstrType;
 
 public:
+  BitwiseInstrType bitwiseInstrType;
   BitwiseInstruction() = default;
   BitwiseInstruction(BitwiseInstrType bitwiseIntrType, SIRTypePtr dataType) {
     this->bitwiseInstrType = bitwiseIntrType;

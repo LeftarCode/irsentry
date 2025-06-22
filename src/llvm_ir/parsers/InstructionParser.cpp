@@ -1,19 +1,10 @@
 #include "InstructionParser.h"
 #include "../../symbolic_engine/instructions/Instructions.h"
 #include "../../utilities/Logger.h"
+#include "../../utilities/helpers/LLVMHelper.h"
 #include <memory>
 
 namespace irsentry {
-
-static std::string labelOf(const llvm::BasicBlock *BB) {
-  if (BB->hasName())
-    return BB->getName().str();
-
-  std::string tmp;
-  llvm::raw_string_ostream rso(tmp);
-  BB->printAsOperand(rso, false);
-  return rso.str();
-}
 
 SEEInstruction
 InstructionParser::parseBinaryInstr(const llvm::BinaryOperator &op) const {
@@ -23,6 +14,8 @@ InstructionParser::parseBinaryInstr(const llvm::BinaryOperator &op) const {
     ValueInstruction instr{kind, parsedType};
     instr.operators[0] = m_valueParser.parseValue(parsedType, op.getOperand(0));
     instr.operators[1] = m_valueParser.parseValue(parsedType, op.getOperand(1));
+
+    instr.result = LLVMHelper::makeSSAResult(op, parsedType, "bin_");
     return instr;
   };
 
@@ -30,6 +23,8 @@ InstructionParser::parseBinaryInstr(const llvm::BinaryOperator &op) const {
     BitwiseInstruction instr{kind, parsedType};
     instr.operators[0] = m_valueParser.parseValue(parsedType, op.getOperand(0));
     instr.operators[1] = m_valueParser.parseValue(parsedType, op.getOperand(1));
+
+    instr.result = LLVMHelper::makeSSAResult(op, parsedType, "bit_");
     return instr;
   };
 
@@ -119,6 +114,7 @@ InstructionParser::parseCastInstr(const llvm::CastInst &ci) const {
   CastInstruction instr{fromType, toType};
   instr.from = m_valueParser.parseValue(fromType, ci.getOperand(0));
 
+  instr.result = LLVMHelper::makeSSAResult(ci, toType, "cast_");
   return instr;
 }
 
@@ -131,6 +127,8 @@ InstructionParser::parseICmpInstr(const llvm::ICmpInst &ci) const {
   instr.operators[0] = m_valueParser.parseValue(opTy, ci.getOperand(0));
   instr.operators[1] = m_valueParser.parseValue(opTy, ci.getOperand(1));
 
+  auto boolTy = SIRType::make<BaseScalar>(BaseScalar::Bool);
+  instr.result = LLVMHelper::makeSSAResult(ci, boolTy, "icmp_");
   return instr;
 }
 
@@ -143,6 +141,8 @@ InstructionParser::parseFCmpInstr(const llvm::FCmpInst &ci) const {
   instr.operators[0] = m_valueParser.parseValue(opTy, ci.getOperand(0));
   instr.operators[1] = m_valueParser.parseValue(opTy, ci.getOperand(1));
 
+  auto boolTy = SIRType::make<BaseScalar>(BaseScalar::Bool);
+  instr.result = LLVMHelper::makeSSAResult(ci, boolTy, "fcmp_");
   return instr;
 }
 
@@ -154,6 +154,10 @@ InstructionParser::parseAllocaInstr(const llvm::AllocaInst &ai) const {
   Value numElements = m_valueParser.parseValue(numTy, ai.getArraySize());
 
   AllocaInstruction instr(elemType, numElements);
+
+  auto ptrType = SIRType::make<Ptr>(elemType);
+  instr.result = LLVMHelper::makeSSAResult(ai, ptrType, "alloca_");
+
   return instr;
 }
 
@@ -165,6 +169,8 @@ InstructionParser::parseLoadInstr(const llvm::LoadInst &li) const {
 
   Value from = m_valueParser.parseValue(ptrTy, li.getPointerOperand());
   LoadInstruction instr(loadedTy, from);
+
+  instr.result = LLVMHelper::makeSSAResult(li, loadedTy, "load_");
   return instr;
 }
 
@@ -174,7 +180,20 @@ InstructionParser::parseGEPInstr(const llvm::GetElementPtrInst &gep) const {
   auto baseTy = m_typeParser.parseType(gep.getPointerOperandType());
 
   Value basePtr = m_valueParser.parseValue(baseTy, gep.getPointerOperand());
-  GetElementPtrInstruction instr(resultTy, basePtr);
+
+  std::vector<Value> idxVals;
+  idxVals.reserve(gep.getNumIndices());
+
+  for (unsigned op = 1; op < gep.getNumOperands(); ++op) {
+    const llvm::Value *idxV = gep.getOperand(op);
+    auto idxTy = m_typeParser.parseType(idxV->getType());
+    idxVals.emplace_back(m_valueParser.parseValue(idxTy, idxV));
+  }
+
+  GetElementPtrInstruction instr(resultTy, std::move(basePtr),
+                                 std::move(idxVals));
+
+  instr.result = LLVMHelper::makeSSAResult(gep, resultTy, "gep_");
   return instr;
 }
 
@@ -203,6 +222,7 @@ SEEInstruction InstructionParser::parseExtractValueInstr(
     idx.emplace_back(static_cast<size_t>(i));
 
   ExtractValueInstruction instr(resultTy, from, std::move(idx));
+  instr.result = LLVMHelper::makeSSAResult(evi, resultTy, "extval_");
   return instr;
 }
 
@@ -226,13 +246,19 @@ InstructionParser::parseCallInstr(const llvm::CallBase &call) const {
   }
 
   CallInstruction instr(retTy, std::move(callee), std::move(args));
+  bool isVoid =
+      retTy->is<BaseScalar>() && retTy->as<BaseScalar>() == BaseScalar::Void;
+
+  if (!isVoid) {
+    instr.result = LLVMHelper::makeSSAResult(call, retTy, "call_");
+  }
   return instr;
 }
 
 SEEInstruction
 InstructionParser::parseBrInstr(const llvm::BranchInst &br) const {
   if (br.isUnconditional()) {
-    std::string succ = labelOf(br.getSuccessor(0));
+    std::string succ = LLVMHelper::getBasicBlockLabel(br.getSuccessor(0));
     BrTerminator instr(BrTerminatorType::Unconditional, std::move(succ));
     return instr;
   }
@@ -240,8 +266,8 @@ InstructionParser::parseBrInstr(const llvm::BranchInst &br) const {
   auto condTy = m_typeParser.parseType(br.getCondition()->getType());
   Value cond = m_valueParser.parseValue(condTy, br.getCondition());
 
-  std::string succTrue = labelOf(br.getSuccessor(0));
-  std::string succFalse = labelOf(br.getSuccessor(1));
+  std::string succTrue = LLVMHelper::getBasicBlockLabel(br.getSuccessor(0));
+  std::string succFalse = LLVMHelper::getBasicBlockLabel(br.getSuccessor(1));
 
   BrTerminator instr(BrTerminatorType::Conditional, std::move(cond),
                      std::move(succTrue), std::move(succFalse));
@@ -274,6 +300,7 @@ SEEInstruction InstructionParser::parseExtractElementInstr(
   Value idx = m_valueParser.parseValue(idxTy, ee.getIndexOperand());
 
   ExtractElementInstruction instr(resultTy, std::move(vec), std::move(idx));
+  instr.result = LLVMHelper::makeSSAResult(ee, resultTy, "extelem_");
   return instr;
 }
 
@@ -291,6 +318,7 @@ SEEInstruction InstructionParser::parseInsertElementInstr(
 
   InsertElementInstruction instr(resultTy, std::move(vec), std::move(elt),
                                  std::move(idx));
+  instr.result = LLVMHelper::makeSSAResult(ie, resultTy, "inselem_");
   return instr;
 }
 
@@ -309,6 +337,7 @@ SEEInstruction InstructionParser::parseShuffleVectorInstr(
 
   ShuffleVectorInstruction instr(resultTy, std::move(v1), std::move(v2),
                                  std::move(mask));
+  instr.result = LLVMHelper::makeSSAResult(sv, resultTy, "shuff_");
   return instr;
 }
 
@@ -384,7 +413,7 @@ InstructionParser::parseSwitchInstr(const llvm::SwitchInst &si) const {
 
   SwitchTerminator instr;
   instr.condition = std::move(condV);
-  instr.defaultSuccessor = labelOf(si.getDefaultDest());
+  instr.defaultSuccessor = LLVMHelper::getBasicBlockLabel(si.getDefaultDest());
 
   instr.cases.reserve(si.getNumCases());
   for (auto &Case : si.cases()) {
@@ -392,18 +421,17 @@ InstructionParser::parseSwitchInstr(const llvm::SwitchInst &si) const {
     Value cVal = m_valueParser.parseValue(caseTy, Case.getCaseValue());
 
     instr.cases.push_back(
-        SwitchCase{std::move(cVal), labelOf(Case.getCaseSuccessor())});
+        SwitchCase{std::move(cVal),
+                   LLVMHelper::getBasicBlockLabel(Case.getCaseSuccessor())});
   }
   return instr;
 }
 
 SEEInstruction
 InstructionParser::parseSelectInstr(const llvm::SelectInst &si) const {
-  // condition
   auto condTy = m_typeParser.parseType(si.getCondition()->getType());
   Value cond = m_valueParser.parseValue(condTy, si.getCondition());
 
-  // true / false operands
   auto tvTy = m_typeParser.parseType(si.getTrueValue()->getType());
   Value tv = m_valueParser.parseValue(tvTy, si.getTrueValue());
 

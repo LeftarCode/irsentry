@@ -1,5 +1,5 @@
 #include "ValueParser.h"
-
+#include "../../utilities/helpers/LLVMHelper.h"
 #include <cstring>
 #include <llvm/IR/Constants.h>
 #include <llvm/IR/GlobalValue.h>
@@ -77,39 +77,63 @@ Value ValueParser::parseValue(SIRTypePtr ty, const llvm::Value *V) const {
   }
 
   Variable var;
-  var.name = V->hasName() ? V->getName().str() : "<unnamed>";
+  var.name = LLVMHelper::getSSAName(*V);
   return Value{std::move(ty), std::move(var)};
 }
 
 Value ValueParser::parseConstant(SIRTypePtr ty, const llvm::Constant *C) const {
-  using namespace llvm;
 
-  if (auto *CI = dyn_cast<ConstantInt>(C)) {
+  if (auto *CI = dyn_cast<llvm::ConstantInt>(C)) {
     Constant c{parseConstInteger(ty, CI)};
     return Value{std::move(ty), std::move(c)};
   }
 
-  if (auto *CFP = dyn_cast<ConstantFP>(C)) {
+  if (auto *CFP = dyn_cast<llvm::ConstantFP>(C)) {
     Constant c{parseConstFloat(CFP)};
     return Value{std::move(ty), std::move(c)};
   }
 
-  if (isa<ConstantPointerNull>(C)) {
+  if (isa<llvm::ConstantPointerNull>(C)) {
     Constant c{ScalarConstant{std::monostate{}}};
     return Value{std::move(ty), std::move(c)};
   }
 
-  if (isa<UndefValue>(C)) {
+  if (isa<llvm::UndefValue>(C)) {
     return Value{std::move(ty), Undef{}};
   }
 
-  if (isa<PoisonValue>(C)) {
+  if (isa<llvm::PoisonValue>(C)) {
     return Value{std::move(ty), Poison{}};
   }
 
-  if (auto *GV = dyn_cast<GlobalValue>(C)) {
+  if (auto *GV = dyn_cast<llvm::GlobalValue>(C)) {
     Variable v{GV->getName().str()};
     return Value{std::move(ty), std::move(v)};
+  }
+
+  if (C->getType()->isArrayTy()) {
+    const auto *arrTy = cast<llvm::ArrayType>(C->getType());
+    unsigned count = arrTy->getNumElements();
+
+    SIRTypePtr elemSirTy = ty->as<Array>().elem;
+
+    ArrayConstant arrConst;
+    arrConst.elements.reserve(count);
+
+    for (unsigned i = 0; i < count; ++i) {
+      const auto *elemC = cast<llvm::Constant>(C->getAggregateElement(i));
+      Value elemV = parseConstant(elemSirTy, elemC);
+
+      if (!elemV.isConstant()) {
+        throw std::runtime_error(
+            "ValueParser: non-constant element in ArrayConstant");
+      }
+
+      arrConst.elements.push_back(elemV.asConst());
+    }
+
+    Constant c{std::move(arrConst)};
+    return Value{std::move(ty), std::move(c)};
   }
 
   throw std::runtime_error(

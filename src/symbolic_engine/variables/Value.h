@@ -5,6 +5,7 @@
 #include <optional>
 #include <string>
 #include <variant>
+#include <vector>
 
 namespace irsentry {
 
@@ -12,12 +13,34 @@ struct Float80Bits {
   std::array<std::uint8_t, 10> bytes{};
 };
 
+struct ArrayConstant {
+  std::vector<struct Constant> elements;
+};
+
 using ScalarConstant = std::variant<std::monostate, bool, float, double,
                                     long double, Float80Bits, IntX>;
+using ConstantPayload = std::variant<ScalarConstant, ArrayConstant>;
 
 struct Constant {
-  ScalarConstant value;
+  ConstantPayload value;
+
+  Constant() = default;
+  Constant(ScalarConstant sc) : value(std::move(sc)) {}
+  Constant(ArrayConstant ac) : value(std::move(ac)) {}
+
+  bool isScalar() const {
+    return std::holds_alternative<ScalarConstant>(value);
+  }
+  bool isArray() const { return std::holds_alternative<ArrayConstant>(value); }
+
+  const ScalarConstant &asScalar() const {
+    return std::get<ScalarConstant>(value);
+  }
+  const ArrayConstant &asArray() const {
+    return std::get<ArrayConstant>(value);
+  }
 };
+
 struct Variable {
   std::string name;
 };

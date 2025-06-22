@@ -3,7 +3,7 @@
 
 namespace irsentry {
 
-void CFGDotPrinter::print(const std::unique_ptr<CFG> &cfg,
+void CFGDotPrinter::print(const std::shared_ptr<CFG> &cfg,
                           const std::string &filename) {
   ids_.clear();
   nextId_ = 0;
@@ -86,10 +86,11 @@ std::string CFGDotPrinter::edgeLabel(const CFGEdge &e) {
   case EdgeKind::SwitchDefault:
     return "label=\"default\"";
   case EdgeKind::SwitchCase:
-    if (e.caseValue && std::holds_alternative<IntX>(
-                           std::get<Constant>(e.caseValue->payload).value)) {
+    if (e.caseValue &&
+        std::holds_alternative<IntX>(
+            std::get<Constant>(e.caseValue->payload).asScalar())) {
       const auto &ix =
-          std::get<IntX>(std::get<Constant>(e.caseValue->payload).value);
+          std::get<IntX>(std::get<Constant>(e.caseValue->payload).asScalar());
       return "label=\"case=" + ix.toHex() + "\"";
     }
     return "label=\"case\"";

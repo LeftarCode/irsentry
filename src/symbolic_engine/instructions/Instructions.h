@@ -27,17 +27,15 @@
 #include <variant>
 
 namespace irsentry {
-// FIXME: Replace that nonelegant void*
-using SEEInstruction =
-    std::variant<void *, BitwiseInstruction, CastInstruction, FCmpInstruction,
-                 ICmpInstruction, ValueInstruction, CallInstruction,
-                 LoadInstruction, StoreInstruction, AllocaInstruction,
-                 GetElementPtrInstruction, ExtractValueInstruction,
-                 BrTerminator, RetTerminator, ExtractElementInstruction,
-                 InsertElementInstruction, ShuffleVectorInstruction,
-                 InsertValueInstruction, PhiInstruction,
-                 AddrSpaceCastInstruction, UnreachableTerminator,
-                 SwitchTerminator, SelectInstruction>;
+
+using SEEInstruction = std::variant<
+    BitwiseInstruction, CastInstruction, FCmpInstruction, ICmpInstruction,
+    ValueInstruction, CallInstruction, LoadInstruction, StoreInstruction,
+    AllocaInstruction, GetElementPtrInstruction, ExtractValueInstruction,
+    BrTerminator, RetTerminator, ExtractElementInstruction,
+    InsertElementInstruction, ShuffleVectorInstruction, InsertValueInstruction,
+    PhiInstruction, AddrSpaceCastInstruction, UnreachableTerminator,
+    SwitchTerminator, SelectInstruction>;
 } // namespace irsentry
 
 namespace irsentry {}

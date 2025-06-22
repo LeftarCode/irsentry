@@ -1,14 +1,35 @@
 #pragma once
-#include "../module/FunctionInfo.h"
+#include "../module/ModuleInfo.h"
 #include <optional>
 #include <vector>
 
 namespace irsentry {
 
+enum class HotSpotKind {
+  DangerousCall,
+  TaintedComparison,
+  BackdoorCall,
+  Custom
+};
+
+enum class BranchKind { Uncond, TrueFalse, SwitchCase, SwitchDefault };
+
+struct Decision {
+  BranchKind kind;
+  std::optional<IntX> caseValue;
+  bool takenTF;
+};
+
 struct SymbolicHotSpot {
   std::size_t functionIdx;
   std::string basicBlockLabel;
   std::size_t instructionIdx;
+
+  HotSpotKind kind;
+  std::string calleeName;
+  int severity = 5;
+
+  std::vector<Decision> path;
 };
 
 struct NodeHash {
@@ -25,6 +46,6 @@ struct NodeEq {
 class BaseHotSpotScannerPass {
 public:
   virtual std::vector<SymbolicHotSpot>
-  scanCFG(size_t functionIdx, const std::unique_ptr<CFG> &cfg) = 0;
+  scanModule(const std::unique_ptr<ModuleInfo> &module) = 0;
 };
 } // namespace irsentry

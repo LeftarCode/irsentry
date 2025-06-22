@@ -2,21 +2,27 @@
 
 namespace irsentry {
 std::vector<SymbolicInput>
-MainFuncInputPass::scanFunction(size_t functionIdx,
-                                const FunctionInfo &function) {
-  std::vector<SymbolicInput> symInputs;
+MainFuncInputPass::scanModule(const std::unique_ptr<ModuleInfo> &mod) {
+  std::vector<SymbolicInput> out;
 
-  if (function.name.compare("main") != 0) {
-    return {};
+  for (std::size_t fIdx = 0; fIdx < mod->definedFunctions.size(); ++fIdx) {
+    const auto &fn = mod->definedFunctions[fIdx];
+    if (fn.name != "main") {
+      continue;
+    }
+    if (fn.parameters.size() < 2) {
+      continue;
+    }
+    PtrChain chain{2, std::nullopt};
+    FunctionInput fi;
+    fi.functionIdx = fIdx;
+    fi.parameterName = fn.parameters[1].name;
+    fi.spec = chain;
+
+    out.emplace_back(fi);
+
+    break;
   }
-
-  if (function.parameters.size() < 2) {
-    return {};
-  }
-
-  symInputs.emplace_back(
-      FunctionInput{functionIdx, function.parameters[1].name});
-
-  return symInputs;
+  return out;
 }
 } // namespace irsentry

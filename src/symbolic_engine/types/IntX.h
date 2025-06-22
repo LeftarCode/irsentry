@@ -16,6 +16,8 @@ struct IntX {
   static IntX fromU64(std::uint64_t v, std::uint32_t bits = 64);
   static IntX fromI64(std::int64_t v, std::uint32_t bits = 64);
   std::string toHex() const;
+  std::uint64_t toU64() const;
+  std::int64_t toI64() const;
 };
 
 } // namespace irsentry

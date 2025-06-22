@@ -13,7 +13,7 @@ namespace irsentry {
 
 class CFGDotPrinter {
 public:
-  void print(const std::unique_ptr<CFG> &cfg, const std::string &filename);
+  void print(const std::shared_ptr<CFG> &cfg, const std::string &filename);
 
 private:
   std::unordered_map<const CFGNode *, int> ids_;

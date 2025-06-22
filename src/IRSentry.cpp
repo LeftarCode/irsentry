@@ -2,15 +2,15 @@
 #include "llvm_ir/SourceCodeReader.h"
 #include "llvm_ir/parsers/ModuleParser.h"
 #include "llvm_ir/transforms/passes/BreakConstExprPass.h"
+#include "symbolic_engine/SymbolicEngine.h"
 #include "symbolic_engine/cfg/debug/CFGDotPrinter.h"
 #include "symbolic_engine/path_finder/PathFinder.h"
 #include "symbolic_engine/scanner/passes/hotspot/MockHotSpotScannerPass.h"
-#include "symbolic_engine/scanner/passes/hotspot/StdCopyHotSpotScannerPass.h"
 #include "symbolic_engine/scanner/passes/input/MainFuncInputPass.h"
 #include <filesystem>
 
 namespace irsentry {
-void printCFG(const std::unique_ptr<CFG> &cfg, std::string mName,
+void printCFG(const std::shared_ptr<CFG> &cfg, std::string mName,
               std::string fnName) {
   std::filesystem::create_directory("debug");
 
@@ -48,7 +48,6 @@ IRSentry::IRSentry(const IRSentryOptions &irSentryOptions)
 
   m_transformer->registerPass<BreakConstExprPass>();
   m_inputScanner->registerPass<MainFuncInputPass>();
-  m_hotSpotScanner->registerPass<StdCopyHotSpotScannerPass>();
   m_hotSpotScanner->registerPass<MockHotSpotScannerPass>();
 }
 
@@ -97,16 +96,9 @@ IRSentryStatus IRSentry::run() {
     throw std::runtime_error("Uninitialized IRSentry engine");
   }
 
-  size_t symbolicInputsCount = 0;
-  std::vector<std::vector<SymbolicInput>> moduleSymInputs;
-  for (size_t i = 0; i < m_module->definedFunctions.size(); i++) {
-    auto symbolicInput = m_inputScanner->scan(i, m_module->definedFunctions[i]);
-    Logger::getInstance().info(
-        std::format("Found {} symbolic input(s) in {} function.",
-                    symbolicInput.size(), m_module->definedFunctions[i].name));
-    symbolicInputsCount += symbolicInput.size();
-    moduleSymInputs.push_back(symbolicInput);
-  }
+  auto symbolicInputs = m_inputScanner->scan(m_module);
+  size_t symbolicInputsCount = symbolicInputs.size();
+
   Logger::getInstance().info(
       std::format("Found {} symbolic input(s) in total.", symbolicInputsCount));
 
@@ -117,16 +109,9 @@ IRSentryStatus IRSentry::run() {
                                   "without generating any input data.");
   }
 
-  std::vector<std::vector<SymbolicHotSpot>> moduleHotSpots;
-  size_t hotspotsCount = 0;
-  for (size_t i = 0; i < m_module->definedFunctions.size(); i++) {
-    auto hotSpots = m_hotSpotScanner->scan(i, m_module->definedFunctions[i]);
-    moduleHotSpots.emplace_back(hotSpots);
-    Logger::getInstance().info(
-        std::format("Found {} hot spot(s) in {} function.", hotSpots.size(),
-                    m_module->definedFunctions[i].name));
-    hotspotsCount += hotSpots.size();
-  }
+  auto hotSpots = m_hotSpotScanner->scan(m_module);
+  size_t hotspotsCount = hotSpots.size();
+
   Logger::getInstance().info(
       std::format("Found {} hot spot(s) in total.", hotspotsCount));
 
@@ -141,9 +126,21 @@ IRSentryStatus IRSentry::run() {
   }
 
   PathFinder pathFinder;
-  auto symbolicPath =
-      pathFinder.findSymbolicPath(m_module->definedFunctions[0].cfg,
-                                  moduleSymInputs[0][0], moduleHotSpots[0][0]);
+  std::vector<SymbolicPath> paths;
+  for (const auto &symbolicInput : symbolicInputs) {
+    for (const auto &hotSpot : hotSpots) {
+      auto path = pathFinder.find(m_module, symbolicInputs[0], hotSpots[0]);
+
+      if (path.has_value()) {
+        paths.push_back(path.value());
+      }
+    }
+  }
+
+  for (const auto &symPath : paths) {
+    SymbolicEngine symEngine;
+    symEngine.solve(m_module, symPath);
+  }
 
   return IRSentryStatus::Success;
 }

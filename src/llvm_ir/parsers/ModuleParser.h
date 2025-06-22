@@ -2,6 +2,7 @@
 #include "../../symbolic_engine/module/ModuleInfo.h"
 #include "FunctionParser.h"
 #include "TypeParser.h"
+#include "ValueParser.h"
 #include "llvm/IR/Module.h"
 #include <limits>
 #include <memory>
@@ -17,6 +18,7 @@ public:
 
 private:
   const FunctionParser m_functionParser;
+  const ValueParser m_valueParser;
   const TypeParser m_typeParser;
 };
 } // namespace irsentry
