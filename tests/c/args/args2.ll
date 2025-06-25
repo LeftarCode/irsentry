@@ -25,11 +25,11 @@ $"??_C@_0L@HKNOIAKA@TRAFIONY?$CB?6?$AA@" = comdat any
 
 $"??_C@_0P@FKKJLIOJ@SecretPassword?$AA@" = comdat any
 
-$"??_C@_0BA@DEPMKHBF@SecretPassword2?$AA@" = comdat any
+$"??_C@_0CB@MIFPIFNL@d6RzqyPr3mIv7i7gd4gyADAn6MlC5FNo@" = comdat any
 
 @"??_C@_0L@HKNOIAKA@TRAFIONY?$CB?6?$AA@" = linkonce_odr dso_local unnamed_addr constant [11 x i8] c"TRAFIONY!\0A\00", comdat, align 1
 @"??_C@_0P@FKKJLIOJ@SecretPassword?$AA@" = linkonce_odr dso_local unnamed_addr constant [15 x i8] c"SecretPassword\00", comdat, align 1
-@"??_C@_0BA@DEPMKHBF@SecretPassword2?$AA@" = linkonce_odr dso_local unnamed_addr constant [16 x i8] c"SecretPassword2\00", comdat, align 1
+@"??_C@_0CB@MIFPIFNL@d6RzqyPr3mIv7i7gd4gyADAn6MlC5FNo@" = linkonce_odr dso_local unnamed_addr constant [33 x i8] c"d6RzqyPr3mIv7i7gd4gyADAn6MlC5FNo\00", comdat, align 1
 @__local_stdio_printf_options._OptionsStorage = internal global i64 0, align 8
 
 ; Function Attrs: noinline nounwind optnone uwtable
@@ -134,33 +134,32 @@ define dso_local i32 @main(i32 noundef %0, ptr noundef %1) #0 {
   %3 = alloca i32, align 4
   %4 = alloca ptr, align 8
   %5 = alloca i32, align 4
-  %6 = alloca [64 x i8], align 16
+  %6 = alloca ptr, align 8
   store i32 0, ptr %3, align 4
   store ptr %1, ptr %4, align 8
   store i32 %0, ptr %5, align 4
-  %7 = load ptr, ptr %4, align 8
-  %8 = getelementptr inbounds ptr, ptr %7, i64 1
-  %9 = load ptr, ptr %8, align 8
-  %10 = call i32 @strcmp(ptr noundef %9, ptr noundef @"??_C@_0P@FKKJLIOJ@SecretPassword?$AA@") #4
-  %11 = icmp eq i32 %10, 0
-  br i1 %11, label %12, label %20
+  store ptr null, ptr %6, align 8
+  %7 = load ptr, ptr %6, align 8
+  %8 = call i32 @strcmp(ptr noundef %7, ptr noundef @"??_C@_0P@FKKJLIOJ@SecretPassword?$AA@") #4
+  %9 = icmp ne i32 %8, 0
+  br i1 %9, label %10, label %18
 
-12:                                               ; preds = %2
-  %13 = load ptr, ptr %4, align 8
-  %14 = getelementptr inbounds ptr, ptr %13, i64 2
-  %15 = load ptr, ptr %14, align 8
-  %16 = call i32 @strcmp(ptr noundef %15, ptr noundef @"??_C@_0BA@DEPMKHBF@SecretPassword2?$AA@") #4
-  %17 = icmp eq i32 %16, 0
-  br i1 %17, label %18, label %19
+10:                                               ; preds = %2
+  %11 = load ptr, ptr %4, align 8
+  %12 = getelementptr inbounds ptr, ptr %11, i64 2
+  %13 = load ptr, ptr %12, align 8
+  %14 = call i32 @strcmp(ptr noundef %13, ptr noundef @"??_C@_0CB@MIFPIFNL@d6RzqyPr3mIv7i7gd4gyADAn6MlC5FNo@") #4
+  %15 = icmp eq i32 %14, 0
+  br i1 %15, label %16, label %17
 
-18:                                               ; preds = %12
+16:                                               ; preds = %10
   call void @IRSENTRY_MOCK_NOPARAMS()
-  br label %19
+  br label %17
 
-19:                                               ; preds = %18, %12
-  br label %20
+17:                                               ; preds = %16, %10
+  br label %18
 
-20:                                               ; preds = %19, %2
+18:                                               ; preds = %17, %2
   ret i32 0
 }
 

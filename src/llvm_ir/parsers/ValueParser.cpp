@@ -108,7 +108,7 @@ Value ValueParser::parseConstant(SIRTypePtr ty, const llvm::Constant *C) const {
 
   if (auto *GV = dyn_cast<llvm::GlobalValue>(C)) {
     Variable v{GV->getName().str()};
-    return Value{std::move(ty), std::move(v)};
+    return Value{std::move(ty), v};
   }
 
   if (C->getType()->isArrayTy()) {

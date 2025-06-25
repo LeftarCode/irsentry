@@ -6,15 +6,10 @@
 
 namespace irsentry {
 
-struct PtrChain {
-  unsigned depth;
-  std::optional<uint64_t> lengthBytes;
-};
-
 struct FunctionInput {
   std::size_t functionIdx;
-  std::string parameterName;
-  std::variant<std::monostate, unsigned, PtrChain> spec;
+  size_t parameterIdx;
+  SIRTypePtr parameterType;
 };
 
 struct FunctionOutputParam {};

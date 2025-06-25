@@ -37,7 +37,13 @@ public:
     ssa.insert_or_assign(v.asVar().name, e);
   }
 
+  void bind(const std::string n, const z3::expr &e) {
+    ssa.insert_or_assign(n, e);
+  }
+
   z3::expr lookup(const Value &v) const { return ssa.at(v.asVar().name); }
+  z3::expr lookup(const std::string &n) const { return ssa.at(n); }
+
   inline uint64_t align16(uint64_t x) { return (x + 15) & ~uint64_t(15); }
 
   Allocation &allocate(const std::string &name, const z3::expr &sizeBV,

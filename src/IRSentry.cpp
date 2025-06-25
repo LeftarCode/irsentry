@@ -50,9 +50,11 @@ IRSentry::IRSentry(const IRSentryOptions &irSentryOptions)
   m_inputScanner->registerPass<MainFuncInputPass>();
   m_hotSpotScanner->registerPass<MockHotSpotScannerPass>();
 
-  // tuiThread = std::thread([&] { tuiRenderer.run(); });
-  Logger::getInstance().addListener(
-      [&](const std::string &msg) { tuiRenderer.pushLog(msg); });
+  if (!m_options.quiteMode) {
+    tuiThread = std::thread([&] { tuiRenderer.run(); });
+    Logger::getInstance().addListener(
+        [&](const std::string &msg) { tuiRenderer.pushLog(msg); });
+  }
 }
 
 void IRSentry::init() {
@@ -147,9 +149,11 @@ IRSentryStatus IRSentry::run() {
   }
 
   Logger::getInstance().info("Jobs done! IRSentry completed successfully");
-  Logger::getInstance().info("Press q or ESC key to exit...");
+  if (!m_options.quiteMode) {
+    Logger::getInstance().info("Press q or ESC key to exit...");
+    tuiThread.join();
+  }
 
-  // tuiThread.join();
   return IRSentryStatus::Success;
 }
 

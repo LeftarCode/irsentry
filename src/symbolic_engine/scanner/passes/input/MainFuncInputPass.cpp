@@ -7,17 +7,19 @@ MainFuncInputPass::scanModule(const std::unique_ptr<ModuleInfo> &mod) {
 
   for (std::size_t fIdx = 0; fIdx < mod->definedFunctions.size(); ++fIdx) {
     const auto &fn = mod->definedFunctions[fIdx];
-    if (fn.name != "main") {
+    if (fn.name != "main" || fn.parameters.size() < 2) {
       continue;
     }
-    if (fn.parameters.size() < 2) {
-      continue;
-    }
-    PtrChain chain{2, std::nullopt};
+
+    constexpr size_t DEFAULT_SLOTS = 4;
+    auto charTy = SIRType::make<BaseScalar>(BaseScalar::Uint8);
+    auto charPtr = SIRType::make<Ptr>(charTy);
+    auto argvTy = SIRType::make<Array>(DEFAULT_SLOTS, charPtr);
+
     FunctionInput fi;
     fi.functionIdx = fIdx;
-    fi.parameterName = fn.parameters[1].name;
-    fi.spec = chain;
+    fi.parameterIdx = 1;
+    fi.parameterType = argvTy;
 
     out.emplace_back(fi);
 

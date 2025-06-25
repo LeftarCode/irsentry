@@ -72,9 +72,8 @@ static void extract_file(FILE *zip, LocalFileHeader *hdr) {
     return;
   }
 
-  fread(buf, 1, hdr->compressed_size, zip); /* no short?read checks */
+  fread(buf, 1, hdr->compressed_size, zip);
 
-  /* VULNERABILITY C: assumes stored?only compression */
   fwrite(buf, 1, hdr->compressed_size, out);
 
   fclose(out);

@@ -17,6 +17,7 @@ struct IRSentryOptions {
   bool exitWhenNoHotSpots = true;
   bool debugCFG = false;
   bool profilingStructures = false;
+  bool quiteMode = false;
 };
 
 class IRSentry {
