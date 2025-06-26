@@ -4,24 +4,28 @@
 
 ## 📖 Project Overview
 
-**IRSentry** is a command‑line tool for static analysis of LLVM IR code. It automatically discovers potential security vulnerabilities and generates concrete inputs to reproduce them. By combining **Symbolic Execution** with a **Symbolic Memory** model and leveraging the power of the Z3 SMT solver, IRSentry precisely tracks data flow from user inputs to risky function calls ("hotspots").
+**IRSentry** is a C++ CLI tool for static analysis of LLVM IR. It employs **Path-Guided Symbolic Execution** with **Function Summaries** and a **Symbolic Memory** model, all powered by the Z3 SMT solver. IRSentry tracks data flow from user inputs to unsafe calls, then generates concrete inputs to reproduce vulnerabilities.
 
 ## 🚀 Key Features
 
-- **Language Agnostic** – Analyze any source language compiled to LLVM IR.
-- **Symbolic Execution Engine** – Explore execution paths symbolically, preserving constraints along the way.
-- **Symbolic Memory Model** – Accurately represent buffer and pointer operations in memory.
-- **Automated Proof Generation** – Convert path constraints into SMT formulas and obtain concrete inputs via Z3.
-- **FTXUI-based CLI** – Intuitive terminal interface for configuring and running analyses.
-- **Doxygen Documentation** – Comprehensive docs generated directly from the source code.
+- **Language Agnostic** – Works on any source language compiled to LLVM IR.
+- **Path-Guided Symbolic Execution** – Direct analysis along likely paths with pruning.
+- **Function Summaries** – Reuse summarized constraints to boost performance and scalability.
+- **Symbolic Memory Model** – Precise handling of buffers, pointers, and memory operations.
+- **Automated Proof Generation** – Convert path constraints to SMT and extract inputs with Z3.
+- **FTXUI CLI** – User-friendly terminal interface for configuration and execution.
+- **Doxygen Documentation** – Auto-generated code docs for easy exploration.
 
 ## 🎯 Architecture Overview
 
 1. **LLVM Front-End**: Parse LLVM IR and build the Control Flow Graph (CFG).
-2. **Input Discovery**: Identify potential user inputs (`argv`, `fread`, `recv`, etc.).
-3. **Hotspot Detection**: Recognize unsafe functions (`strcpy`, `memcpy`, etc.) and patterns.
-4. **Symbolic Engine**: Traverse paths between inputs and hotspots, collecting symbolic constraints.
-5. **SMT Solving**: Translate each path into an SMT formula and derive concrete inputs with Z3.
+2. **Input Discovery**: Locate user-controlled data (`argv`, `fread`, `recv`, etc.).
+3. **Hotspot Detection**: Identify unsafe functions (`strcpy`, `memcpy`, etc.).
+4. **Symbolic Engine**:
+   - **Path-Guided Exploration**: Prioritize feasible paths based on heuristics.
+   - **Function Summaries**: Apply pre-computed summaries for scalable interprocedural analysis.
+   - **Constraint Collection**: Formulate path constraints symbolically.
+5. **SMT Solving**: Translate constraints to SMT queries and derive concrete inputs with Z3.
 
 ## ⚙️ Requirements
 
@@ -31,50 +35,44 @@
 - **CMake**
 - **FTXUI** (terminal UI)
 
-## 🛠️ Installation & Build Instructions
+## 🛠️ Installation & Build
 
 ```bash
-# Clone the repository
+# Clone the repo
 git clone https://github.com/YourUser/IRSentry.git
 cd IRSentry
 
-# Create and enter build directory
+# Create build directory
 mkdir build && cd build
 
-# Configure the project
-cmake ..
-
-# Build
-make -j$(nproc)
+# Configure and build
+cmake .. && make -j$(nproc)
 ```
 
 ## ▶️ Usage Examples
 
 ```bash
-# Analyze an LLVM IR file and output results in JSON
+# Static analysis and JSON report
 ./irsentry --input path/to/program.ll --output report.json
 
-# Launch the interactive FTXUI interface
+# Interactive FTXUI mode
 ./irsentry --interactive
 ```
 
 ## 📚 Documentation
 
-Generate and view the Doxygen documentation:
-
 ```bash
-cd docs
-doxygen Doxyfile
-# Open docs/html/index.html in your browser
+cd docs && doxygen Doxyfile
+# Open docs/html/index.html
 ```
 
 ## 🤝 Contributing
 
-Found a bug or have an idea for improvement? Feel free to open an issue or submit a pull request on GitHub!
+Issues, ideas, and pull requests are welcome!
 
 ## 📄 License
 
-This project is licensed under the **MIT License**. See [LICENSE](LICENSE) for details.
+Licensed under the **MIT License**. See [LICENSE](LICENSE).
 
 ---
 
