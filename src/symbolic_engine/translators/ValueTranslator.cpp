@@ -102,7 +102,7 @@ static z3::expr intXToBv(z3::context &ctx, const IntX &x) {
   return ctx.bv_val(("0x" + hex).c_str(), x.bitWidth);
 }
 
-z3::expr valueToExpr(VarEnv &env, const Value &val, unsigned ptrWidth) {
+z3::expr valueToExpr(SymbolicStore &env, const Value &val, unsigned ptrWidth) {
   throw std::runtime_error("valueToExpr: Not implemented yet!");
 }
 

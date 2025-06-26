@@ -36,15 +36,11 @@ private:
   void debugPrintResult();
 
   std::size_t m_decPos = 0;
-  z3::context ctx;
-  VarEnv varEnv;
-  z3::solver solver;
+  SymbolicStore varEnv;
 
   const std::size_t symbolicArgvs = 4;
   const unsigned symbolicBufferSize = 128;
-  const unsigned ptrBytes = 8;
-  const unsigned ptrBits = 64;
-  const ResultPrinter resultPrinter;
+  ResultPrinter resultPrinter;
 };
 
 } // namespace irsentry

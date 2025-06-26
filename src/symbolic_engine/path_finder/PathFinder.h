@@ -3,7 +3,6 @@
 #include "../instructions/Instructions.h"
 #include "../scanner/HotSpotScanner.h"
 #include "../scanner/InputScanner.h"
-#include "InstructionTranslator.h"
 #include <unordered_set>
 #include <vector>
 #include <z3++.h>

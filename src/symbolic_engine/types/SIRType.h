@@ -8,6 +8,8 @@
 
 namespace irsentry {
 
+using SIRTypePtr = std::shared_ptr<class SIRType>;
+
 enum class BaseScalar {
   Void,
   Bool,
