@@ -11,8 +11,6 @@ namespace irsentry {
 struct Allocation {
   z3::expr base;
   z3::expr size;
-  SIRTypePtr elemType;
-  z3::expr data;
 };
 
 class SymbolicStore {
@@ -30,14 +28,20 @@ public:
   z3::expr lookup(const Value &v) const;
   z3::expr lookup(const std::string &n) const;
 
-  Allocation &allocate(const std::string &name, const z3::expr &sizeBV,
-                       SIRTypePtr elemTy);
+  z3::expr createPtr(uint64_t value);
+  z3::expr createConstByte(const std::string &name);
+  z3::expr createBV(const uint64_t &value, const z3::expr &ref);
+  z3::expr createBool(const bool &value);
+  z3::expr createConst(const std::string &name, const z3::sort &sort);
+  z3::expr createConst(const std::string &name, const SIRTypePtr &type);
+
+  Allocation &allocate(const std::string &name, const z3::expr &sizeBV);
 
   z3::expr load(const Allocation &A, const z3::expr &offset, unsigned bytes);
   z3::expr loadByte(const z3::expr &base);
 
   void store(const z3::expr &addr, const z3::expr &value);
-  void writeBytes(const z3::expr &base, const std::string &bytes);
+  void storeBytes(const z3::expr &base, const std::string &bytes);
 
   void debugDumpModel(const z3::model &m) const;
 

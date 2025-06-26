@@ -281,7 +281,7 @@ z3::expr InstructionTranslator::translateAlloca(SymbolicStore &env,
       Z3Helper::translateValueAsBV(ctx, env, I.numElements, PTR);
   z3::expr sizeBV = ctx.bv_val(elemBytes, PTR) * numElemsBV;
 
-  Allocation &A = env.allocate(I.result.asVar().name, sizeBV, I.allocatedType);
+  Allocation &A = env.allocate(I.result.asVar().name, sizeBV);
 
   env.bind(I.result, A.base);
   return A.base;

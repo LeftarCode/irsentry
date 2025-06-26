@@ -65,8 +65,7 @@ void SymbolicEngine::handleSwitch(const z3::expr &e, const SwitchTerminator *sw,
   const Decision &d = symPath.decisions[m_decPos++];
 
   z3::expr sel = e;
-  z3::expr cv =
-      varEnv.ctx.bv_val(d.caseValue->toU64(), sel.get_sort().bv_size());
+  z3::expr cv = varEnv.createBV(d.caseValue->toU64(), sel);
 
   varEnv.solver.add(d.kind == BranchKind::SwitchCase ? sel == cv : sel != cv);
 }
@@ -92,23 +91,20 @@ void SymbolicEngine::processSymbolicInput(
 
 void SymbolicEngine::allocSymBufArray(std::string name, size_t slots,
                                       SIRTypePtr elemTy) {
-  z3::expr arrayBytes = varEnv.ctx.bv_val(slots * SymbolicStore::PTR_BYTES,
-                                          SymbolicStore::PTR_BITS);
+  z3::expr arrayBytes = varEnv.createPtr(slots * SymbolicStore::PTR_BYTES);
 
-  Allocation &A = varEnv.allocate(name, arrayBytes, elemTy);
+  Allocation &A = varEnv.allocate(name, arrayBytes);
   z3::expr arrayBase = A.base;
 
   varEnv.bind(name, arrayBase);
-  z3::expr bufSize =
-      varEnv.ctx.bv_val(symbolicBufferSize, SymbolicStore::PTR_BITS);
+  z3::expr bufSize = varEnv.createPtr(symbolicBufferSize);
 
   for (std::size_t i = 0; i < slots; ++i) {
     std::string bufName = name + "_input_buf_" + std::to_string(i);
 
-    Allocation &B = varEnv.allocate(bufName, bufSize, elemTy);
-    z3::expr slotAddr =
-        arrayBase + varEnv.ctx.bv_val(i * SymbolicStore::PTR_BYTES,
-                                      SymbolicStore::PTR_BITS);
+    Allocation &B = varEnv.allocate(bufName, bufSize);
+    z3::expr offset = varEnv.createPtr(i * SymbolicStore::PTR_BYTES);
+    z3::expr slotAddr = arrayBase + offset;
     varEnv.store(slotAddr, B.base);
 
     fillSymbolicBuffer(bufName, B);
@@ -118,18 +114,17 @@ void SymbolicEngine::allocSymBufArray(std::string name, size_t slots,
 void SymbolicEngine::fillSymbolicBuffer(std::string bufName,
                                         const Allocation &bufAlloc) {
   for (unsigned j = 0; j < symbolicBufferSize; ++j) {
-    z3::expr sym =
-        varEnv.ctx.bv_const((bufName + "_b_" + std::to_string(j)).c_str(), 8);
-    varEnv.store(bufAlloc.base + varEnv.ctx.bv_val(j, SymbolicStore::PTR_BITS),
-                 sym);
+    std::string symName = bufName + "_b_" + std::to_string(j);
+    z3::expr sym = varEnv.createConstByte(symName);
+    z3::expr offset = varEnv.createPtr(j);
+    varEnv.store(bufAlloc.base + offset, sym);
   }
 }
 
 void SymbolicEngine::initFunctionParams(const FunctionInfo &func) {
   for (std::size_t idx = 0; idx < func.parameters.size(); ++idx) {
     const auto &p = func.parameters[idx];
-    auto paramSort = translateSort(varEnv.ctx, p.type, SymbolicStore::PTR_BITS);
-    z3::expr arg = varEnv.ctx.constant(p.name.c_str(), paramSort);
+    z3::expr arg = varEnv.createConst(p.name, p.type);
     varEnv.bind(p.name, arg);
   }
 }
@@ -148,9 +143,7 @@ void SymbolicEngine::processGlobal(
   const std::string &gName = gPair.first;
   const Value &gValue = gPair.second;
 
-  z3::sort gSort =
-      translateSort(varEnv.ctx, gValue.type, SymbolicStore::PTR_BITS);
-  z3::expr gSym = varEnv.ctx.constant(gName.c_str(), gSort);
+  z3::expr gSym = varEnv.createConst(gName, gValue.type);
 
   varEnv.bind(gName, gSym);
 
@@ -174,12 +167,13 @@ bool SymbolicEngine::addScalarConstraint(const Value &gVal,
   const ScalarConstant &sc = C.asScalar();
 
   if (std::holds_alternative<bool>(sc)) {
-    varEnv.solver.add(gSym == varEnv.ctx.bool_val(std::get<bool>(sc)));
+    bool v = std::get<bool>(sc);
+    varEnv.solver.add(gSym == varEnv.ctx.bool_val(v));
     return true;
   }
   if (std::holds_alternative<IntX>(sc)) {
     uint64_t v = std::get<IntX>(sc).toU64();
-    varEnv.solver.add(gSym == varEnv.ctx.bv_val(v, gSym.get_sort().bv_size()));
+    varEnv.solver.add(gSym == varEnv.createBV(v, gSym));
     return true;
   }
   return false;
@@ -217,9 +211,9 @@ bool SymbolicEngine::addArrayI8Constraint(const Value &gVal,
     bytes.push_back(static_cast<char>(ix.toU64() & 0xFF));
   }
 
-  z3::expr sizeBytes = varEnv.ctx.bv_val(bytes.size(), SymbolicStore::PTR_BITS);
-  auto &a = varEnv.allocate(gSym.decl().name().str(), sizeBytes, gVal.type);
-  varEnv.writeBytes(a.base, bytes);
+  z3::expr sizeBytes = varEnv.createPtr(bytes.size());
+  auto &a = varEnv.allocate(gSym.decl().name().str(), sizeBytes);
+  varEnv.storeBytes(a.base, bytes);
 
   varEnv.bind(gSym.decl().name().str(), a.base);
 

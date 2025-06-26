@@ -30,8 +30,35 @@ z3::expr SymbolicStore::lookup(const std::string &n) const {
   return m_ssa.at(n);
 }
 
+z3::expr SymbolicStore::createPtr(uint64_t value) {
+  return ctx.bv_val(value, SymbolicStore::PTR_BITS);
+}
+
+z3::expr SymbolicStore::createConstByte(const std::string &name) {
+  return ctx.bv_const(name.c_str(), 8);
+}
+
+z3::expr SymbolicStore::createBV(const uint64_t &value, const z3::expr &ref) {
+  return ctx.bv_val(value, ref.get_sort().bv_size());
+}
+
+z3::expr SymbolicStore::createBool(const bool &value) {
+  return ctx.bool_val(value);
+}
+
+z3::expr SymbolicStore::createConst(const std::string &name,
+                                    const z3::sort &sort) {
+  return ctx.constant(name.c_str(), sort);
+}
+
+z3::expr SymbolicStore::createConst(const std::string &name,
+                                    const SIRTypePtr &type) {
+  z3::sort gSort = translateSort(ctx, type, SymbolicStore::PTR_BITS);
+  return createConst(name, gSort);
+}
+
 Allocation &SymbolicStore::allocate(const std::string &name,
-                                    const z3::expr &sizeBV, SIRTypePtr elemTy) {
+                                    const z3::expr &sizeBV) {
   constexpr uint64_t DEFAULT_BYTES = 4096;
 
   uint64_t sizeConst = 0;
@@ -52,11 +79,7 @@ Allocation &SymbolicStore::allocate(const std::string &name,
 
   z3::expr base = ctx.bv_val(baseConst, PTR_BITS);
 
-  z3::expr arr =
-      ctx.constant((name + "_arr").c_str(),
-                   ctx.array_sort(ctx.bv_sort(PTR_BITS), ctx.bv_sort(8)));
-
-  m_allocations.emplace_back(Allocation{base, sizeBV, elemTy, arr});
+  m_allocations.emplace_back(Allocation{base, sizeBV});
   return m_allocations.back();
 }
 
@@ -65,7 +88,7 @@ z3::expr SymbolicStore::load(const Allocation &A, const z3::expr &offset,
   z3::expr val = ctx.bv_val(0, bytes * 8);
   for (unsigned i = 0; i < bytes; ++i) {
     z3::expr addr = A.base + offset + ctx.bv_val(i, PTR_BITS);
-    z3::expr byte = z3::select(A.data, addr);
+    z3::expr byte = z3::select(m_memory, addr);
     val = z3::concat(byte, val);
   }
   return val.extract(bytes * 8 - 1, 0);
@@ -84,7 +107,7 @@ void SymbolicStore::store(const z3::expr &addr, const z3::expr &value) {
   }
 }
 
-void SymbolicStore::writeBytes(const z3::expr &base, const std::string &bytes) {
+void SymbolicStore::storeBytes(const z3::expr &base, const std::string &bytes) {
   for (unsigned i = 0; i < bytes.size(); ++i) {
     m_memory = z3::store(m_memory, base + ctx.bv_val(i, PTR_BITS),
                          ctx.bv_val(static_cast<uint8_t>(bytes[i]), 8));
