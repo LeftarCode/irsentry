@@ -21,11 +21,21 @@ private:
   void processSymbolicInput(const SymbolicInput &symIn,
                             const std::unique_ptr<ModuleInfo> &mod);
 
+  void processSymbolicFunctionInput(const FunctionInput *fi,
+                                    const std::unique_ptr<ModuleInfo> &mod);
+  void
+  processSymbolicFunctionOutputParam(const FunctionOutputParam *fo,
+                                     const std::unique_ptr<ModuleInfo> &mod);
+  void
+  processSymbolicFunctionOutputResult(const FunctionOutputResult *fores,
+                                      const std::unique_ptr<ModuleInfo> &mod);
+
   void initGlobals(const std::unique_ptr<ModuleInfo> &mod);
   void processGlobal(const std::pair<const std::string, Value> &gPair,
                      bool addConstraint);
 
-  void allocSymBufArray(std::string name, size_t slots, SIRTypePtr elemTy);
+  void allocSymBuf(std::string name);
+  void allocSymBufArray(std::string name, size_t slots);
   void fillSymbolicBuffer(std::string bufName, const Allocation &bufAlloc);
 
   bool addScalarConstraint(const Value &gVal, const z3::expr &gSym);
@@ -39,7 +49,6 @@ private:
   SymbolicStore varEnv;
 
   const std::size_t symbolicArgvs = 4;
-  const unsigned symbolicBufferSize = 128;
   ResultPrinter resultPrinter;
 };
 

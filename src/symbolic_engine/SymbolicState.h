@@ -17,6 +17,7 @@ class SymbolicStore {
 public:
   static constexpr unsigned PTR_BITS = 64;
   static constexpr unsigned PTR_BYTES = PTR_BITS / 8;
+  static constexpr unsigned SYM_BUF_SIZE = 256;
   z3::context ctx;
   z3::solver solver;
 
@@ -38,6 +39,7 @@ public:
   Allocation &allocate(const std::string &name, const z3::expr &sizeBV);
 
   z3::expr load(const Allocation &A, const z3::expr &offset, unsigned bytes);
+  z3::expr load(const z3::expr &base, const z3::expr &offset, unsigned bytes);
   z3::expr loadByte(const z3::expr &base);
 
   void store(const z3::expr &addr, const z3::expr &value);

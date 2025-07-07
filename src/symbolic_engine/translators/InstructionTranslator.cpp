@@ -1,5 +1,11 @@
 #include "InstructionTranslator.h"
 #include "../../utilities/helpers/Z3Helper.h"
+#include "summaries/FileSummaries.h"
+#include "summaries/StrSummaries.h"
+
+static bool isStrcmp(const std::string &n) {
+  return n == "strcmp" || n.rfind("llvm.strcmp", 0) == 0;
+}
 
 namespace irsentry {
 
@@ -159,12 +165,6 @@ InstructionTranslator::translateValue(SymbolicStore & /*env*/,
   throw std::logic_error{"translateValue() not implemented"};
 }
 
-static std::unordered_map<std::string, z3::expr> SummaryCache;
-
-static bool isStrcmp(const std::string &n) {
-  return n == "strcmp" || n.rfind("llvm.strcmp", 0) == 0;
-}
-
 z3::expr InstructionTranslator::translateCall(SymbolicStore &env,
                                               const CallInstruction &instr) {
   z3::context &ctx = env.ctx;
@@ -176,39 +176,12 @@ z3::expr InstructionTranslator::translateCall(SymbolicStore &env,
     return ctx.bool_val(true);
   }
 
-  if (auto it = SummaryCache.find(instr.callee); it != SummaryCache.end()) {
-    z3::expr ret = it->second;
-    env.bind(instr.result, ret);
-    return ret;
+  if (isStrcmp(instr.callee) && instr.arguments.size() == 2) {
+    return strcmpSummary(env, instr);
   }
 
-  if (isStrcmp(instr.callee) && instr.arguments.size() == 2) {
-    constexpr unsigned MAX = 128;
-
-    z3::expr ptrA = Z3Helper::translateValueAsBV(ctx, env, instr.arguments[0],
-                                                 SymbolicStore::PTR_BITS);
-    z3::expr ptrB = Z3Helper::translateValueAsBV(ctx, env, instr.arguments[1],
-                                                 SymbolicStore::PTR_BITS);
-
-    z3::expr equal = ctx.bool_val(true);
-    z3::expr finished = ctx.bool_val(false);
-
-    for (unsigned i = 0; i < MAX; ++i) {
-      z3::expr a = env.loadByte(ptrA + ctx.bv_val(i, SymbolicStore::PTR_BITS));
-      z3::expr b = env.loadByte(ptrB + ctx.bv_val(i, SymbolicStore::PTR_BITS));
-
-      z3::expr bothZero = (a == ctx.bv_val(0, 8)) && (b == ctx.bv_val(0, 8));
-
-      equal = z3::ite(finished, equal, equal && (a == b));
-      finished = finished || bothZero;
-    }
-    z3::expr stringsEqual = equal && finished;
-    z3::expr ret = z3::ite(stringsEqual, ctx.bv_val(0, 32), ctx.bv_val(1, 32));
-
-    if (instr.result.isVariable())
-      env.bind(instr.result, ret);
-
-    return ret;
+  if (instr.callee == "fread") {
+    return freadSummary(env, instr);
   }
 
   z3::sort retSort =

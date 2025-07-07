@@ -21,17 +21,17 @@ void TUIRenderer::initializeComponents() {
 void TUIRenderer::initializeSections() {
   m_processTiming = makeSectionComponent("process timing",
                                          [&] { return m_processTimingLines; });
-  m_cycleProgress = makeSectionComponent("cycle progress",
+  m_cycleProgress = makeSectionComponent("input scanning progress",
                                          [&] { return m_processTimingLines; });
-  m_stageProgress = makeSectionComponent("stage progress",
+  m_stageProgress = makeSectionComponent("hotspot scanning progress",
                                          [&] { return m_processTimingLines; });
   m_fuzzingStrategy = makeSectionComponent(
-      "fuzzing strategy yields", [&] { return m_processTimingLines; });
-  m_overallResults = makeSectionComponent("overall results",
+      "overall paths", [&] { return m_processTimingLines; });
+  m_overallResults = makeSectionComponent("vulnerability results",
                                           [&] { return m_processTimingLines; });
-  m_findings = makeSectionComponent("findings in depth",
+  m_findings = makeSectionComponent("workers status",
                                     [&] { return m_processTimingLines; });
-  m_pathGeometry = makeSectionComponent("path geometry",
+  m_pathGeometry = makeSectionComponent("irsentry status",
                                         [&] { return m_processTimingLines; });
 }
 

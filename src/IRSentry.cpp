@@ -6,6 +6,7 @@
 #include "symbolic_engine/cfg/debug/CFGDotPrinter.h"
 #include "symbolic_engine/path_finder/PathFinder.h"
 #include "symbolic_engine/scanner/passes/hotspot/MockHotSpotScannerPass.h"
+#include "symbolic_engine/scanner/passes/input/FreadFuncOutputPass.h"
 #include "symbolic_engine/scanner/passes/input/MainFuncInputPass.h"
 #include <filesystem>
 
@@ -47,7 +48,8 @@ IRSentry::IRSentry(const IRSentryOptions &irSentryOptions)
   Logger::getInstance().setLogLevel(irSentryOptions.logLevel);
 
   m_transformer->registerPass<BreakConstExprPass>();
-  m_inputScanner->registerPass<MainFuncInputPass>();
+  // m_inputScanner->registerPass<MainFuncInputPass>();
+  m_inputScanner->registerPass<FreadFuncOutputPass>();
   m_hotSpotScanner->registerPass<MockHotSpotScannerPass>();
 
   if (!m_options.quiteMode) {
@@ -133,9 +135,9 @@ IRSentryStatus IRSentry::run() {
 
   PathFinder pathFinder;
   std::vector<SymbolicPath> paths;
-  for (const auto &symbolicInput : symbolicInputs) {
-    for (const auto &hotSpot : hotSpots) {
-      auto path = pathFinder.find(m_module, symbolicInputs[0], hotSpots[0]);
+  for (auto &symbolicInput : symbolicInputs) {
+    for (auto &hotSpot : hotSpots) {
+      auto path = pathFinder.find(m_module, symbolicInput, hotSpot);
 
       if (path.has_value()) {
         paths.push_back(path.value());

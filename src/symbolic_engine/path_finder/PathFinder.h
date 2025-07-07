@@ -9,8 +9,10 @@
 
 namespace irsentry {
 
+using SymbolicPathBlocks = std::vector<std::weak_ptr<CFGNode>>;
+
 struct SymbolicPath {
-  std::vector<std::weak_ptr<CFGNode>> blocks;
+  SymbolicPathBlocks blocks;
   std::vector<Decision> decisions;
   std::size_t functionIdx;
   std::size_t instructionIdx;

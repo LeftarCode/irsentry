@@ -1,15 +1,13 @@
-#include "MockHotSpotScannerPass.h"
+#include "FreadFuncOutputPass.h"
+#include "../Decision.h"
 #include <stdexcept>
-#include <unordered_map>
-#include <unordered_set>
 
 namespace irsentry {
-
-static constexpr const char *kBackdoor = "IRSENTRY_MOCK_NOPARAMS";
+static constexpr const char *fopenName = "fopen";
 
 static void dfs(std::size_t fnIdx, const NodePtr &node,
                 std::vector<Decision> path, NodeSet &vis,
-                std::vector<SymbolicHotSpot> &out) {
+                std::vector<SymbolicInput> &out) {
   if (!node)
     return;
   if (!vis.insert(node.get()).second)
@@ -17,16 +15,20 @@ static void dfs(std::size_t fnIdx, const NodePtr &node,
 
   for (std::size_t i = 0; i < node->instructions.size(); ++i) {
     if (auto call = std::get_if<CallInstruction>(&node->instructions[i]);
-        call && call->callee == kBackdoor) {
-      SymbolicHotSpot hs;
-      hs.functionIdx = fnIdx;
-      hs.basicBlockLabel = node->label;
-      hs.instructionIdx = i;
-      hs.kind = HotSpotKind::BackdoorCall;
-      hs.calleeName = kBackdoor;
-      hs.severity = 9;
-      hs.path = path;
-      out.push_back(std::move(hs));
+        call && call->callee == fopenName) {
+      constexpr size_t DEFAULT_SLOTS = 1;
+      auto charTy = SIRType::make<BaseScalar>(BaseScalar::Uint8);
+      auto charPtr = SIRType::make<Ptr>(charTy);
+      auto filePtr = SIRType::make<Array>(DEFAULT_SLOTS, charPtr);
+
+      FunctionOutputResult fores;
+      fores.functionIdx = fnIdx;
+      fores.basicBlockLabel = node->label;
+      fores.instructionIdx = i;
+      fores.path = path;
+      fores.returnType = charPtr;
+      fores.returnVariable = call->result.asVar().name;
+      out.push_back(std::move(fores));
     }
   }
 
@@ -63,25 +65,25 @@ static void dfs(std::size_t fnIdx, const NodePtr &node,
   }
 }
 
-static std::vector<SymbolicHotSpot> scanCFG(std::size_t fnIdx,
-                                            const std::shared_ptr<CFG> &cfg) {
-  std::vector<SymbolicHotSpot> hot;
+static std::vector<SymbolicInput> scanCFG(std::size_t fnIdx,
+                                          const std::shared_ptr<CFG> &cfg) {
+  std::vector<SymbolicInput> out;
   NodeSet visited;
   std::vector<Decision> startPath;
-  dfs(fnIdx, cfg->root, startPath, visited, hot);
-  return hot;
+  dfs(fnIdx, cfg->root, startPath, visited, out);
+  return out;
 }
 
-std::vector<SymbolicHotSpot>
-MockHotSpotScannerPass::scanModule(const std::unique_ptr<ModuleInfo> &mod) {
-  std::vector<SymbolicHotSpot> all;
+std::vector<SymbolicInput>
+FreadFuncOutputPass::scanModule(const std::unique_ptr<ModuleInfo> &mod) {
+  std::vector<SymbolicInput> all;
   for (std::size_t i = 0; i < mod->definedFunctions.size(); ++i) {
     const auto &fn = mod->definedFunctions[i];
     auto hs = scanCFG(i, fn.cfg);
     all.insert(all.end(), std::make_move_iterator(hs.begin()),
                std::make_move_iterator(hs.end()));
   }
+
   return all;
 }
-
 } // namespace irsentry

@@ -94,6 +94,17 @@ z3::expr SymbolicStore::load(const Allocation &A, const z3::expr &offset,
   return val.extract(bytes * 8 - 1, 0);
 }
 
+z3::expr SymbolicStore::load(const z3::expr &base, const z3::expr &offset,
+                             unsigned bytes) {
+  z3::expr val = ctx.bv_val(0, bytes * 8);
+  for (unsigned i = 0; i < bytes; ++i) {
+    z3::expr addr = base + offset + ctx.bv_val(i, PTR_BITS);
+    z3::expr byte = z3::select(m_memory, addr);
+    val = z3::concat(byte, val);
+  }
+  return val.extract(bytes * 8 - 1, 0);
+}
+
 z3::expr SymbolicStore::loadByte(const z3::expr &base) {
   return z3::select(m_memory, base);
 }

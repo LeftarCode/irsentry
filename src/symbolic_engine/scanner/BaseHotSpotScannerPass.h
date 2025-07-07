@@ -1,5 +1,6 @@
 #pragma once
 #include "../module/ModuleInfo.h"
+#include "passes/Decision.h"
 #include <optional>
 #include <vector>
 
@@ -12,14 +13,6 @@ enum class HotSpotKind {
   Custom
 };
 
-enum class BranchKind { Uncond, TrueFalse, SwitchCase, SwitchDefault };
-
-struct Decision {
-  BranchKind kind;
-  std::optional<IntX> caseValue;
-  bool takenTF;
-};
-
 struct SymbolicHotSpot {
   std::size_t functionIdx;
   std::string basicBlockLabel;
@@ -30,17 +23,6 @@ struct SymbolicHotSpot {
   int severity = 5;
 
   std::vector<Decision> path;
-};
-
-struct NodeHash {
-  std::size_t operator()(const CFGNode *n) const noexcept {
-    return std::hash<const void *>{}(n);
-  }
-};
-struct NodeEq {
-  bool operator()(const CFGNode *a, const CFGNode *b) const noexcept {
-    return a == b;
-  }
 };
 
 class BaseHotSpotScannerPass {

@@ -72,32 +72,93 @@ void SymbolicEngine::handleSwitch(const z3::expr &e, const SwitchTerminator *sw,
 
 void SymbolicEngine::processSymbolicInput(
     const SymbolicInput &symIn, const std::unique_ptr<ModuleInfo> &mod) {
-  if (!std::holds_alternative<FunctionInput>(symIn)) {
-    throw std::runtime_error("SymbolicEngine: Only FunctionInput is supported");
-  }
 
-  auto &fi = std::get<FunctionInput>(symIn);
-  auto &func = mod->definedFunctions[fi.functionIdx];
-  auto &param = func.parameters[fi.parameterIdx];
+  if (auto fi = std::get_if<FunctionInput>(&symIn)) {
+    processSymbolicFunctionInput(fi, mod);
+  } else if (auto fo = std::get_if<FunctionOutputParam>(&symIn)) {
+    processSymbolicFunctionOutputParam(fo, mod);
+  } else if (auto fores = std::get_if<FunctionOutputResult>(&symIn)) {
+    processSymbolicFunctionOutputResult(fores, mod);
+  } else {
+    throw std::runtime_error("SymbolicEngine: Unsupported SymbolicInput...");
+  }
+}
+
+void SymbolicEngine::processSymbolicFunctionInput(
+    const FunctionInput *fi, const std::unique_ptr<ModuleInfo> &mod) {
+  auto &func = mod->definedFunctions[fi->functionIdx];
+  auto &param = func.parameters[fi->parameterIdx];
   auto paramName = param.name;
 
-  if (fi.parameterType->is<Array>()) {
-    auto &arrayTy = fi.parameterType->as<Array>();
-    allocSymBufArray(paramName, arrayTy.num, arrayTy.elem);
+  if (fi->parameterType->is<Array>()) {
+    auto &arrayTy = fi->parameterType->as<Array>();
+    allocSymBufArray(paramName, arrayTy.num);
+  } else if (fi->parameterType->is<Ptr>()) {
+    allocSymBuf(paramName);
   } else {
     throw std::runtime_error("SymbolicEngine: Only Array type is supported");
   }
 }
 
-void SymbolicEngine::allocSymBufArray(std::string name, size_t slots,
-                                      SIRTypePtr elemTy) {
+void SymbolicEngine::processSymbolicFunctionOutputParam(
+    const FunctionOutputParam *fo, const std::unique_ptr<ModuleInfo> &mod) {
+  auto &func = mod->definedFunctions[fo->functionIdx];
+  auto &bb = func.cfg->byLabel[fo->basicBlockLabel];
+  auto &instr = bb->instructions[fo->instructionIdx];
+  auto &callInstr = std::get<CallInstruction>(instr);
+  auto &param = callInstr.arguments[fo->parameterIdx];
+  if (!param.isVariable()) {
+    throw std::runtime_error(
+        "SymbolicEngine: Unsupported Value type in FunctionInput");
+  }
+  auto paramValue = param.asVar();
+  auto paramName = paramValue.name;
+
+  if (fo->parameterType->is<Array>()) {
+    auto &arrayTy = fo->parameterType->as<Array>();
+    allocSymBufArray(paramName, arrayTy.num);
+  } else if (fo->parameterType->is<Ptr>()) {
+    allocSymBuf(paramName);
+  } else {
+    throw std::runtime_error("SymbolicEngine: Only Array type is supported");
+  }
+}
+
+void SymbolicEngine::processSymbolicFunctionOutputResult(
+    const FunctionOutputResult *fores, const std::unique_ptr<ModuleInfo> &mod) {
+  auto &func = mod->definedFunctions[fores->functionIdx];
+  auto &bb = func.cfg->byLabel[fores->basicBlockLabel];
+  auto &instr = bb->instructions[fores->instructionIdx];
+  auto &callInstr = std::get<CallInstruction>(instr);
+  auto &result = callInstr.result;
+  auto resultValue = result.asVar();
+  auto resultName = resultValue.name;
+
+  if (fores->returnType->is<Array>()) {
+    auto &arrayTy = fores->returnType->as<Array>();
+    allocSymBufArray(resultName, arrayTy.num);
+  } else if (fores->returnType->is<Ptr>()) {
+    allocSymBuf(resultName);
+  } else {
+    throw std::runtime_error("SymbolicEngine: Only Array type is supported");
+  }
+}
+
+void SymbolicEngine::allocSymBuf(std::string name) {
+  z3::expr bufSize = varEnv.createPtr(SymbolicStore::SYM_BUF_SIZE);
+  Allocation &A = varEnv.allocate(name, bufSize);
+  z3::expr buffBase = A.base;
+  varEnv.bind(name, buffBase);
+}
+
+void SymbolicEngine::allocSymBufArray(std::string name, size_t slots) {
   z3::expr arrayBytes = varEnv.createPtr(slots * SymbolicStore::PTR_BYTES);
 
   Allocation &A = varEnv.allocate(name, arrayBytes);
   z3::expr arrayBase = A.base;
 
   varEnv.bind(name, arrayBase);
-  z3::expr bufSize = varEnv.createPtr(symbolicBufferSize);
+  z3::expr bufSize = varEnv.createPtr(SymbolicStore::SYM_BUF_SIZE);
 
   for (std::size_t i = 0; i < slots; ++i) {
     std::string bufName = name + "_input_buf_" + std::to_string(i);
@@ -113,7 +174,7 @@ void SymbolicEngine::allocSymBufArray(std::string name, size_t slots,
 
 void SymbolicEngine::fillSymbolicBuffer(std::string bufName,
                                         const Allocation &bufAlloc) {
-  for (unsigned j = 0; j < symbolicBufferSize; ++j) {
+  for (unsigned j = 0; j < SymbolicStore::SYM_BUF_SIZE; ++j) {
     std::string symName = bufName + "_b_" + std::to_string(j);
     z3::expr sym = varEnv.createConstByte(symName);
     z3::expr offset = varEnv.createPtr(j);

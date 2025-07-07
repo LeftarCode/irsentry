@@ -8,5 +8,14 @@ public:
   void printResult(const SymbolicInput &symIn,
                    const std::unique_ptr<ModuleInfo> &mod,
                    SymbolicStore &varEnv, const z3::model &model) const;
+
+private:
+  void printFuncInput(const FunctionInput *fi,
+                      const std::unique_ptr<ModuleInfo> &mod,
+                      SymbolicStore &symStore, const z3::model &model) const;
+  void printFuncOutputRes(const FunctionOutputResult *fores,
+                          const std::unique_ptr<ModuleInfo> &mod,
+                          SymbolicStore &symStore,
+                          const z3::model &model) const;
 };
 } // namespace irsentry
