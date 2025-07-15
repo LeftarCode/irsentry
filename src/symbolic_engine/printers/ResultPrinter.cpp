@@ -115,16 +115,19 @@ void ResultPrinter::printFuncOutputRes(const FunctionOutputResult *fores,
   auto &func = mod->definedFunctions[fores->functionIdx];
   auto paramName = fores->returnVariable;
 
-  if (!fores->returnType->is<Ptr>()) {
-    throw std::runtime_error("SymbolicEngine: Only Ptr type is supported");
+  if (!fores->returnType->is<Array>()) {
+    throw std::runtime_error("SymbolicEngine: Only Array type is supported");
   }
 
-  auto &ptrTy = fores->returnType->as<Ptr>();
+  auto &arrayTy = fores->returnType->as<Array>();
   z3::expr inputExpr = symStore.lookup(paramName);
   uint64_t inputBase = model.eval(inputExpr, true).get_numeral_uint64();
+  for (unsigned idx = 0; idx < arrayTy.num; ++idx) {
+    uint64_t ptr =
+        loadPtr(model, symStore, inputBase + idx * SymbolicStore::PTR_BYTES);
 
-  std::string txt =
-      readBuffer(model, symStore, inputBase, SymbolicStore::PTR_BITS);
-  Logger::getInstance().info(std::format("{}: {}", paramName, txt));
+    std::string txt = readBuffer(model, symStore, ptr, SymbolicStore::PTR_BITS);
+    Logger::getInstance().info(std::format("{}[{}]: {}", paramName, idx, txt));
+  }
 }
 } // namespace irsentry

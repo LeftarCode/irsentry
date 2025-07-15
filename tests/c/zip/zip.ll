@@ -108,52 +108,53 @@ define dso_local i32 @main(i32 noundef %0, ptr noundef %1) #0 {
   %5 = alloca i32, align 4
   %6 = alloca ptr, align 8
   %7 = alloca i32, align 4
+  %8 = alloca i64, align 8
   store i32 0, ptr %3, align 4
   store ptr %1, ptr %4, align 8
   store i32 %0, ptr %5, align 4
-  %8 = load ptr, ptr %4, align 8
-  %9 = getelementptr inbounds ptr, ptr %8, i64 1
-  %10 = load ptr, ptr %9, align 8
-  %11 = call ptr @fopen(ptr noundef %10, ptr noundef @"??_C@_02JDPG@rb?$AA@")
-  store ptr %11, ptr %6, align 8
-  %12 = load ptr, ptr %6, align 8
-  %13 = icmp ne ptr %12, null
-  br i1 %13, label %15, label %14
-
-14:                                               ; preds = %2
-  store i32 1, ptr %3, align 4
-  br label %30
+  %9 = load ptr, ptr %4, align 8
+  %10 = getelementptr inbounds ptr, ptr %9, i64 1
+  %11 = load ptr, ptr %10, align 8
+  %12 = call ptr @fopen(ptr noundef %11, ptr noundef @"??_C@_02JDPG@rb?$AA@")
+  store ptr %12, ptr %6, align 8
+  %13 = load ptr, ptr %6, align 8
+  %14 = icmp ne ptr %13, null
+  br i1 %14, label %16, label %15
 
 15:                                               ; preds = %2
-  %16 = load ptr, ptr %6, align 8
-  %17 = call i64 @fread(ptr noundef %7, i64 noundef 4, i64 noundef 1, ptr noundef %16)
-  %18 = load i32, ptr %7, align 4
-  %19 = icmp eq i32 %18, 67324752
-  br i1 %19, label %20, label %27
+  store i32 1, ptr %3, align 4
+  br label %31
 
-20:                                               ; preds = %15
-  %21 = load ptr, ptr %6, align 8
-  %22 = call i64 @fread(ptr noundef %7, i64 noundef 4, i64 noundef 1, ptr noundef %21)
-  %23 = load i32, ptr %7, align 4
-  %24 = icmp eq i32 %23, 67324752
-  br i1 %24, label %25, label %26
+16:                                               ; preds = %2
+  %17 = load ptr, ptr %6, align 8
+  %18 = call i64 @fread(ptr noundef %7, i64 noundef 4, i64 noundef 1, ptr noundef %17)
+  %19 = load i32, ptr %7, align 4
+  %20 = icmp eq i32 %19, 67324752
+  br i1 %20, label %21, label %28
 
-25:                                               ; preds = %20
+21:                                               ; preds = %16
+  %22 = load ptr, ptr %6, align 8
+  %23 = call i64 @fread(ptr noundef %8, i64 noundef 8, i64 noundef 1, ptr noundef %22)
+  %24 = load i64, ptr %8, align 8
+  %25 = icmp eq i64 %24, 67324752
+  br i1 %25, label %26, label %27
+
+26:                                               ; preds = %21
   call void @IRSENTRY_MOCK_NOPARAMS()
-  br label %26
-
-26:                                               ; preds = %25, %20
   br label %27
 
-27:                                               ; preds = %26, %15
-  %28 = load ptr, ptr %6, align 8
-  %29 = call i32 @fclose(ptr noundef %28)
-  store i32 0, ptr %3, align 4
-  br label %30
+27:                                               ; preds = %26, %21
+  br label %28
 
-30:                                               ; preds = %27, %14
-  %31 = load i32, ptr %3, align 4
-  ret i32 %31
+28:                                               ; preds = %27, %16
+  %29 = load ptr, ptr %6, align 8
+  %30 = call i32 @fclose(ptr noundef %29)
+  store i32 0, ptr %3, align 4
+  br label %31
+
+31:                                               ; preds = %28, %15
+  %32 = load i32, ptr %3, align 4
+  ret i32 %32
 }
 
 declare dso_local ptr @fopen(ptr noundef, ptr noundef) #1

@@ -16,7 +16,7 @@ static void dfs(std::size_t fnIdx, const NodePtr &node,
   for (std::size_t i = 0; i < node->instructions.size(); ++i) {
     if (auto call = std::get_if<CallInstruction>(&node->instructions[i]);
         call && call->callee == fopenName) {
-      constexpr size_t DEFAULT_SLOTS = 1;
+      constexpr size_t DEFAULT_SLOTS = 2;
       auto charTy = SIRType::make<BaseScalar>(BaseScalar::Uint8);
       auto charPtr = SIRType::make<Ptr>(charTy);
       auto filePtr = SIRType::make<Array>(DEFAULT_SLOTS, charPtr);
@@ -26,7 +26,7 @@ static void dfs(std::size_t fnIdx, const NodePtr &node,
       fores.basicBlockLabel = node->label;
       fores.instructionIdx = i;
       fores.path = path;
-      fores.returnType = charPtr;
+      fores.returnType = filePtr;
       fores.returnVariable = call->result.asVar().name;
       out.push_back(std::move(fores));
     }

@@ -30,6 +30,10 @@ z3::expr SymbolicStore::lookup(const std::string &n) const {
   return m_ssa.at(n);
 }
 
+uint64_t SymbolicStore::lookupAllocBase(const std::string &n) const {
+  return m_ssaAllocBases.at(n);
+}
+
 z3::expr SymbolicStore::createPtr(uint64_t value) {
   return ctx.bv_val(value, SymbolicStore::PTR_BITS);
 }
@@ -79,8 +83,20 @@ Allocation &SymbolicStore::allocate(const std::string &name,
 
   z3::expr base = ctx.bv_val(baseConst, PTR_BITS);
 
+  m_ssaAllocBases[name] = baseConst;
   m_allocations.emplace_back(Allocation{base, sizeBV});
   return m_allocations.back();
+}
+
+z3::expr SymbolicStore::loadPtr(const z3::expr &base) {
+  z3::expr ptr = loadByte(base);
+  for (int i = 1; i < SymbolicStore::PTR_BYTES; i++) {
+    z3::expr offset = createPtr(i);
+    z3::expr byte = loadByte(base + offset);
+    ptr = z3::concat(byte, ptr);
+  }
+
+  return ptr;
 }
 
 z3::expr SymbolicStore::load(const Allocation &A, const z3::expr &offset,
@@ -120,7 +136,7 @@ void SymbolicStore::store(const z3::expr &addr, const z3::expr &value) {
 
 void SymbolicStore::storeBytes(const z3::expr &base, const std::string &bytes) {
   for (unsigned i = 0; i < bytes.size(); ++i) {
-    m_memory = z3::store(m_memory, base + ctx.bv_val(i, PTR_BITS),
+    m_memory = z3::store(m_memory, base + createPtr(i),
                          ctx.bv_val(static_cast<uint8_t>(bytes[i]), 8));
   }
 }

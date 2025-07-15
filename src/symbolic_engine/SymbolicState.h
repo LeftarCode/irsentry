@@ -28,6 +28,7 @@ public:
 
   z3::expr lookup(const Value &v) const;
   z3::expr lookup(const std::string &n) const;
+  uint64_t lookupAllocBase(const std::string &n) const;
 
   z3::expr createPtr(uint64_t value);
   z3::expr createConstByte(const std::string &name);
@@ -38,6 +39,7 @@ public:
 
   Allocation &allocate(const std::string &name, const z3::expr &sizeBV);
 
+  z3::expr loadPtr(const z3::expr &base);
   z3::expr load(const Allocation &A, const z3::expr &offset, unsigned bytes);
   z3::expr load(const z3::expr &base, const z3::expr &offset, unsigned bytes);
   z3::expr loadByte(const z3::expr &base);
@@ -51,6 +53,7 @@ private:
   uint64_t m_nextConcreteAddr = 0x100000;
   std::vector<Allocation> m_allocations;
   std::unordered_map<std::string, z3::expr> m_ssa;
+  std::unordered_map<std::string, uint64_t> m_ssaAllocBases;
   z3::expr m_memory;
 };
 } // namespace irsentry

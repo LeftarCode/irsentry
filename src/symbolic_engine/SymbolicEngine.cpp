@@ -44,7 +44,7 @@ void SymbolicEngine::solve(const std::unique_ptr<ModuleInfo> &module,
   // TODO: Add post-conditions from hot spot
   // HERE:
 
-  debugPrintResult();
+  // debugPrintResult();
   printResult(symPath.symInput, module);
 }
 

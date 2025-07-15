@@ -184,6 +184,19 @@ z3::expr InstructionTranslator::translateCall(SymbolicStore &env,
     return freadSummary(env, instr);
   }
 
+  if (instr.callee == "fopen") {
+    if (env.solver.check() == z3::sat) {
+        z3::expr filePtr = env.lookup(instr.result);
+        auto model = env.solver.get_model();
+        auto val = model.eval(filePtr, true).get_numeral_uint();
+        auto offsetSSA = std::format("0x{:x}_offset", val);
+        env.bind(offsetSSA, env.createPtr(0));
+    }
+
+    env.bind(instr.result, env.lookup(instr.result));
+    return env.lookup(instr.result);
+  }
+
   z3::sort retSort =
       translateSort(ctx, instr.result.type, SymbolicStore::PTR_BITS);
 
