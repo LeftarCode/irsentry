@@ -26,7 +26,7 @@ static void dfs(std::size_t fnIdx, const NodePtr &node,
       fores.basicBlockLabel = node->label;
       fores.instructionIdx = i;
       fores.path = path;
-      fores.returnType = filePtr;
+      fores.returnType = charPtr;
       fores.returnVariable = call->result.asVar().name;
       out.push_back(std::move(fores));
     }
@@ -74,8 +74,8 @@ static std::vector<SymbolicInput> scanCFG(std::size_t fnIdx,
   return out;
 }
 
-std::vector<SymbolicInput>
-FreadFuncOutputPass::scanModule(const std::unique_ptr<ModuleInfo> &mod) {
+std::vector<SymbolicInput> FopenFunctionOutputResultPass::scanModule(
+    const std::unique_ptr<ModuleInfo> &mod) {
   std::vector<SymbolicInput> all;
   for (std::size_t i = 0; i < mod->definedFunctions.size(); ++i) {
     const auto &fn = mod->definedFunctions[i];

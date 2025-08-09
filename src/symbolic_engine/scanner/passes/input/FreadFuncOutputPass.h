@@ -2,7 +2,7 @@
 #include "../../BaseInputScannerPass.h"
 
 namespace irsentry {
-class FreadFuncOutputPass : public BaseInputScannerPass {
+class FopenFunctionOutputResultPass : public BaseInputScannerPass {
 public:
   std::vector<SymbolicInput>
   scanModule(const std::unique_ptr<ModuleInfo> &module) override;

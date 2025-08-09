@@ -21,6 +21,9 @@ private:
   void processSymbolicInput(const SymbolicInput &symIn,
                             const std::unique_ptr<ModuleInfo> &mod);
 
+  void processSymbolicHotspot(const SymbolicHotSpot &symIn,
+                              const std::unique_ptr<ModuleInfo> &mod);
+
   void processSymbolicFunctionInput(const FunctionInput *fi,
                                     const std::unique_ptr<ModuleInfo> &mod);
   void

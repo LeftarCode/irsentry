@@ -17,6 +17,7 @@ struct SymbolicPath {
   std::size_t functionIdx;
   std::size_t instructionIdx;
   SymbolicInput symInput;
+  SymbolicHotSpot symHotSpot;
 };
 
 class PathFinder {

@@ -110,8 +110,9 @@ InstructionParser::parseCastInstr(const llvm::CastInst &ci) const {
 
   auto fromType = m_typeParser.parseType(ci.getSrcTy());
   auto toType = m_typeParser.parseType(ci.getDestTy());
+  auto kind = toKind(ci.getOpcode());
 
-  CastInstruction instr{fromType, toType};
+  CastInstruction instr(fromType, toType, kind);
   instr.from = m_valueParser.parseValue(fromType, ci.getOperand(0));
 
   instr.result = LLVMHelper::makeSSAResult(ci, toType, "cast_");
@@ -153,7 +154,9 @@ InstructionParser::parseAllocaInstr(const llvm::AllocaInst &ai) const {
   auto numTy = m_typeParser.parseType(ai.getArraySize()->getType());
   Value numElements = m_valueParser.parseValue(numTy, ai.getArraySize());
 
-  AllocaInstruction instr(elemType, numElements);
+  auto align = ai.getAlign().value();
+
+  AllocaInstruction instr(elemType, numElements, align);
 
   auto ptrType = SIRType::make<Ptr>(elemType);
   instr.result = LLVMHelper::makeSSAResult(ai, ptrType, "alloca_");

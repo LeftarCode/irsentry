@@ -7,7 +7,7 @@ namespace irsentry {
 
 class Z3Helper {
 public:
-  static uint64_t byteSizeOf(const SIRTypePtr &ty);
+  static uint64_t byteSizeOf(const SIRTypePtr &ty, uint64_t alignment = 1);
 
   static z3::expr translateValueAsBV(z3::context &ctx, SymbolicStore &env,
                                      const Value &v, unsigned width,

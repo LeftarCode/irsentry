@@ -23,12 +23,10 @@ static z3::expr freadSummary(SymbolicStore &env, const CallInstruction &instr) {
     auto model = env.solver.get_model();
 
     filePtrConcrete = model.eval(filePtr, true).get_numeral_uint();
-    std::cout << "FREAD, FilePTR: " << filePtrConcrete << std::endl;
 
     auto offsetSSA = std::format("0x{:x}_offset", filePtrConcrete);
     auto fileOffset = env.lookup(offsetSSA);
     fileOffsetConcrete = model.eval(fileOffset, true).get_numeral_uint();
-    std::cout << "FREAD, offset: " << fileOffsetConcrete << std::endl;
   }
 
   z3::expr currentFileOffset = env.createPtr(fileOffsetConcrete);
@@ -46,8 +44,7 @@ static z3::expr freadSummary(SymbolicStore &env, const CallInstruction &instr) {
     z3::expr offset = env.createPtr(i);
     z3::expr doRead = z3::ult(offset, bytesRead);
 
-    z3::expr fileByte =
-        env.loadByte(fileContentPtr + offset + currentFileOffset);
+    z3::expr fileByte = env.loadByte(filePtr + offset + currentFileOffset);
     z3::expr oldByte = env.loadByte(bufferPtr + offset);
     z3::expr newByte = z3::ite(doRead, fileByte, oldByte);
 
@@ -62,4 +59,21 @@ static z3::expr freadSummary(SymbolicStore &env, const CallInstruction &instr) {
 
   return bytesRead;
 }
+
+static z3::expr fopenSummary(SymbolicStore &env, const CallInstruction &instr) {
+  if (env.solver.check() != z3::sat) {
+    throw std::runtime_error("Unable to solve model for fopen summary");
+  }
+
+  auto model = env.solver.get_model();
+
+  z3::expr filePtr = env.lookup(instr.result);
+  auto val = model.eval(filePtr, true).get_numeral_uint();
+  auto offsetSSA = std::format("0x{:x}_offset", val);
+  env.bind(offsetSSA, env.createPtr(0));
+
+  env.bind(instr.result, env.lookup(instr.result));
+  return env.lookup(instr.result);
+}
+
 } // namespace irsentry

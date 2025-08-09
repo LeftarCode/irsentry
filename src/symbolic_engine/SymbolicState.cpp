@@ -30,10 +30,6 @@ z3::expr SymbolicStore::lookup(const std::string &n) const {
   return m_ssa.at(n);
 }
 
-uint64_t SymbolicStore::lookupAllocBase(const std::string &n) const {
-  return m_ssaAllocBases.at(n);
-}
-
 z3::expr SymbolicStore::createPtr(uint64_t value) {
   return ctx.bv_val(value, SymbolicStore::PTR_BITS);
 }
@@ -83,8 +79,9 @@ Allocation &SymbolicStore::allocate(const std::string &name,
 
   z3::expr base = ctx.bv_val(baseConst, PTR_BITS);
 
-  m_ssaAllocBases[name] = baseConst;
   m_allocations.emplace_back(Allocation{base, sizeBV});
+  m_constAllocations.emplace_back(
+      ConstAllocation{baseConst, baseConst + sizeConst, sizeConst});
   return m_allocations.back();
 }
 
@@ -154,6 +151,14 @@ void SymbolicStore::debugDumpModel(const z3::model &m) const {
   std::cout << '\n';
 
   Z3Helper::dumpMemory(m, m_memory, 1024);
+}
+
+uint64_t SymbolicStore::getRemainingSpace(uint64_t base) const {
+  for (const auto &alloc : m_constAllocations) {
+    if (base >= alloc.base && base < alloc.end) {
+      return alloc.end - base;
+    }
+  }
 }
 
 }; // namespace irsentry

@@ -2,7 +2,7 @@
 
 namespace irsentry {
 
-uint64_t Z3Helper::byteSizeOf(const SIRTypePtr &ty) {
+uint64_t Z3Helper::byteSizeOf(const SIRTypePtr &ty, uint64_t alignment) {
   return ty->match(
       [](BaseScalar bs) -> uint64_t {
         switch (bs) {
@@ -39,9 +39,11 @@ uint64_t Z3Helper::byteSizeOf(const SIRTypePtr &ty) {
       [&](const Vec &v) -> uint64_t { return v.num * byteSizeOf(v.elem); },
       [&](const Struct &s) -> uint64_t {
         uint64_t sum = 0;
-        for (auto &f : s.fields)
+        for (auto &f : s.fields) {
           sum += byteSizeOf(f);
-        return sum;
+        }
+        uint64_t padded = (sum + alignment - 1) & ~(alignment - 1);
+        return padded;
       },
       [](const Func &) -> uint64_t { return 8; },
       [](const Named &) -> uint64_t { return 0; });

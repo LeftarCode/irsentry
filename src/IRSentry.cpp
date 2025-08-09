@@ -5,6 +5,7 @@
 #include "symbolic_engine/SymbolicEngine.h"
 #include "symbolic_engine/cfg/debug/CFGDotPrinter.h"
 #include "symbolic_engine/path_finder/PathFinder.h"
+#include "symbolic_engine/scanner/passes/hotspot/FreadHotSpotScannerPass.h"
 #include "symbolic_engine/scanner/passes/hotspot/MockHotSpotScannerPass.h"
 #include "symbolic_engine/scanner/passes/input/FreadFuncOutputPass.h"
 #include "symbolic_engine/scanner/passes/input/MainFuncInputPass.h"
@@ -49,8 +50,10 @@ IRSentry::IRSentry(const IRSentryOptions &irSentryOptions)
 
   m_transformer->registerPass<BreakConstExprPass>();
   // m_inputScanner->registerPass<MainFuncInputPass>();
-  m_inputScanner->registerPass<FreadFuncOutputPass>();
+  m_inputScanner->registerPass<FopenFunctionOutputResultPass>();
+
   m_hotSpotScanner->registerPass<MockHotSpotScannerPass>();
+  m_hotSpotScanner->registerPass<FreadHotSpotScannerPass>();
 
   if (!m_options.quiteMode) {
     tuiThread = std::thread([&] { tuiRenderer.run(); });
@@ -135,15 +138,19 @@ IRSentryStatus IRSentry::run() {
 
   PathFinder pathFinder;
   std::vector<SymbolicPath> paths;
+  size_t detectedPaths = 0;
   for (auto &symbolicInput : symbolicInputs) {
     for (auto &hotSpot : hotSpots) {
       auto path = pathFinder.find(m_module, symbolicInput, hotSpot);
 
       if (path.has_value()) {
         paths.push_back(path.value());
+        detectedPaths++;
       }
     }
   }
+  Logger::getInstance().info(
+      std::format("Found {} path(s) in total to explore.", detectedPaths));
 
   for (const auto &symPath : paths) {
     SymbolicEngine symEngine;

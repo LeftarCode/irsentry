@@ -23,13 +23,15 @@ enum class CastInstrType : std::uint8_t {
 class CastInstruction {
 public:
   CastInstruction() = default;
-  CastInstruction(SIRTypePtr dataTypeFrom, SIRTypePtr dataTypeTo) {
-
+  CastInstruction(SIRTypePtr dataTypeFrom, SIRTypePtr dataTypeTo,
+                  CastInstrType type) {
     result = Value(dataTypeTo);
     from = Value(dataTypeFrom);
+    this->type = type;
   }
 
   Value result;
   Value from;
+  CastInstrType type;
 };
 } // namespace irsentry

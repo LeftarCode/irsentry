@@ -13,6 +13,12 @@ struct Allocation {
   z3::expr size;
 };
 
+struct ConstAllocation {
+  uint64_t base;
+  uint64_t end;
+  uint64_t size;
+};
+
 class SymbolicStore {
 public:
   static constexpr unsigned PTR_BITS = 64;
@@ -28,7 +34,6 @@ public:
 
   z3::expr lookup(const Value &v) const;
   z3::expr lookup(const std::string &n) const;
-  uint64_t lookupAllocBase(const std::string &n) const;
 
   z3::expr createPtr(uint64_t value);
   z3::expr createConstByte(const std::string &name);
@@ -48,12 +53,13 @@ public:
   void storeBytes(const z3::expr &base, const std::string &bytes);
 
   void debugDumpModel(const z3::model &m) const;
+  uint64_t getRemainingSpace(uint64_t base) const;
 
 private:
   uint64_t m_nextConcreteAddr = 0x100000;
   std::vector<Allocation> m_allocations;
+  std::vector<ConstAllocation> m_constAllocations;
   std::unordered_map<std::string, z3::expr> m_ssa;
-  std::unordered_map<std::string, uint64_t> m_ssaAllocBases;
   z3::expr m_memory;
 };
 } // namespace irsentry

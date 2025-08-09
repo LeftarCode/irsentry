@@ -3,6 +3,7 @@
 #include "scanner/BaseHotSpotScannerPass.h"
 #include "scanner/BaseInputScannerPass.h"
 #include "translators/InstructionTranslator.h"
+#include <chrono>
 #include <sstream>
 #include <z3++.h>
 
@@ -41,10 +42,10 @@ void SymbolicEngine::solve(const std::unique_ptr<ModuleInfo> &module,
       }
     }
   }
-  // TODO: Add post-conditions from hot spot
-  // HERE:
 
-  // debugPrintResult();
+  processSymbolicHotspot(symPath.symHotSpot, module);
+
+  debugPrintResult();
   printResult(symPath.symInput, module);
 }
 
@@ -81,6 +82,55 @@ void SymbolicEngine::processSymbolicInput(
     processSymbolicFunctionOutputResult(fores, mod);
   } else {
     throw std::runtime_error("SymbolicEngine: Unsupported SymbolicInput...");
+  }
+}
+
+void SymbolicEngine::processSymbolicHotspot(
+    const SymbolicHotSpot &hotSpot, const std::unique_ptr<ModuleInfo> &mod) {
+  if (hotSpot.kind == HotSpotKind::BackdoorCall) {
+    return;
+  } else if (hotSpot.kind == HotSpotKind::DangerousCall) {
+    auto &func = mod->definedFunctions[hotSpot.functionIdx];
+    auto &bb = func.cfg->byLabel[hotSpot.basicBlockLabel];
+    auto &instr = bb->instructions[hotSpot.instructionIdx];
+    auto &callInstr = std::get<CallInstruction>(instr);
+
+    if (varEnv.solver.check() != z3::sat) {
+      throw std::runtime_error(
+          "SymbolicEngine: Unable to solve for hot spot processing...");
+    }
+    // TO HELPER FUNCTION in SymbolicStore
+    auto model = varEnv.solver.get_model();
+    auto &dstBufferSSA = callInstr.arguments[0].asVar().name;
+    auto dstBufferExpr = varEnv.lookup(dstBufferSSA);
+    auto dstBufferEvalExpr = model.eval(dstBufferExpr, true);
+    auto dstBufferValue = dstBufferEvalExpr.get_numeral_uint64();
+    // TO HELPER FUNCTION in SymbolicStore
+    auto dstBufferSize = varEnv.getRemainingSpace(dstBufferValue);
+
+    auto objSizeScalar = callInstr.arguments[1].asConst().asScalar();
+    auto objSizeIntX = std::get<IntX>(objSizeScalar);
+    auto objSizeInt = objSizeIntX.toU64();
+
+    z3::expr elemCount = varEnv.createPtr(0x00);
+    if (callInstr.arguments[2].isConstant()) {
+      auto elemCountScalar = callInstr.arguments[2].asConst().asScalar();
+      auto elemCountIntX = std::get<IntX>(elemCountScalar);
+      auto elemCountInt = elemCountIntX.toU64();
+      elemCount = varEnv.createPtr(elemCountInt);
+    } else if (callInstr.arguments[2].isVariable()) {
+      auto elemCountVarName = callInstr.arguments[2].asVar().name;
+      elemCount = varEnv.lookup(elemCountVarName);
+    }
+
+    auto readLengthBV = varEnv.createPtr(objSizeInt) * elemCount;
+    auto dstBufferSizeBV = varEnv.createPtr(dstBufferSize);
+
+    varEnv.solver.add(z3::ugt(readLengthBV, dstBufferSizeBV));
+
+  } else {
+    throw std::runtime_error(
+        "SymbolicEngine: Unsupported SymbolicHotSpot kind...");
   }
 }
 

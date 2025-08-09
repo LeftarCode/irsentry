@@ -65,6 +65,7 @@ handleFuncInputSameFunc(const std::unique_ptr<ModuleInfo> &mod,
   result.decisions = dst.path;
   result.symInput = *src;
   result.blocks = createSymbolicPathBlocks(path, curFuncCFG);
+  result.symHotSpot = dst;
 
   return result;
 }
@@ -126,6 +127,7 @@ handleFuncOutputResSameFunc(const std::unique_ptr<ModuleInfo> &mod,
   result.functionIdx = src->functionIdx;
   result.decisions = dst.path;
   result.symInput = *src;
+  result.symHotSpot = dst;
 
   auto srcPath = createSymbolicPathBlocks(inputPath, curFuncCFG);
   auto dstPath = createSymbolicPathBlocks(outputPath, curFuncCFG);
