@@ -49,7 +49,7 @@ IRSentry::IRSentry(const IRSentryOptions &irSentryOptions)
   Logger::getInstance().setLogLevel(irSentryOptions.logLevel);
 
   m_transformer->registerPass<BreakConstExprPass>();
-  // m_inputScanner->registerPass<MainFuncInputPass>();
+  m_inputScanner->registerPass<MainFuncInputPass>();
   m_inputScanner->registerPass<FopenFunctionOutputResultPass>();
 
   m_hotSpotScanner->registerPass<MockHotSpotScannerPass>();

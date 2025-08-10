@@ -150,7 +150,7 @@ void SymbolicStore::debugDumpModel(const z3::model &m) const {
   }
   std::cout << '\n';
 
-  Z3Helper::dumpMemory(m, m_memory, 1024);
+  // Z3Helper::dumpMemory(m, m_memory, 1024);
 }
 
 uint64_t SymbolicStore::getRemainingSpace(uint64_t base) const {

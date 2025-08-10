@@ -45,7 +45,7 @@ void SymbolicEngine::solve(const std::unique_ptr<ModuleInfo> &module,
 
   processSymbolicHotspot(symPath.symHotSpot, module);
 
-  debugPrintResult();
+  // debugPrintResult();
   printResult(symPath.symInput, module);
 }
 

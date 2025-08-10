@@ -23,7 +23,7 @@ class SymbolicStore {
 public:
   static constexpr unsigned PTR_BITS = 64;
   static constexpr unsigned PTR_BYTES = PTR_BITS / 8;
-  static constexpr unsigned SYM_BUF_SIZE = 256;
+  static constexpr unsigned SYM_BUF_SIZE = 128;
   z3::context ctx;
   z3::solver solver;
 

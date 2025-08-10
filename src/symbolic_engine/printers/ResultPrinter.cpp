@@ -103,8 +103,7 @@ void ResultPrinter::printFuncInput(const FunctionInput *fi,
       break;
     }
 
-    std::string txt =
-        readCString(model, symStore, ptr, SymbolicStore::PTR_BITS);
+    std::string txt = readBuffer(model, symStore, ptr, SymbolicStore::PTR_BITS);
     Logger::getInstance().info(std::format("{}[{}]: {}", paramName, idx, txt));
   }
 }

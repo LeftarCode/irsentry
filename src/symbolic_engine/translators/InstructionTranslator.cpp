@@ -91,19 +91,93 @@ InstructionTranslator::translateBitwise(SymbolicStore &env,
 
 z3::expr InstructionTranslator::translateCast(SymbolicStore &env,
                                               const CastInstruction &instr) {
-  if (instr.type != CastInstrType::ZExt) {
-    throw std::logic_error{"translateCast() only ZExt is implemented"};
+  const auto fromName = instr.from.asVar().name;
+  z3::expr fromVar = env.lookup(fromName);
+  z3::sort fromSort = fromVar.get_sort();
+
+  const unsigned fromBits = fromSort.is_bv() ? fromSort.bv_size() : 0u;
+  const unsigned resultBits =
+      static_cast<unsigned>(Z3Helper::byteSizeOf(instr.result.type) * 8ull);
+
+  auto bv_resize = [&](const z3::expr &e, unsigned dstBits) -> z3::expr {
+    const unsigned srcBits = e.get_sort().bv_size();
+    if (srcBits == dstBits)
+      return e;
+    if (srcBits < dstBits) {
+      const unsigned k = dstBits - srcBits;
+      return k ? z3::zext(e, k) : e;
+    }
+    return e.extract(dstBits - 1, 0);
+  };
+
+  auto require_bv = [&](const char *ctxMsg) {
+    if (!fromSort.is_bv())
+      throw std::logic_error(std::string(ctxMsg) +
+                             ": source must be a bit-vector");
+  };
+
+  z3::expr out = fromVar;
+
+  switch (instr.type) {
+  case CastInstrType::Trunc: {
+    require_bv("Trunc");
+    if (resultBits >= fromBits)
+      throw std::logic_error{"Trunc: result must be < source width"};
+    out = fromVar.extract(resultBits - 1, 0);
+    break;
+  }
+  case CastInstrType::ZExt: {
+    require_bv("ZExt");
+    if (resultBits < fromBits)
+      throw std::logic_error{"ZExt: result must be >= source width"};
+    const unsigned k = resultBits - fromBits;
+    out = k ? z3::zext(fromVar, k) : fromVar;
+    break;
+  }
+  case CastInstrType::SExt: {
+    require_bv("SExt");
+    if (resultBits < fromBits)
+      throw std::logic_error{"SExt: result must be >= source width"};
+    const unsigned k = resultBits - fromBits;
+    out = k ? z3::sext(fromVar, k) : fromVar;
+    break;
+  }
+  case CastInstrType::PtrToInt: {
+    require_bv("PtrToInt");
+    out = bv_resize(fromVar, resultBits);
+    break;
+  }
+  case CastInstrType::IntToPtr: {
+    require_bv("IntToPtr");
+    out = bv_resize(fromVar, resultBits);
+    break;
+  }
+  case CastInstrType::BitCast: {
+    require_bv("BitCast (only BV<->BV supported)");
+    if (fromBits != resultBits)
+      throw std::logic_error{"BitCast: bitwidth mismatch"};
+    out = fromVar;
+    break;
+  }
+  case CastInstrType::AddrSpaceCast: {
+    require_bv("AddrSpaceCast");
+    out = (fromBits == resultBits) ? fromVar : bv_resize(fromVar, resultBits);
+    break;
+  }
+  case CastInstrType::FPTrunc:
+  case CastInstrType::FPExt:
+  case CastInstrType::FPToUI:
+  case CastInstrType::FPToSI:
+  case CastInstrType::UIToFP:
+  case CastInstrType::SIToFP:
+    throw std::logic_error{"Floating-point casts are not supported"};
+
+  default:
+    throw std::logic_error{"translateCast(): unknown CastInstrType"};
   }
 
-  auto fromName = instr.from.asVar().name;
-  auto fromVar = env.lookup(fromName);
-  auto fromBits = fromVar.get_sort().bv_size();
-  uint64_t resultBits = Z3Helper::byteSizeOf(instr.result.type) * 8;
-
-  z3::expr extBV = z3::zext(fromVar, resultBits - fromBits);
-  env.bind(instr.result, extBV);
-
-  return extBV;
+  env.bind(instr.result, out);
+  return out;
 }
 
 z3::expr InstructionTranslator::translateFCmp(SymbolicStore &env,
@@ -170,11 +244,28 @@ z3::expr InstructionTranslator::translateICmp(SymbolicStore &env,
   return cmp;
 }
 
-z3::expr
-InstructionTranslator::translateValue(SymbolicStore & /*env*/,
-                                      const ValueInstruction & /*instr*/) {
+z3::expr InstructionTranslator::translateValue(SymbolicStore &env,
+                                               const ValueInstruction &instr) {
+  z3::context &ctx = env.ctx;
+  unsigned PTR = SymbolicStore::PTR_BITS;
+  z3::expr op1 = Z3Helper::translateValueAsBV(ctx, env, instr.operators[0], PTR,
+                                              "value_op_1");
+  z3::expr op2 = Z3Helper::translateValueAsBV(ctx, env, instr.operators[1], PTR,
+                                              "value_op_2");
+  z3::expr result = op1;
+  switch (instr.valueInstrType) {
+  case ValueInstrType::AddInstrType:
+    result = op1 + op2;
+    break;
+  case ValueInstrType::SubInstrType:
+    result = op1 - op2;
+    break;
+  default:
+    throw std::logic_error{"translateValue() supports only add/sub"};
+  };
 
-  throw std::logic_error{"translateValue() not implemented"};
+  env.bind(instr.result, result);
+  return result;
 }
 
 z3::expr InstructionTranslator::translateCall(SymbolicStore &env,
@@ -192,12 +283,24 @@ z3::expr InstructionTranslator::translateCall(SymbolicStore &env,
     return strcmpSummary(env, instr);
   }
 
+  if (instr.callee == "strlen") {
+    return strlenSummary(env, instr);
+  }
+
+  if (instr.callee == "strstr") {
+    return strstrSummary(env, instr);
+  }
+
   if (instr.callee == "fread") {
     return freadSummary(env, instr);
   }
 
   if (instr.callee == "fopen") {
     return fopenSummary(env, instr);
+  }
+
+  if (instr.callee == "atoi") {
+    return atoiSummary(env, instr);
   }
 
   z3::sort retSort =
@@ -291,69 +394,64 @@ z3::expr InstructionTranslator::translateGetElementPtr(
   z3::expr baseBV =
       Z3Helper::translateValueAsBV(ctx, env, instr.base, PTR, "gep_base");
 
-  // FIXME: if it's struct it fails!!!
+  auto elemSizeBV = [&](SIRTypePtr t) -> z3::expr {
+    uint64_t sz = Z3Helper::byteSizeOf(t);
+    if (t->is<BaseScalar>() && t->as<BaseScalar>() == BaseScalar::Void) {
+      sz = 8;
+    }
+    return env.createPtr(sz);
+  };
+
+  z3::expr offset = env.createPtr(0);
+
+  std::size_t idxPos = 0;
   SIRTypePtr curTy = nullptr;
-  bool startedFromPtr = false;
-  if (instr.base.type->is<Ptr>()) {
-    curTy = instr.base.type->as<Ptr>().pointee;
-    startedFromPtr = true;
-  } else if (instr.base.type->is<Struct>()) {
-    curTy = instr.base.type;
-  } else if (instr.base.type->is<Array>()) {
-    curTy = instr.base.type;
+
+  if (instr.base.type->is<Ptr>() && !instr.indices.empty()) {
+    SIRTypePtr sourceTy = instr.sourceType;
+
+    const Value &first = instr.indices[0];
+    z3::expr firstBV =
+        Z3Helper::translateValueAsBV(ctx, env, first, PTR, "gep_idx0");
+    offset = offset + (firstBV * elemSizeBV(sourceTy));
+
+    curTy = sourceTy;
+    idxPos = 1;
   } else {
-    throw std::exception(
-        "InstructionTranslator: GEP - only pointer/struct/array supported");
+    curTy = instr.sourceType;
   }
 
-  z3::expr offset = ctx.bv_val(0, PTR);
-
-  bool firstIndex = true;
-  for (const Value &idxVal : instr.indices) {
-
+  for (; idxPos < instr.indices.size(); ++idxPos) {
+    const Value &idxVal = instr.indices[idxPos];
     z3::expr idxBV =
         Z3Helper::translateValueAsBV(ctx, env, idxVal, PTR, "gep_idx");
-    if (firstIndex && startedFromPtr) {
-      uint64_t elemSz = Z3Helper::byteSizeOf(curTy);
-      if (curTy->is<BaseScalar>() &&
-          curTy->as<BaseScalar>() == BaseScalar::Void) {
-        elemSz = 8;
-      }
-
-      offset = offset + (idxBV * ctx.bv_val(elemSz, PTR));
-      firstIndex = false;
-      continue;
-    }
-
-    firstIndex = false;
 
     if (curTy->is<Array>()) {
       auto &arr = curTy->as<Array>();
-      offset =
-          offset + (idxBV * ctx.bv_val(Z3Helper::byteSizeOf(arr.elem), PTR));
+      offset = offset + (idxBV * env.createPtr(Z3Helper::byteSizeOf(arr.elem)));
       curTy = arr.elem;
     } else if (curTy->is<Vec>()) {
       auto &vec = curTy->as<Vec>();
-      offset =
-          offset + (idxBV * ctx.bv_val(Z3Helper::byteSizeOf(vec.elem), PTR));
+      offset = offset + (idxBV * env.createPtr(Z3Helper::byteSizeOf(vec.elem)));
       curTy = vec.elem;
     } else if (curTy->is<Struct>()) {
       const auto &st = curTy->as<Struct>();
 
       if (!(idxVal.isConstant() && idxVal.asConst().isScalar() &&
-            std::holds_alternative<IntX>(idxVal.asConst().asScalar())))
+            std::holds_alternative<IntX>(idxVal.asConst().asScalar()))) {
         return freshPtr();
+      }
 
       std::size_t fieldNo = std::get<IntX>(idxVal.asConst().asScalar()).toU64();
       if (fieldNo >= st.fields.size()) {
         return freshPtr();
       }
-      std::cout << fieldNo << std::endl;
+
       uint64_t off = 0;
       for (std::size_t i = 0; i < fieldNo; ++i)
         off += Z3Helper::byteSizeOf(st.fields[i]);
 
-      offset = offset + ctx.bv_val(off, PTR);
+      offset = offset + env.createPtr(off);
       curTy = st.fields[fieldNo];
     } else if (curTy->is<BaseScalar>()) {
       BaseScalar bs =
@@ -364,7 +462,7 @@ z3::expr InstructionTranslator::translateGetElementPtr(
         elemSz = 8;
       }
 
-      offset = offset + (idxBV * ctx.bv_val(elemSz, PTR));
+      offset = offset + (idxBV * env.createPtr(elemSz));
     } else {
       return freshPtr();
     }

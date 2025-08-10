@@ -15,6 +15,7 @@ public:
 
   Value result;
   Value base;
+  SIRTypePtr sourceType;
   std::vector<Value> indices;
 };
 } // namespace irsentry

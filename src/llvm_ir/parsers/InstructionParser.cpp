@@ -115,6 +115,8 @@ InstructionParser::parseCastInstr(const llvm::CastInst &ci) const {
   CastInstruction instr(fromType, toType, kind);
   instr.from = m_valueParser.parseValue(fromType, ci.getOperand(0));
 
+  printf("Kind: %d\n", kind);
+
   instr.result = LLVMHelper::makeSSAResult(ci, toType, "cast_");
   return instr;
 }
@@ -180,9 +182,9 @@ InstructionParser::parseLoadInstr(const llvm::LoadInst &li) const {
 SEEInstruction
 InstructionParser::parseGEPInstr(const llvm::GetElementPtrInst &gep) const {
   auto resultTy = m_typeParser.parseType(gep.getType());
-  auto baseTy = m_typeParser.parseType(gep.getPointerOperandType());
-
-  Value basePtr = m_valueParser.parseValue(baseTy, gep.getPointerOperand());
+  auto sourceTy = m_typeParser.parseType(gep.getSourceElementType());
+  auto basePtrTy = m_typeParser.parseType(gep.getPointerOperand()->getType());
+  Value basePtr = m_valueParser.parseValue(basePtrTy, gep.getPointerOperand());
 
   std::vector<Value> idxVals;
   idxVals.reserve(gep.getNumIndices());
@@ -196,6 +198,7 @@ InstructionParser::parseGEPInstr(const llvm::GetElementPtrInst &gep) const {
   GetElementPtrInstruction instr(resultTy, std::move(basePtr),
                                  std::move(idxVals));
 
+  instr.sourceType = sourceTy;
   instr.result = LLVMHelper::makeSSAResult(gep, resultTy, "gep_");
   return instr;
 }

@@ -26,7 +26,6 @@ enum class ValueInstrType {
 };
 
 class ValueInstruction {
-  ValueInstrType valueInstrType;
 
 public:
   ValueInstruction() = default;
@@ -40,5 +39,6 @@ public:
 
   Value result;
   std::array<Value, 2> operators;
+  ValueInstrType valueInstrType;
 };
 } // namespace irsentry
