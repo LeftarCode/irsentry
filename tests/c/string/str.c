@@ -32,20 +32,18 @@ int main(int argc, char **argv) {
   return 0;
 }
 
-//int main(int argc, char **argv) {
+// int main(int argc, char **argv) {
 //
-//  if (argc != 2) {
-//    printf("Usage: ./str.exe [req]");
-//    return 1;
-//  }
-//  if (strstr(argv[1], "bitwa") == NULL) {
-//    return 1;
-//  }
-//  if (strstr(argv[1], "1410") == NULL) {
-//    return 1;
-//  }
-//
-//  IRSENTRY_MOCK_NOPARAMS();
-//
-//  return 0;
-//}
+//   if (argc != 2) {
+//     printf("Usage: ./str.exe [req]");
+//     return 1;
+//   }
+//   if (strstr(argv[1], "bitwa") == NULL) {
+//     return 1;
+//   }
+//   if (strstr(argv[1], "1410") == NULL) {
+//     return 1;
+//   }
+//   IRSENTRY_MOCK_NOPARAMS();
+//   return 0;
+// }
