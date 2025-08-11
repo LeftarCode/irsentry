@@ -45,7 +45,7 @@ void SymbolicEngine::solve(const std::unique_ptr<ModuleInfo> &module,
 
   processSymbolicHotspot(symPath.symHotSpot, module);
 
-  // debugPrintResult();
+  debugPrintResult();
   printResult(symPath.symInput, module);
 }
 
@@ -346,10 +346,6 @@ void SymbolicEngine::printResult(const SymbolicInput &symIn,
 void SymbolicEngine::debugPrintResult() {
   if (varEnv.solver.check() == z3::sat) {
     z3::model m = varEnv.solver.get_model();
-
-    std::ostringstream oss;
-    oss << "SAT – model:\n" << m << '\n';
-    Logger::getInstance().debug(oss.str());
 
     Logger::getInstance().debug("\n--- Symbolic state dump ---\n");
     varEnv.debugDumpModel(m);

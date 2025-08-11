@@ -9,7 +9,20 @@ namespace irsentry {
 SymbolicStore::SymbolicStore()
     : solver(ctx),
       m_memory(ctx.constant(
-          "mem0", ctx.array_sort(ctx.bv_sort(PTR_BITS), ctx.bv_sort(8)))) {}
+          "mem0", ctx.array_sort(ctx.bv_sort(PTR_BITS), ctx.bv_sort(8)))) {
+
+  z3::set_param("verbose", 10);
+  z3::params p(ctx);
+  p.set("auto_config", false);
+  p.set("threads", 1u);
+  p.set("bv.delay", true);
+  p.set("push_ite_bv", true);
+  p.set("bv_ite2id", true);
+  p.set("array.extensional", false);
+  p.set("blast_select_store", false);
+  p.set("expand_select_store", false);
+  solver.set(p);
+}
 
 void SymbolicStore::bind(const Value &v, const z3::expr &e) {
   if (!v.isVariable()) {
@@ -150,7 +163,7 @@ void SymbolicStore::debugDumpModel(const z3::model &m) const {
   }
   std::cout << '\n';
 
-  // Z3Helper::dumpMemory(m, m_memory, 1024);
+  Z3Helper::dumpMemory(m, m_memory, 1024);
 }
 
 uint64_t SymbolicStore::getRemainingSpace(uint64_t base) const {

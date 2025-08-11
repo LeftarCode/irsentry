@@ -5,8 +5,8 @@
 #include <z3++.h>
 
 constexpr unsigned MAX_STR = 64;
-static constexpr unsigned MAX_HAY = 64;
-static constexpr unsigned MAX_NDL = 64;
+static constexpr unsigned MAX_HAY = 20;
+static constexpr unsigned MAX_NDL = 20;
 
 namespace irsentry {
 static z3::expr strcmpSummary(SymbolicStore &env,
@@ -81,9 +81,8 @@ static z3::expr strstrSummary(SymbolicStore &env,
 
   z3::expr len_h = strlenExpr(env, hay, MAX_HAY);
   z3::expr len_n = strlenExpr(env, ndl, MAX_NDL);
-  z3::expr emptyNeedle = (len_n == BVp(0));
 
-  z3::expr firstEqualGuard = env.loadByte(hay) == env.loadByte(ndl);
+  z3::expr ndl_head = env.loadByte(ndl);
 
   std::vector<z3::expr> match;
   match.reserve(MAX_HAY);
@@ -93,7 +92,7 @@ static z3::expr strstrSummary(SymbolicStore &env,
     z3::expr canStart =
         z3::ule(I, len_h) && z3::ule(len_n, len_h - I) && (len_n != BVp(0));
 
-    z3::expr headOk = env.loadByte(hay + I) == env.loadByte(ndl);
+    z3::expr headOk = env.loadByte(hay + I) == ndl_head;
 
     z3::expr allEq = ctx.bool_val(true);
     for (unsigned k = 0; k < MAX_NDL; ++k) {
@@ -106,15 +105,36 @@ static z3::expr strstrSummary(SymbolicStore &env,
     match.push_back(canStart && headOk && allEq);
   }
 
-  z3::expr ret = BVp(0);
-  for (int i = (int)MAX_HAY - 1; i >= 0; --i) {
-    ret = z3::ite(match[(size_t)i],
-                  hay + BV((uint64_t)i, SymbolicStore::PTR_BITS), ret);
-  }
-  ret = z3::ite(emptyNeedle, hay, ret);
+  z3::expr anyMatch = ctx.bool_val(false);
+  for (auto &m : match)
+    anyMatch = anyMatch || m;
 
-  if (instr.result.isVariable())
-    env.bind(instr.result, ret);
+  z3::expr POS = ctx.bv_const("strstr_pos", SymbolicStore::PTR_BITS);
+  env.solver.add(z3::ult(POS, BVp(MAX_HAY)));
+
+  env.solver.add(z3::implies(anyMatch, match[0] || match[1] /*dummy*/));
+  env.solver.add(z3::implies(
+      anyMatch, match[(size_t)0] || match[(size_t)0] == match[(size_t)0]));
+
+  {
+    z3::expr pos_is_match = ctx.bool_val(false);
+    for (unsigned i = 0; i < MAX_HAY; ++i) {
+      z3::expr I = BV(i, SymbolicStore::PTR_BITS);
+      pos_is_match = pos_is_match || (POS == I && match[i]);
+    }
+    env.solver.add(z3::implies(anyMatch, pos_is_match));
+  }
+  {
+    for (unsigned j = 0; j < MAX_HAY; ++j) {
+      z3::expr J = BV(j, SymbolicStore::PTR_BITS);
+      env.solver.add(z3::implies(anyMatch && z3::ult(J, POS), !match[j]));
+    }
+  }
+
+  z3::expr ret = BVp(0);
+  ret = z3::ite(anyMatch, hay + POS, BVp(0));
+
+  env.bind(instr.result, ret);
   return ret;
 }
 
@@ -127,33 +147,24 @@ static z3::expr atoiSummary(SymbolicStore &env, const CallInstruction &instr) {
 
   z3::expr s = Z3Helper::translateValueAsBV(ctx, env, instr.arguments[0],
                                             SymbolicStore::PTR_BITS);
-
-  z3::expr len = strlenExpr(env, s, 10);
+  const unsigned MAX_DIG = 10;
 
   z3::expr acc = BV32(0);
-  z3::expr allDigits = ctx.bool_val(true);
+  z3::expr done = ctx.bool_val(false);
   const z3::expr ten = BV32(10);
 
-  for (unsigned i = 0; i < 10; ++i) {
+  for (unsigned i = 0; i < MAX_DIG; ++i) {
     z3::expr I = BVp(i);
-    z3::expr take = z3::ult(I, len);
-
     z3::expr ch = env.loadByte(s + I);
     z3::expr isDigit = z3::ule(BV8('0'), ch) && z3::ule(ch, BV8('9'));
-    allDigits = z3::ite(take, allDigits && isDigit, allDigits);
-
     z3::expr d32 = z3::zext(ch, 24) - BV32('0');
-    acc = z3::ite(take, acc * ten + d32, acc);
+
+    acc = z3::ite(!done && isDigit, acc * ten + d32, acc);
+    done = done || !isDigit;
   }
 
-  env.solver.add(allDigits);
-  env.solver.add(
-      z3::implies(z3::ult(len, BVp(10)), env.loadByte(s + len) == BV8(0)));
-
-  z3::expr ret = acc;
-  if (instr.result.isVariable())
-    env.bind(instr.result, ret);
-  return ret;
+  env.bind(instr.result, acc);
+  return acc;
 }
 
 } // namespace irsentry

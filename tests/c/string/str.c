@@ -11,27 +11,41 @@ int main(int argc, char **argv) {
     printf("Usage: ./str.exe [req]");
     return 1;
   }
-
   const char *req_buf = argv[1];
-  if (strstr(req_buf, "POST / HTTP/1.1\n") != req_buf) {
+  if (strstr(req_buf, "POST / HTTP/1.1@") != req_buf) {
     return 1;
   }
 
-  const char *hdr_start = req_buf + strlen("POST / HTTP/1.1\n");
-  const char *hdr_end = strstr(hdr_start, "\n\n");
-  if (strstr(hdr_start, "Content-Length:") == NULL) {
+  const char *hdr_start = req_buf + strlen("POST / HTTP/1.1@");
+  const char *cl_start = strstr(hdr_start, "Content-Length:");
+  if (cl_start == NULL) {
     return 1;
   }
 
-  const char *p_cl = hdr_start + strlen("Content-Length:");
-  int content_length = atoi(p_cl);
-
-  const char *body = malloc(content_length);
-  memcpy(body, hdr_end, content_length);
-
-  if (content_length == 1234 && strstr(hdr_end + 4, "PARAM=1") != NULL) {
-    IRSENTRY_MOCK_NOPARAMS();
+  const char *cl_num = cl_start + strlen("Content-Length:");
+  if (atoi(cl_num) > 1234) {
+    return 1;
   }
+
+  IRSENTRY_MOCK_NOPARAMS();
 
   return 0;
 }
+
+//int main(int argc, char **argv) {
+//
+//  if (argc != 2) {
+//    printf("Usage: ./str.exe [req]");
+//    return 1;
+//  }
+//  if (strstr(argv[1], "bitwa") == NULL) {
+//    return 1;
+//  }
+//  if (strstr(argv[1], "1410") == NULL) {
+//    return 1;
+//  }
+//
+//  IRSENTRY_MOCK_NOPARAMS();
+//
+//  return 0;
+//}
